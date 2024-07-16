@@ -4,16 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>개발자 도우미</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        @font-face {
-            font-family: 'GmarketSansMedium';
-            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
-            font-weight: normal;
-            font-style: normal;
-        }
-
         body {
-            font-family: 'GmarketSansMedium', sans-serif;
+            font-family: 'Noto Sans KR', sans-serif;
             margin: 0;
             padding: 0;
             font-size: 85%;
@@ -105,16 +99,16 @@
             height: 300px;
             margin-bottom: 10px;
         }
-        #postList {
+        #postList, #noticeList, #downloadList {
             list-style-type: none;
             padding: 0;
         }
-        #postList li {
+        #postList li, #noticeList li, #downloadList li {
             cursor: pointer;
             padding: 10px;
             border-bottom: 1px solid #ddd;
         }
-        #postList li:hover {
+        #postList li:hover, #noticeList li:hover, #downloadList li:hover {
             background-color: #f5f5f5;
         }
     </style>
@@ -136,19 +130,19 @@
         <div class="dropdown">
             <button class="dropbtn">코딩공부</button>
             <div class="dropdown-content">
-                <a href="#" onclick="showContent('파이썬')">파이썬</a>
-                <a href="#" onclick="showAutoHotkeyContent()">오토핫키</a>
-                <a href="#" onclick="showContent('자바스크립트')">자바스크립트</a>
-                <a href="#" onclick="showContent('hwp')">hwp</a>
-                <a href="#" onclick="showContent('인디자인')">인디자인</a>
+                <a href="#" onclick="showCodingStudyList('python')">파이썬</a>
+                <a href="#" onclick="showCodingStudyList('autohotkey')">오토핫키</a>
+                <a href="#" onclick="showCodingStudyList('javascript')">자바스크립트</a>
+                <a href="#" onclick="showCodingStudyList('hwp')">hwp</a>
+                <a href="#" onclick="showCodingStudyList('indesign')">인디자인</a>
             </div>
         </div>
         <div class="dropdown">
-            <button class="dropbtn">궁금한 점</button>
+            <button class="dropbtn">게시판</button>
             <div class="dropdown-content">
-                <a href="#" onclick="showWriteForm()">글쓰기</a>
-                <a href="#" onclick="showList()">목록</a>
-                <a href="#" onclick="showSearch()">글찾기</a>
+                <a href="#" onclick="showQnAList()">Q&A</a>
+                <a href="#" onclick="showNoticeList()">공지사항</a>
+                <a href="#" onclick="showDownloadList()">다운로드</a>
             </div>
         </div>
         <div class="search-bar">
@@ -165,71 +159,260 @@
 
     <div class="footer" id="footer" style="display: none;">
         <button onclick="showWriteForm()">글쓰기</button>
-        <button onclick="showEditor()">에디터</button>
         <button onclick="showList()">목록</button>
     </div>
 
     <script>
         let posts = JSON.parse(localStorage.getItem('posts')) || [];
+        let notices = JSON.parse(localStorage.getItem('notices')) || [];
+        let downloads = JSON.parse(localStorage.getItem('downloads')) || [];
+        let codingStudies = JSON.parse(localStorage.getItem('codingStudies')) || {
+            python: [],
+            autohotkey: [],
+            javascript: [],
+            hwp: [],
+            indesign: []
+        };
 
         function showContent(content) {
             document.getElementById('mainContent').innerHTML = `<p>${content}</p>`;
             document.getElementById('footer').style.display = 'none';
         }
 
-        function showAutoHotkeyContent() {
-            const content = `
-                <h2>AutoHotkey Win 라이브러리</h2>
-                <p>AutoHotkey의 Win 라이브러리는 윈도우 관리와 관련된 다양한 함수를 제공합니다. 
-                이 라이브러리를 사용하면 윈도우의 위치 변경, 크기 조절, 활성화, 최소화, 최대화 등 
-                다양한 윈도우 조작을 할 수 있습니다.</p>
-                <p>주요 함수들:</p>
-                <ul>
-                    <li>WinActivate: 지정된 윈도우를 활성화합니다.</li>
-                    <li>WinClose: 지정된 윈도우를 닫습니다.</li>
-                    <li>WinGetPos: 윈도우의 위치와 크기를 가져옵니다.</li>
-                    <li>WinMove: 윈도우의 위치를 변경합니다.</li>
-                    <li>WinSetAlwaysOnTop: 윈도우를 항상 위에 표시되도록 설정합니다.</li>
-                </ul>
-                <p><a href="https://www.autohotkey.com/docs/v2/lib/Win.htm" target="_blank">자세한 내용은 여기를 클릭하세요</a></p>
+        function showCodingStudyList(category) {
+            let listHtml = `<h2>${category} 학습 목록</h2><ul id="codingStudyList">`;
+            codingStudies[category].forEach((study, index) => {
+                listHtml += `<li onclick="viewCodingStudy('${category}', ${index})">${study.title}</li>`;
+            });
+            listHtml += '</ul>';
+            document.getElementById('mainContent').innerHTML = listHtml;
+            document.getElementById('footer').style.display = 'none';
+        }
+
+        function viewCodingStudy(category, index) {
+            const study = codingStudies[category][index];
+            document.getElementById('mainContent').innerHTML = `
+                <h2>${study.title}</h2>
+                <div>${study.content}</div>
             `;
-            document.getElementById('mainContent').innerHTML = content;
+        }
+
+        function showQnAList() {
+            let listHtml = '<h2>Q&A 목록</h2><ul id="postList">';
+            posts.forEach((post, index) => {
+                listHtml += `<li onclick="viewPost(${index})">${post.title}</li>`;
+            });
+            listHtml += '</ul>';
+            listHtml += '<button onclick="showWriteForm()">질문하기</button>';
+            listHtml += '<input type="text" id="searchTerm" placeholder="검색어를 입력하세요"><button onclick="searchPosts()">검색</button>';
+            document.getElementById('mainContent').innerHTML = listHtml;
+            document.getElementById('footer').style.display = 'none';
+        }
+
+        function showNoticeList() {
+            let listHtml = '<h2>공지사항</h2><ul id="noticeList">';
+            notices.forEach((notice, index) => {
+                listHtml += `<li onclick="viewNotice(${index})">${notice.title}</li>`;
+            });
+            listHtml += '</ul>';
+            listHtml += '<button onclick="showNoticeWriteForm()">공지작성</button>';
+            document.getElementById('mainContent').innerHTML = listHtml;
+            document.getElementById('footer').style.display = 'none';
+        }
+
+        function showDownloadList() {
+            let listHtml = '<h2>다운로드</h2><ul id="downloadList">';
+            downloads.forEach((download, index) => {
+                listHtml += `<li onclick="viewDownload(${index})">${download.title}</li>`;
+            });
+            listHtml += '</ul>';
+            listHtml += '<button onclick="showDownloadUploadForm()">파일 업로드</button>';
+            document.getElementById('mainContent').innerHTML = listHtml;
             document.getElementById('footer').style.display = 'none';
         }
 
         function showWriteForm() {
             document.getElementById('mainContent').innerHTML = `
+                <h2>질문하기</h2>
                 <input type="text" id="postTitle" placeholder="제목을 입력하세요" style="width: 100%; margin-bottom: 10px;">
                 <textarea id="editor" placeholder="여기에 글을 작성하세요..."></textarea>
+                <input type="file" id="imageUpload" accept="image/*">
                 <button onclick="savePost()">저장</button>
-            `;
-            document.getElementById('footer').style.display = 'block';
-        }
-
-        function showEditor() {
-            // 에디터 표시 로직
-        }
-
-        function showList() {
-            let listHtml = '<h2>글 목록</h2><ul id="postList">';
-            posts.forEach((post, index) => {
-                listHtml += `<li onclick="viewPost(${index})">${post.title}</li>`;
-            });
-            listHtml += '</ul>';
-            document.getElementById('mainContent').innerHTML = listHtml;
-            document.getElementById('footer').style.display = 'block';
-        }
-
-        function showSearch() {
-            document.getElementById('mainContent').innerHTML = `
-                <input type="text" id="searchTerm" placeholder="검색어를 입력하세요">
-                <button onclick="performSearch()">검색</button>
-                <div id="searchResults"></div>
             `;
             document.getElementById('footer').style.display = 'none';
         }
 
-        function performSearch() {
+        function showNoticeWriteForm() {
+            document.getElementById('mainContent').innerHTML = `
+                <h2>공지사항 작성</h2>
+                <input type="text" id="noticeTitle" placeholder="제목을 입력하세요" style="width: 100%; margin-bottom: 10px;">
+                <textarea id="noticeEditor" placeholder="여기에 글을 작성하세요..."></textarea>
+                <input type="password" id="noticePassword" placeholder="비밀번호를 입력하세요">
+                <input type="file" id="noticeImageUpload" accept="image/*">
+                <button onclick="saveNotice()">저장</button>
+            `;
+            document.getElementById('footer').style.display = 'none';
+        }
+
+        function showDownloadUploadForm() {
+            document.getElementById('mainContent').innerHTML = `
+                <h2>파일 업로드</h2>
+                <input type="text" id="downloadTitle" placeholder="제목을 입력하세요" style="width: 100%; margin-bottom: 10px;">
+                <textarea id="downloadDescription" placeholder="파일 설명을 입력하세요..."></textarea>
+                <input type="file" id="fileUpload">
+                <button onclick="uploadFile()">업로드</button>
+            `;
+            document.getElementById('footer').style.display = 'none';
+        }
+
+        function savePost() {
+            const title = document.getElementById('postTitle').value;
+            const content = document.getElementById('editor').value;
+            const imageInput = document.getElementById('imageUpload');
+            if (title && content) {
+                let post = {title, content};
+                if (imageInput.files && imageInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        post.image = e.target.result;
+                        posts.push(post);
+                        localStorage.setItem('posts', JSON.stringify(posts));
+                        showQnAList();
+                    };
+                    reader.readAsDataURL(imageInput.files[0]);
+                } else {
+                    posts.push(post);
+                    localStorage.setItem('posts', JSON.stringify(posts));
+                    showQnAList();
+                }
+            }
+        }
+
+        function saveNotice() {
+            const title = document.getElementById('noticeTitle').value;
+            const content = document.getElementById('noticeEditor').value;
+            const password = document.getElementById('noticePassword').value;
+            const imageInput = document.getElementById('noticeImageUpload');
+            if (title && content && password) {
+                let notice = {title, content, password};
+                if (imageInput.files && imageInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        notice.image = e.target.result;
+                        notices.push(notice);
+                        localStorage.setItem('notices', JSON.stringify(notices));
+                        showNoticeList();
+                    };
+                    reader.readAsDataURL(imageInput.files[0]);
+                } else {
+                    notices.push(notice);
+                    localStorage.setItem('notices', JSON.stringify(notices));
+                    showNoticeList();
+                }
+            }
+        }
+
+        function uploadFile() {
+            const title = document.getElementById('downloadTitle').value;
+            const description = document.getElementById('downloadDescription').value;
+            const fileInput = document.getElementById('fileUpload');
+            if (title && description && fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const download = {
+                        title: title,
+                        description: description,
+                        file: e.target.result,
+                        fileName: fileInput.files[0].name
+                    };
+                    downloads.push(download);
+                    localStorage.setItem('downloads', JSON.stringify(downloads));
+                    showDownloadList();
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+
+        function viewPost(index) {
+            const post = posts[index];
+            let postHtml = `
+                <h2>${post.title}</h2>
+                <div>${post.content}</div>
+            `;
+            if (post.image) {
+                postHtml += `<img src="${post.image}" alt="Post Image" style="max-width: 100%;">`;
+            }
+            postHtml += `
+                <button onclick="editPost(${index})">수정</button>
+                <button onclick="deletePost(${index})">삭제</button>
+            `;
+            document.getElementById('mainContent').innerHTML = postHtml;
+        }
+
+        function viewNotice(index) {
+            const notice = notices[index];
+            let noticeHtml = `
+                <h2>${notice.title}</h2>
+                <div>${notice.content}</div>
+            `;
+            if (notice.image) {
+                noticeHtml += `<img src="${notice.image}" alt="Notice Image" style="max-width: 100%;">`;
+            }
+            document.getElementById('mainContent').innerHTML = noticeHtml;
+        }
+
+        function viewDownload(index) {
+            const download = downloads[index];
+            let downloadHtml = `
+                <h2>${download.title}</h2>
+                <p>${download.description}</p>
+                <a href="${download.file}" download="${download.fileName}">Download ${download.fileName}</a>
+            `;
+            document.getElementById('mainContent').innerHTML = downloadHtml;
+        }
+
+        function editPost(index) {
+            const post = posts[index];
+            document.getElementById('mainContent').innerHTML = `
+                <h2>글 수정</h2>
+                <input type="text" id="editTitle" value="${post.title}" style="width: 100%; margin-bottom: 10px;">
+                <textarea id="editEditor" style="width: 100%; height: 300px;">${post.content}</textarea>
+                <input type="file" id="editImageUpload" accept="image/*">
+                <button onclick="updatePost(${index})">업데이트</button>
+            `;
+        }
+
+        function updatePost(index) {
+            const title = document.getElementById('editTitle').value;
+            const content = document.getElementById('editEditor').value;
+            const imageInput = document.getElementById('editImageUpload');
+            if (title && content) {
+                let post = {title, content};
+                if (imageInput.files && imageInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        post.image = e.target.result;
+                        posts[index] = post;
+                        localStorage.setItem('posts', JSON.stringify(posts));
+                        viewPost(index);
+                    };
+                    reader.readAsDataURL(imageInput.files[0]);
+                } else {
+                    post.image = posts[index].image;  // 기존 이미지 유지
+                    posts[index] = post;
+                    localStorage.setItem('posts', JSON.stringify(posts));
+                    viewPost(index);
+                }
+            }
+        }
+
+        function deletePost(index) {
+            posts.splice(index, 1);
+            localStorage.setItem('posts', JSON.stringify(posts));
+            showQnAList();
+        }
+
+        function searchPosts() {
             const searchTerm = document.getElementById('searchTerm').value.toLowerCase();
             const results = posts.filter(post => 
                 post.title.toLowerCase().includes(searchTerm) || 
@@ -240,57 +423,50 @@
                 resultHtml += `<li onclick="viewPost(${posts.indexOf(post)})">${post.title}</li>`;
             });
             resultHtml += '</ul>';
-            document.getElementById('searchResults').innerHTML = resultHtml;
-        }
-
-        function savePost() {
-            const title = document.getElementById('postTitle').value;
-            const content = document.getElementById('editor').value;
-            if (title && content) {
-                posts.push({title, content});
-                localStorage.setItem('posts', JSON.stringify(posts));
-                showList();
-            }
-        }
-
-        function viewPost(index) {
-            const post = posts[index];
-            document.getElementById('mainContent').innerHTML = `
-                <h2>${post.title}</h2>
-                <p>${post.content}</p>
-                <button onclick="editPost(${index})">수정</button>
-                <button onclick="deletePost(${index})">삭제</button>
-            `;
-        }
-
-        function editPost(index) {
-            const post = posts[index];
-            document.getElementById('mainContent').innerHTML = `
-                <input type="text" id="editTitle" value="${post.title}" style="width: 100%; margin-bottom: 10px;">
-                <textarea id="editEditor" style="width: 100%; height: 300px;">${post.content}</textarea>
-                <button onclick="updatePost(${index})">업데이트</button>
-            `;
-        }
-
-        function updatePost(index) {
-            const title = document.getElementById('editTitle').value;
-            const content = document.getElementById('editEditor').value;
-            if (title && content) {
-                posts[index] = {title, content};
-                localStorage.setItem('posts', JSON.stringify(posts));
-                viewPost(index);
-            }
-        }
-
-        function deletePost(index) {
-            posts.splice(index, 1);
-            localStorage.setItem('posts', JSON.stringify(posts));
-            showList();
+            document.getElementById('mainContent').innerHTML = resultHtml;
         }
 
         function search() {
-            // 검색 로직 (필요하다면 구현)
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            let results = [];
+            posts.forEach((post, index) => {
+                if (post.title.toLowerCase().includes(searchTerm) || post.content.toLowerCase().includes(searchTerm)) {
+                    results.push({type: 'Q&A', item: post, index: index});
+                }
+            });
+            notices.forEach((notice, index) => {
+                if (notice.title.toLowerCase().includes(searchTerm) || notice.content.toLowerCase().includes(searchTerm)) {
+                    results.push({type: '공지사항', item: notice, index: index});
+                }
+            });
+            downloads.forEach((download, index) => {
+                if (download.title.toLowerCase().includes(searchTerm) || download.description.toLowerCase().includes(searchTerm)) {
+                    results.push({type: '다운로드', item: download, index: index});
+                }
+            });
+            let resultHtml = '<h2>검색 결과</h2><ul>';
+            results.forEach(result => {
+                resultHtml += `<li onclick="${result.type === 'Q&A' ? 'viewPost' : result.type === '공지사항' ? 'viewNotice' : 'viewDownload'}(${result.index})">[${result.type}] ${result.item.title}</li>`;
+            });
+            resultHtml += '</ul>';
+            document.getElementById('mainContent').innerHTML = resultHtml;
         }
+
+        // 오토핫키 컨텐츠 추가
+        codingStudies.autohotkey = [
+            {title: "윈도우 조작 기본", content: "윈도우 활성화, 이동, 크기 조절 등의 기본 명령어를 설명합니다."},
+            {title: "핫키 설정하기", content: "자주 사용하는 작업을 단축키로 설정하는 방법을 알아봅니다."},
+            {title: "문자열 조작", content: "문자열을 다루는 다양한 함수와 사용법을 소개합니다."},
+            {title: "파일 및 폴더 작업", content: "파일 생성, 삭제, 이동 등의 작업을 자동화하는 방법을 배웁니다."},
+            {title: "GUI 만들기", content: "사용자 인터페이스를 만드는 방법과 이벤트 처리 방법을 알아봅니다."},
+            {title: "루프와 조건문", content: "반복 작업과 조건에 따른 실행을 구현하는 방법을 설명합니다."},
+            {title: "시스템 정보 얻기", content: "시스템 정보를 얻고 활용하는 방법을 소개합니다."},
+            {title: "인터넷 작업 자동화", content: "웹 브라우저 조작과 간단한 웹 스크래핑 방법을 배웁니다."},
+            {title: "이미지 처리", content: "스크린샷 찍기, 이미지 편집 등의 작업을 자동화하는 방법을 알아봅니다."},
+            {title: "고급 테크닉", content: "DLL 호출, COM 객체 사용 등 고급 기능을 활용하는 방법을 소개합니다."}
+        ];
+        localStorage.setItem('codingStudies', JSON.stringify(codingStudies));
+
     </script>
 </body>
 </html>
