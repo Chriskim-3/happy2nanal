@@ -1,60 +1,12 @@
--*
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyBtyjw-rPmCLoXK7O471upPawvJmp6jaWA",
-  authDomain: "nanal-9e758.firebaseapp.com",
-  projectId: "nanal-9e758",
-  storageBucket: "nanal-9e758.appspot.com",
-  messagingSenderId: "1073199749734",
-  appId: "1:1073199749734:web:372da8e47d7366e1242ba7",
-  measurementId: "G-L20RGTW4TC"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-*/
-
 <!DOCTYPE html>
 <html lang="ko">
-
-
-  <title>Happy2Nanal</title>
-    <!-- Firebase Configuration -->
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
-    <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-
-      
 <head>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
-  
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>개발자 도우미</title>
+    <title>Happy2Nanal</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* CSS 스타일 */
         @font-face {
             font-family: 'GmarketSansMedium';
             src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
@@ -236,8 +188,28 @@ const analytics = getAnalytics(app);
             text-decoration: none;
             border-radius: 5px;
         }
-      
     </style>
+    <!-- Firebase Configuration -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBtyjw-rPmCLoXK7O471upPawvJmp6jaWA",
+            authDomain: "nanal-9e758.firebaseapp.com",
+            projectId: "nanal-9e758",
+            storageBucket: "nanal-9e758.appspot.com",
+            messagingSenderId: "1073199749734",
+            appId: "1:1073199749734:web:372da8e47d7366e1242ba7",
+            measurementId: "G-L20RGTW4TC"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const analytics = firebase.getAnalytics(app);
+        const database = firebase.database(app);
+    </script>
 </head>
 <body>
     <div class="header">
@@ -278,246 +250,226 @@ const analytics = getAnalytics(app);
             <!-- 여기에 메뉴 선택에 따른 내용이 표시됩니다 -->
         </div>
     </div>
-
     <div class="footer">
         <p>&copy; 2024 개발자 도우미. All rights reserved.</p>
     </div>
-
+    
     <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBtyjw-rPmCLoXK7O471upPawvJmp6jaWA",
-      authDomain: "nanal-9e758.firebaseapp.com",
-      projectId: "nanal-9e758",
-      storageBucket: "nanal-9e758.appspot.com",
-      messagingSenderId: "1073199749734",
-      appId: "1:1073199749734:web:372da8e47d7366e1242ba7",
-      measurementId: "G-L20RGTW4TC"
-    };
-
-    // Firebase 초기화
-    firebase.initializeApp(firebaseConfig);
-
-    // Firebase 데이터베이스 참조
-    const database = firebase.database();
-
-    // 기존 스크립트 내용
-    let posts = JSON.parse(localStorage.getItem('posts')) || [];
-    let notices = JSON.parse(localStorage.getItem('notices')) || [];
-
-      
-    let posts = JSON.parse(localStorage.getItem('posts')) || [];
-    let notices = JSON.parse(localStorage.getItem('notices')) || [];
-    let files = JSON.parse(localStorage.getItem('files')) || [];
-    let studyContents = JSON.parse(localStorage.getItem('studyContents')) || [];
-
-    function showContent(content) {
-        let html = `<p>${content}</p>`;
-        if (content === '이 홈페이지는 글쓰고, 올리고, 지울려고 만드는 사이트 입니다.') {
-            html += '<img src="https://apod.nasa.gov/apod/image/2407/CometaryGlobs_Pugh_1080.jpg" alt="소개 이미지" class="intro-image">';
+        // JavaScript 함수
+        let posts = JSON.parse(localStorage.getItem('posts')) || [];
+        let notices = JSON.parse(localStorage.getItem('notices')) || [];
+        let files = JSON.parse(localStorage.getItem('files')) || [];
+        let studyContents = JSON.parse(localStorage.getItem('studyContents')) || [];
+    
+        function showContent(content) {
+            let html = `<p>${content}</p>`;
+            if (content === '이 홈페이지는 글쓰고, 올리고, 지울려고 만드는 사이트 입니다.') {
+                html += '<img src="https://apod.nasa.gov/apod/image/2407/CometaryGlobs_Pugh_1080.jpg" alt="소개 이미지" class="intro-image">';
+            }
+            document.getElementById('mainContent').innerHTML = html;
         }
-        document.getElementById('mainContent').innerHTML = html;
-    }
-
-    function showStudyList(topic) {
-        let listHtml = `<h2 class="study-title">${topic} 학습 내용</h2>`;
-        
-        listHtml += '<ul id="studyList">';
-        studyContents.filter(item => item.topic === topic).forEach((item, index) => {
+    
+        function showStudyList(topic) {
+            let listHtml = `<h2 class="study-title">${topic} 학습 내용</h2>`;
+            
+            listHtml += '<ul id="studyList">';
+            studyContents.filter(item => item.topic === topic).forEach((item, index) => {
+                listHtml += `
+                    <li onclick="viewStudyContent(${studyContents.indexOf(item)})">
+                        <h3>${item.title}</h3>
+                        <div class="date-display">${item.date || '날짜 없음'}</div>
+                    </li>`;
+            });
+            listHtml += '</ul>';
+    
             listHtml += `
-                <li onclick="viewStudyContent(${studyContents.indexOf(item)})">
-                    <h3>${item.title}</h3>
-                    <div class="date-display">${item.date || '날짜 없음'}</div>
-                </li>`;
-        });
-        listHtml += '</ul>';
-
-        listHtml += `
-            <div class="search-container">
-                <input type="text" id="studySearchInput" placeholder="검색...">
-                <button onclick="searchStudy('${topic}')">검색</button>
-            </div>
-            <div class="button-container">
-                <button onclick="showStudyForm('${topic}')">글쓰기</button>
-            </div>
-        `;
-
-        document.getElementById('mainContent').innerHTML = listHtml;
-    }
-
-    function showStudyForm(topic) {
-        document.getElementById('mainContent').innerHTML = `
-            <h3>${topic} 내용 추가</h3>
-            <input type="text" id="studyTitle" placeholder="제목을 입력하세요">
-            <textarea id="studyContent" placeholder="내용을 입력하세요..."></textarea>
-            <div class="button-container">
-                <button onclick="saveStudyContent('${topic}')">저장</button>
-            </div>
-        `;
-    }
-
-    function saveStudyContent(topic) {
-        const title = document.getElementById('studyTitle').value;
-        const content = document.getElementById('studyContent').value;
-        if (title && content) {
-            const date = new Date().toLocaleString();
-            studyContents.push({topic, title, content, date});
-            localStorage.setItem('studyContents', JSON.stringify(studyContents));
-            showStudyList(topic);
+                <div class="search-container">
+                    <input type="text" id="studySearchInput" placeholder="검색...">
+                    <button onclick="searchStudy('${topic}')">검색</button>
+                </div>
+                <div class="button-container">
+                    <button onclick="showStudyForm('${topic}')">글쓰기</button>
+                </div>
+            `;
+    
+            document.getElementById('mainContent').innerHTML = listHtml;
         }
-    }
-
-    function viewStudyContent(index) {
-        const item = studyContents[index];
-        let content = `
-            <h2>${item.title}</h2>
-            <div class="date-display">${item.date || '날짜 없음'}</div>
-            <div>${item.content}</div>
-            <div class="button-container">
-                <button onclick="editStudyContent(${index})">수정</button>
-                <button onclick="deleteStudyContent(${index})">삭제</button>
-                <button onclick="showStudyList('${item.topic}')">목록으로</button>
-            </div>
-        `;
-        document.getElementById('mainContent').innerHTML = content;
-    }
-
-    function editStudyContent(index) {
-        const item = studyContents[index];
-        document.getElementById('mainContent').innerHTML = `
-            <h3>학습 내용 수정</h3>
-            <input type="text" id="studyTitle" value="${item.title}">
-            <textarea id="studyContent">${item.content}</textarea>
-            <div class="button-container">
-                <button onclick="updateStudyContent(${index})">업데이트</button>
-                <button onclick="showStudyList('${item.topic}')">취소</button>
-            </div>
-        `;
-    }
-
-    function updateStudyContent(index) {
-        const title = document.getElementById('studyTitle').value;
-        const content = document.getElementById('studyContent').value;
-        if (title && content) {
-            const date = new Date().toLocaleString();
-            studyContents[index] = {topic: studyContents[index].topic, title, content, date};
-            localStorage.setItem('studyContents', JSON.stringify(studyContents));
-            viewStudyContent(index);
+    
+        function showStudyForm(topic) {
+            document.getElementById('mainContent').innerHTML = `
+                <h3>${topic} 내용 추가</h3>
+                <input type="text" id="studyTitle" placeholder="제목을 입력하세요">
+                <textarea id="studyContent" placeholder="내용을 입력하세요..."></textarea>
+                <div class="button-container">
+                    <button onclick="saveStudyContent('${topic}')">저장</button>
+                </div>
+            `;
         }
-    }
-
-    function deleteStudyContent(index) {
-        if (confirm('정말로 이 학습 내용을 삭제하시겠습니까?')) {
-            const topic = studyContents[index].topic;
-            studyContents.splice(index, 1);
-            localStorage.setItem('studyContents', JSON.stringify(studyContents));
-            showStudyList(topic);
+    
+        function saveStudyContent(topic) {
+            const title = document.getElementById('studyTitle').value;
+            const content = document.getElementById('studyContent').value;
+            if (title && content) {
+                const date = new Date().toLocaleString();
+                studyContents.push({topic, title, content, date});
+                localStorage.setItem('studyContents', JSON.stringify(studyContents));
+                showStudyList(topic);
+            }
         }
-    }
-
-    function searchStudy(topic) {
-        const searchTerm = document.getElementById('studySearchInput').value.toLowerCase();
-        const results = studyContents.filter(item => 
-            item.topic === topic && (item.title.toLowerCase().includes(searchTerm) || item.content.toLowerCase().includes(searchTerm))
-        );
-        let resultHtml = `<h3>${topic} 검색 결과</h3><ul>`;
-        results.forEach((item, index) => {
-            resultHtml += `<li onclick="viewStudyContent(${studyContents.indexOf(item)})">${item.title}</li>`;
-        });
-        resultHtml += '</ul>';
-        document.getElementById('mainContent').innerHTML = resultHtml;
-    }
-
-    function showQnAList() {
-    database.ref('posts').once('value').then((snapshot) => {
-        let posts = snapshot.val();
-        let listHtml = '<h3>Q&A 목록</h3><ul id="postList">';
-        for (let key in posts) {
-            listHtml += `<li onclick="viewPost('${key}')">${posts[key].title}</li>`;
+    
+        function viewStudyContent(index) {
+            const item = studyContents[index];
+            let content = `
+                <h2>${item.title}</h2>
+                <div class="date-display">${item.date || '날짜 없음'}</div>
+                <div>${item.content}</div>
+                <div class="button-container">
+                    <button onclick="editStudyContent(${index})">수정</button>
+                    <button onclick="deleteStudyContent(${index})">삭제</button>
+                    <button onclick="showStudyList('${item.topic}')">목록으로</button>
+                </div>
+            `;
+            document.getElementById('mainContent').innerHTML = content;
         }
-        listHtml += '</ul>';
-        // ... (나머지 코드)
-        document.getElementById('mainContent').innerHTML = listHtml;
-    });
-}
-
-    function showQnAForm() {
-        document.getElementById('mainContent').innerHTML = `
-            <h3>Q&A 글쓰기</h3>
-            <input type="text" id="postTitle" placeholder="제목을 입력하세요">
-            <textarea id="editor" placeholder="여기에 글을 작성하세요..."></textarea>
-            <div class="button-container">
-                <button onclick="savePost()">저장</button>
-            </div>
-        `;
-    }
-
-      function savePost() {
-      const title = document.getElementById('postTitle').value;
-      const content = document.getElementById('editor').value;
-      if (title && content) {
-          const date = new Date().toLocaleString();
-          const newPost = {title, content, date};
-          database.ref('posts').push(newPost);
-          showQnAList();
-       }
-   }
-
-    function viewPost(index) {
-        const post = posts[index];
-        let content = `
-            <h3>${post.title}</h3>
-            <div class="date-display">${post.date || '날짜 없음'}</div>
-            <p>${post.content}</p>
-            <div class="button-container">
-                <button onclick="editPost(${index})">수정</button>
-                <button onclick="deletePost(${index})">삭제</button>
-                <button onclick="showQnAList()">목록으로</button>
-            </div>
-        `;
-        document.getElementById('mainContent').innerHTML = content;
-    }
-
-    function editPost(index) {
-        const post = posts[index];
-        document.getElementById('mainContent').innerHTML = `
-            <h3>게시글 수정</h3>
-            <input type="text" id="editTitle" value="${post.title}">
-            <textarea id="editEditor">${post.content}</textarea>
-            <div class="button-container">
-                <button onclick="updatePost(${index})">업데이트</button>
-                <button onclick="showQnAList()">취소</button>
-            </div>
-        `;
-    }
-
-    function updatePost(index) {
-        const title = document.getElementById('editTitle').value;
-        const content = document.getElementById('editEditor').value;
-        if (title && content) {
-            const date = new Date().toLocaleString();
-            posts[index] = {title, content, date};
-            localStorage.setItem('posts', JSON.stringify(posts));
-            viewPost(index);
+    
+        function editStudyContent(index) {
+            const item = studyContents[index];
+            document.getElementById('mainContent').innerHTML = `
+                <h3>학습 내용 수정</h3>
+                <input type="text" id="studyTitle" value="${item.title}">
+                <textarea id="studyContent">${item.content}</textarea>
+                <div class="button-container">
+                    <button onclick="updateStudyContent(${index})">업데이트</button>
+                    <button onclick="showStudyList('${item.topic}')">취소</button>
+                </div>
+            `;
         }
-    }
-
-    function deletePost(index) {
-        if (confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
-            posts.splice(index, 1);
-            localStorage.setItem('posts', JSON.stringify(posts));
-            showQnAList();
+    
+        function updateStudyContent(index) {
+            const title = document.getElementById('studyTitle').value;
+            const content = document.getElementById('studyContent').value;
+            if (title && content) {
+                const date = new Date().toLocaleString();
+                studyContents[index] = {topic: studyContents[index].topic, title, content, date};
+                localStorage.setItem('studyContents', JSON.stringify(studyContents));
+                viewStudyContent(index);
+            }
         }
-    }
-
-    function searchQnA() {
-        const searchTerm = document.getElementById('qnaSearchInput').value.toLowerCase();
-        const results = posts.filter(post => 
-            post.title.toLowerCase().includes(searchTerm) || 
-            post.content.toLowerCase().includes(searchTerm)
-        );
-        let resultHtml = '<h3>Q&A 검색 결과</h3><ul>';
-        results.forEach((post, index) => {
-            resultHtml += `<li onclick="viewPost(${posts.indexOf(post)})">${post.title}</li>`;
+    
+        function deleteStudyContent(index) {
+            if (confirm('정말로 이 학습 내용을 삭제하시겠습니까?')) {
+                const topic = studyContents[index].topic;
+                studyContents.splice(index, 1);
+                localStorage.setItem('studyContents', JSON.stringify(studyContents));
+                showStudyList(topic);
+            }
+        }
+    
+        function searchStudy(topic) {
+            const searchTerm = document.getElementById('studySearchInput').value.toLowerCase();
+            const results = studyContents.filter(item => 
+                item.topic === topic && (item.title.toLowerCase().includes(searchTerm) || item.content.toLowerCase().includes(searchTerm))
+            );
+            let resultHtml = `<h3>${topic} 검색 결과</h3><ul>`;
+            results.forEach((item, index) => {
+                resultHtml += `<li onclick="viewStudyContent(${studyContents.indexOf(item)})">${item.title}</li>`;
+            });
+            resultHtml += '</ul>';
+            document.getElementById('mainContent').innerHTML = resultHtml;
+        }
+    
+        function showQnAList() {
+            database.ref('posts').once('value').then((snapshot) => {
+                let posts = snapshot.val();
+                let listHtml = '<h3>Q&A 목록</h3><ul id="postList">';
+                for (let key in posts) {
+                    listHtml += `<li onclick="viewPost('${key}')">${posts[key].title}</li>`;
+                }
+                listHtml += '</ul>';
+                document.getElementById('mainContent').innerHTML = listHtml;
+            });
+        }
+    
+        function showQnAForm() {
+            document.getElementById('mainContent').innerHTML = `
+                <h3>Q&A 글쓰기</h3>
+                <input type="text" id="postTitle" placeholder="제목을 입력하세요">
+                <textarea id="editor" placeholder="여기에 글을 작성하세요..."></textarea>
+                <div class="button-container">
+                    <button onclick="savePost()">저장</button>
+                </div>
+            `;
+        }
+    
+        function savePost() {
+            const title = document.getElementById('postTitle').value;
+            const content = document.getElementById('editor').value;
+            if (title && content) {
+                const date = new Date().toLocaleString();
+                const newPost = {title, content, date};
+                database.ref('posts').push(newPost);
+                showQnAList();
+            }
+        }
+    
+        function viewPost(key) {
+            database.ref('posts/' + key).once('value').then((snapshot) => {
+                const post = snapshot.val();
+                let content = `
+                    <h3>${post.title}</h3>
+                    <div class="date-display">${post.date || '날짜 없음'}</div>
+                    <p>${post.content}</p>
+                    <div class="button-container">
+                        <button onclick="editPost('${key}')">수정</button>
+                        <button onclick="deletePost('${key}')">삭제</button>
+                        <button onclick="showQnAList()">목록으로</button>
+                    </div>
+                `;
+                document.getElementById('mainContent').innerHTML = content;
+            });
+        }
+    
+        function editPost(key) {
+            database.ref('posts/' + key).once('value').then((snapshot) => {
+                const post = snapshot.val();
+                document.getElementById('mainContent').innerHTML = `
+                    <h3>게시글 수정</h3>
+                    <input type="text" id="editTitle" value="${post.title}">
+                    <textarea id="editEditor">${post.content}</textarea>
+                    <div class="button-container">
+                        <button onclick="updatePost('${key}')">업데이트</button>
+                        <button onclick="showQnAList()">취소</button>
+                    </div>
+                `;
+            });
+        }
+    
+        function updatePost(key) {
+            const title = document.getElementById('editTitle').value;
+            const content = document.getElementById('editEditor').value;
+            if (title && content) {
+                const date = new Date().toLocaleString();
+                database.ref('posts/' + key).update({title, content, date});
+                viewPost(key);
+            }
+        }
+    
+        function deletePost(key) {
+            if (confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+                database.ref('posts/' + key).remove();
+                showQnAList();
+            }
+        }
+    
+        function searchQnA() {
+            const searchTerm = document.getElementById('qnaSearchInput').value.toLowerCase();
+            const results = posts.filter(post => 
+                post.title.toLowerCase().includes(searchTerm) || 
+                post.content.toLowerCase().includes(searchTerm)
+            );
+            let resultHtml = '<h3>Q&A 검색 결과</h3><ul>';
+            results.forEach((post, index) => {
+            resultHtml += `<li onclick="viewPost('${post.key}')">${post.title}</li>`;
         });
         resultHtml += '</ul>';
         document.getElementById('mainContent').innerHTML = resultHtml;
@@ -535,7 +487,7 @@ const analytics = getAnalytics(app);
                 <button onclick="searchNotice()">검색</button>
             </div>
             <div class="button-container">
-                                <button onclick="showNoticePasswordForm()">공지사항 작성</button>
+                <button onclick="showNoticePasswordForm()">공지사항 작성</button>
             </div>
         `;
         document.getElementById('mainContent').innerHTML = listHtml;
@@ -592,11 +544,43 @@ const analytics = getAnalytics(app);
             <p>${notice.content}</p>
             <div class="button-container">
                 <button onclick="showNoticeList()">목록으로</button>
-                <button onclick="viewNotice(${index})">수정</button>
-                <button onclick="viewNoticet(${index})">삭제</button>
+                <button onclick="editNotice(${index})">수정</button>
+                <button onclick="deleteNotice(${index})">삭제</button>
             </div>
         `;
         document.getElementById('mainContent').innerHTML = content;
+    }
+
+    function editNotice(index) {
+        const notice = notices[index];
+        document.getElementById('mainContent').innerHTML = `
+            <h3>공지사항 수정</h3>
+            <input type="text" id="noticeTitle" value="${notice.title}">
+            <textarea id="noticeContent">${notice.content}</textarea>
+            <div class="button-container">
+                <button onclick="updateNotice(${index})">업데이트</button>
+                <button onclick="showNoticeList()">취소</button>
+            </div>
+        `;
+    }
+
+    function updateNotice(index) {
+        const title = document.getElementById('noticeTitle').value;
+        const content = document.getElementById('noticeContent').value;
+        if (title && content) {
+            const date = new Date().toLocaleString();
+            notices[index] = {title, content, date};
+            localStorage.setItem('notices', JSON.stringify(notices));
+            viewNotice(index);
+        }
+    }
+
+    function deleteNotice(index) {
+        if (confirm('정말로 이 공지사항을 삭제하시겠습니까?')) {
+            notices.splice(index, 1);
+            localStorage.setItem('notices', JSON.stringify(notices));
+            showNoticeList();
+        }
     }
 
     function searchNotice() {
@@ -700,8 +684,9 @@ const analytics = getAnalytics(app);
     });
 
     showContent('이 홈페이지는 글쓰고, 올리고, 지울려고 만드는 사이트 입니다.');
-    </script>
+</script>
 </body>
 </html>
 
-
+    
+   
