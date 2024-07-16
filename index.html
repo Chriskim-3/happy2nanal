@@ -19,27 +19,28 @@
         }
         .support-message {
             color: #006994;
-            font-size: 0.8em;
+            font-size: 1.2em;
+            margin-bottom: 10px;
         }
         .main-title {
-            font-size: 2em;
+            font-size: 2.5em;
             margin-top: 10px;
             cursor: pointer;
         }
         .menu-bar {
             background-color: #333;
             overflow: hidden;
-            padding: 10px 0;
+            padding: 5px 0;
         }
         .menu-bar a, .menu-bar .dropbtn {
             color: white;
             text-align: center;
-            padding: 14px 16px;
+            padding: 10px 12px;
             text-decoration: none;
             font-size: 16px;
-            height: 40px;
-            line-height: 40px;
-            margin: 0 5px;
+            height: 20px;
+            line-height: 20px;
+            margin: 0 2px;
         }
         .dropdown {
             display: inline-block;
@@ -63,11 +64,11 @@
             display: block;
         }
         .content {
-            margin: 20px;
-            padding: 20px;
+            margin: 10px;
+            padding: 10px;
         }
         .main {
-            padding: 20px;
+            padding: 10px;
         }
         .footer {
             background-color: #333;
@@ -81,14 +82,14 @@
         .search-bar {
             float: right;
             padding: 6px;
-            margin-top: 8px;
+            margin-top: 4px;
             margin-right: 16px;
         }
         #editor {
             width: 100%;
-            height: 300px;
-            margin-bottom: 20px;
-            padding: 10px;
+            height: 200px;
+            margin-bottom: 10px;
+            padding: 5px;
         }
         #postList, #noticeList, #downloadList {
             list-style-type: none;
@@ -96,47 +97,47 @@
         }
         #postList li, #noticeList li, #downloadList li {
             cursor: pointer;
-            padding: 15px;
+            padding: 10px;
             border-bottom: 1px solid #ddd;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
         #postList li:hover, #noticeList li:hover, #downloadList li:hover {
             background-color: #f5f5f5;
         }
         .post-content {
-            margin-bottom: 30px;
+            margin-bottom: 15px;
         }
         .button-container {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 10px;
         }
         .button-container button {
-            margin: 0 10px;
-            padding: 10px 20px;
-            height: 40px;
+            margin: 0 5px;
+            padding: 5px 10px;
+            height: 30px;
         }
         input[type="text"], input[type="password"] {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            height: 40px;
+            padding: 5px;
+            margin-bottom: 5px;
+            height: 30px;
         }
         .sub-menu {
             font-size: 0.8em;
-            margin-left: 10px;
+            margin-left: 5px;
         }
         .copyright {
             font-size: 0.8em;
-            margin-top: 20px;
+            margin-top: 10px;
         }
         .comment-section {
-            margin-top: 20px;
+            margin-top: 10px;
         }
         .comment-section textarea {
             width: 100%;
-            height: 100px;
-            margin-bottom: 10px;
-            padding: 10px;
+            height: 80px;
+            margin-bottom: 5px;
+            padding: 5px;
         }
     </style>
 </head>
@@ -376,56 +377,281 @@
             `;
         }
 
-        // 오토핫키 컨텐츠
-codingStudies.autohotkey = [
-    {
-        title: "윈도우 조작 기본",
-        content: "윈도우 활성화, 이동, 크기 조절 등의 기본 명령어를 학습합니다. WinActivate, WinMove, WinResize 등의 함수 사용법을 익힙니다.",
-        link: "https://www.autohotkey.com/docs/v2/lib/Win.htm"
-    },
-    {
-        title: "핫키 설정하기",
-        content: "자주 사용하는 작업을 단축키로 설정하는 방법을 배웁니다. 키 조합, 모디파이어 키 사용법, 핫키 우선순위 설정 등을 다룹니다.",
-        link: "https://www.autohotkey.com/docs/v2/Hotkeys.htm"
-    },
-    {
-        title: "문자열 조작",
-        content: "문자열을 다루는 다양한 함수와 사용법을 소개합니다. SubStr, StrReplace, RegExMatch 등의 함수를 활용한 문자열 처리 방법을 학습합니다.",
-        link: "https://www.autohotkey.com/docs/v2/lib/String.htm"
-    },
-    {
-        title: "파일 및 폴더 작업",
-        content: "파일 생성, 삭제, 이동 등의 작업을 자동화하는 방법을 배웁니다. FileRead, FileAppend, FileMove 등의 함수 사용법을 익힙니다.",
-        link: "https://www.autohotkey.com/docs/v2/lib/File.htm"
-    },
-    {
-        title: "GUI 만들기",
-        content: "사용자 인터페이스를 만드는 방법과 이벤트 처리 방법을 알아봅니다. Gui 객체를 사용한 윈도우 생성, 컨트롤 추가, 이벤트 핸들링 등을 학습합니다.",
-        link: "https://www.autohotkey.com/docs/v2/lib/Gui.htm"
-    },
-    {
-        title: "루프와 조건문",
-        content: "반복 작업과 조건에 따른 실행을 구현하는 방법을 설명합니다. Loop, While, If 문의 사용법과 고급 테크닉을 배웁니다.",
-        link: "https://www.autohotkey.com/docs/v2/Language.htm#flow-control"
-    },
-    {
-        title: "시스템 정보 얻기",
-        content: "시스템 정보를 얻고 활용하는 방법을 소개합니다. A_ScreenWidth, A_ScreenHeight, A_OSVersion 등의 내장 변수 사용법을 익힙니다.",
-        link: "https://www.autohotkey.com/docs/v2/lib/BuiltIn.htm#variables"
-    },
-    {
-        title: "인터넷 작업 자동화",
-        content: "웹 브라우저 조작과 간단한 웹 스크래핑 방법을 배웁니다. ComObject를 사용한 IE 자동화, UrlDownloadToFile 함수 사용법 등을 학습합니다.",
-        link: "https://www.autohotkey.com/docs/v2/lib/ComObject.htm"
-    },
-    {
-        title: "이미지 처리",
-        content: "스크린샷 찍기, 이미지 편집 등의 작업을 자동화하는 방법을 알아봅니다. GDI+ 라이브러리를 사용한 이미지 처리 방법을 학습합니다.",
-        link: "https://www.autohotkey.com/docs/v2/lib/Gui.htm#bitmap"
-    },
-    {
-        title: "고급 테크닉",
-        content: "DLL 호출, COM 객체 사용 등 고급 기능을 활용하는 방법을 소개합니다. DllCall, ComObject 함수의 심화 사용법을 익힙니다.",
-        link: "https://www.autohotkey.com/docs/v2/lib/DllCall.htm"
-    }
-];
+       // 오토핫키 컨텐츠
+        codingStudies.autohotkey = [
+            {
+                title: "윈도우 조작 기본",
+                content: "윈도우 활성화, 이동, 크기 조절 등의 기본 명령어를 학습합니다. WinActivate, WinMove, WinResize 등의 함수 사용법을 익힙니다.",
+                link: "https://www.autohotkey.com/docs/v2/lib/Win.htm"
+            },
+            {
+                title: "핫키 설정하기",
+                content: "자주 사용하는 작업을 단축키로 설정하는 방법을 배웁니다. 키 조합, 모디파이어 키 사용법, 핫키 우선순위 설정 등을 다룹니다.",
+                link: "https://www.autohotkey.com/docs/v2/Hotkeys.htm"
+            },
+            {
+                title: "문자열 조작",
+                content: "문자열을 다루는 다양한 함수와 사용법을 소개합니다. SubStr, StrReplace, RegExMatch 등의 함수를 활용한 문자열 처리 방법을 학습합니다.",
+                link: "https://www.autohotkey.com/docs/v2/lib/String.htm"
+            },
+            {
+                title: "파일 및 폴더 작업",
+                content: "파일 생성, 삭제, 이동 등의 작업을 자동화하는 방법을 배웁니다. FileRead, FileAppend, FileMove 등의 함수 사용법을 익힙니다.",
+                link: "https://www.autohotkey.com/docs/v2/lib/File.htm"
+            },
+            {
+                title: "GUI 만들기",
+                content: "사용자 인터페이스를 만드는 방법과 이벤트 처리 방법을 알아봅니다. Gui 객체를 사용한 윈도우 생성, 컨트롤 추가, 이벤트 핸들링 등을 학습합니다.",
+                link: "https://www.autohotkey.com/docs/v2/lib/Gui.htm"
+            },
+            {
+                title: "루프와 조건문",
+                content: "반복 작업과 조건에 따른 실행을 구현하는 방법을 설명합니다. Loop, While, If 문의 사용법과 고급 테크닉을 배웁니다.",
+                link: "https://www.autohotkey.com/docs/v2/Language.htm#flow-control"
+            },
+            {
+                title: "시스템 정보 얻기",
+                content: "시스템 정보를 얻고 활용하는 방법을 소개합니다. A_ScreenWidth, A_ScreenHeight, A_OSVersion 등의 내장 변수 사용법을 익힙니다.",
+                link: "https://www.autohotkey.com/docs/v2/lib/BuiltIn.htm#variables"
+            },
+            {
+                title: "인터넷 작업 자동화",
+                content: "웹 브라우저 조작과 간단한 웹 스크래핑 방법을 배웁니다. ComObject를 사용한 IE 자동화, UrlDownloadToFile 함수 사용법 등을 학습합니다.",
+                link: "https://www.autohotkey.com/docs/v2/lib/ComObject.htm"
+            },
+            {
+                title: "이미지 처리",
+                content: "스크린샷 찍기, 이미지 편집 등의 작업을 자동화하는 방법을 알아봅니다. GDI+ 라이브러리를 사용한 이미지 처리 방법을 학습합니다.",
+                link: "https://www.autohotkey.com/docs/v2/lib/Gui.htm#bitmap"
+            },
+            {
+                title: "고급 테크닉",
+                content: "DLL 호출, COM 객체 사용 등 고급 기능을 활용하는 방법을 소개합니다. DllCall, ComObject 함수의 심화 사용법을 익힙니다.",
+                link: "https://www.autohotkey.com/docs/v2/lib/DllCall.htm"
+            }
+        ];
+
+        // 자바스크립트 컨텐츠
+        codingStudies.javascript = [
+            {
+                title: "Document Object Model (DOM)",
+                content: "웹 페이지의 구조를 프로그래밍적으로 조작하는 방법을 학습합니다. 요소 선택, 수정, 이벤트 처리 등을 다룹니다.",
+                link: "https://opensource.adobe.com/dc-acrobat-sdk-docs/library/jsapiref/JS_API_AcroJS.html#dom"
+            },
+            {
+                title: "PDF 조작",
+                content: "PDF 파일을 JavaScript로 동적으로 생성하고 수정하는 방법을 배웁니다. 페이지 추가, 텍스트 삽입, 이미지 추가 등을 학습합니다.",
+                link: "https://opensource.adobe.com/dc-acrobat-sdk-docs/library/jsapiref/JS_API_AcroJS.html#pdf-manipulation"
+            },
+            {
+                title: "폼 필드 작업",
+                content: "PDF 폼의 필드를 JavaScript로 조작하는 방법을 알아봅니다. 필드 값 설정, 유효성 검사, 계산 등을 다룹니다.",
+                link: "https://opensource.adobe.com/dc-acrobat-sdk-docs/library/jsapiref/JS_API_AcroJS.html#form-fields"
+            },
+            {
+                title: "보안 및 디지털 서명",
+                content: "PDF 문서의 보안 설정과 디지털 서명을 JavaScript로 구현하는 방법을 학습합니다.",
+                link: "https://opensource.adobe.com/dc-acrobat-sdk-docs/library/jsapiref/JS_API_AcroJS.html#security"
+            },
+            {
+                title: "주석 및 마크업",
+                content: "PDF 문서에 주석을 추가하고 관리하는 방법을 배웁니다. 텍스트 주석, 강조 표시, 도형 등을 다룹니다.",
+                link: "https://opensource.adobe.com/dc-acrobat-sdk-docs/library/jsapiref/JS_API_AcroJS.html#annotations"
+            },
+            {
+                title: "문서 자동화",
+                content: "반복적인 PDF 작업을 자동화하는 스크립트 작성 방법을 학습합니다. 배치 처리, 템플릿 사용 등을 다룹니다.",
+                link: "https://opensource.adobe.com/dc-acrobat-sdk-docs/library/jsapiref/JS_API_AcroJS.html#automation"
+            },
+            {
+                title: "외부 데이터 통합",
+                content: "외부 데이터 소스를 PDF 문서와 통합하는 방법을 배웁니다. AJAX 요청, 데이터베이스 연동 등을 학습합니다.",
+                link: "https://opensource.adobe.com/dc-acrobat-sdk-docs/library/jsapiref/JS_API_AcroJS.html#external-data"
+            },
+            {
+                title: "사용자 정의 대화상자",
+                content: "JavaScript를 사용하여 사용자 정의 대화상자를 만드는 방법을 알아봅니다. 입력 받기, 메시지 표시 등을 다룹니다.",
+                link: "https://opensource.adobe.com/dc-acrobat-sdk-docs/library/jsapiref/JS_API_AcroJS.html#dialogs"
+            },
+            {
+                title: "PDF 포트폴리오",
+                content: "여러 PDF 문서를 하나의 포트폴리오로 관리하는 방법을 학습합니다. 문서 추가, 정렬, 검색 기능 등을 구현합니다.",
+                link: "https://opensource.adobe.com/dc-acrobat-sdk-docs/library/jsapiref/JS_API_AcroJS.html#portfolios"
+            },
+            {
+                title: "플러그인 개발",
+                content: "Acrobat용 JavaScript 플러그인을 개발하는 방법을 배웁니다. 사용자 정의 기능 추가, UI 확장 등을 다룹니다.",
+                link: "https://opensource.adobe.com/dc-acrobat-sdk-docs/library/jsapiref/JS_API_AcroJS.html#plugins"
+            }
+        ];
+
+        // 파이썬 컨텐츠
+        codingStudies.python = [
+            {
+                title: "기본 문법",
+                content: "파이썬의 기본 문법을 학습합니다. 변수, 데이터 타입, 조건문, 반복문 등을 다룹니다.",
+                link: "https://docs.python.org/ko/3/tutorial/index.html"
+            },
+            {
+                title: "함수와 모듈",
+                content: "함수 정의와 호출, 모듈 사용법을 배웁니다. 내장 함수, 사용자 정의 함수, 모듈 임포트 등을 학습합니다.",
+                link: "https://docs.python.org/ko/3/tutorial/modules.html"
+            },
+            {
+                title: "데이터 구조",
+                content: "리스트, 튜플, 딕셔너리, 셋 등 파이썬의 기본 데이터 구조를 익힙니다.",
+                link: "https://docs.python.org/ko/3/tutorial/datastructures.html"
+            },
+            {
+                title: "클래스와 객체",
+                content: "객체 지향 프로그래밍의 기초를 학습합니다. 클래스 정의, 인스턴스 생성, 상속 등을 다룹니다.",
+                link: "https://docs.python.org/ko/3/tutorial/classes.html"
+            },
+            {
+                title: "파일 입출력",
+                content: "파일 읽기, 쓰기, 관리 등 파일 처리 방법을 배웁니다.",
+                link: "https://docs.python.org/ko/3/tutorial/inputoutput.html#reading-and-writing-files"
+            },
+            {
+                title: "예외 처리",
+                content: "오류와 예외 상황을 처리하는 방법을 학습합니다. try-except 구문, 사용자 정의 예외 등을 다룹니다.",
+                link: "https://docs.python.org/ko/3/tutorial/errors.html"
+            },
+            {
+                title: "정규 표현식",
+                content: "문자열 패턴 매칭을 위한 정규 표현식 사용법을 배웁니다.",
+                link: "https://docs.python.org/ko/3/library/re.html"
+            },
+            {
+                title: "데이터베이스 연동",
+                content: "SQLite, MySQL 등의 데이터베이스와 파이썬을 연동하는 방법을 학습합니다.",
+                link: "https://docs.python.org/ko/3/library/sqlite3.html"
+            },
+            {
+                title: "웹 스크래핑",
+                content: "BeautifulSoup, requests 라이브러리를 사용한 웹 스크래핑 기법을 배웁니다.",
+                link: "https://docs.python.org/ko/3/howto/urllib2.html"
+            },
+            {
+                title: "GUI 프로그래밍",
+                content: "Tkinter를 사용하여 간단한 그래픽 사용자 인터페이스를 만드는 방법을 학습합니다.",
+                link: "https://docs.python.org/ko/3/library/tkinter.html"
+            }
+        ];
+
+        localStorage.setItem('codingStudies', JSON.stringify(codingStudies));
+
+        // 뒤로 가기 기능 추가
+        window.onpopstate = function(event) {
+            if (event.state) {
+                document.getElementById('mainContent').innerHTML = event.state.html;
+            }
+        };
+
+        // 공지사항 작성 기능
+        function showNoticeWriteForm() {
+            document.getElementById('mainContent').innerHTML = `
+                <h2>공지사항 작성</h2>
+                <input type="password" id="noticePassword" placeholder="비밀번호를 입력하세요">
+                <button onclick="checkNoticePassword()">확인</button>
+            `;
+        }
+
+        function checkNoticePassword() {
+            const password = document.getElementById('noticePassword').value;
+            if (password === '369369') {
+                document.getElementById('mainContent').innerHTML = `
+                    <h2>공지사항 작성</h2>
+                    <input type="text" id="noticeTitle" placeholder="제목을 입력하세요">
+                    <textarea id="noticeEditor" placeholder="내용을 입력하세요..."></textarea>
+                    <div class="button-container">
+                        <button onclick="saveNotice()">저장</button>
+                    </div>
+                `;
+            } else {
+                alert('비밀번호가 올바르지 않습니다.');
+            }
+        }
+
+        function saveNotice() {
+            const title = document.getElementById('noticeTitle').value;
+            const content = document.getElementById('noticeEditor').value;
+            if (title && content) {
+                notices.push({title, content});
+                localStorage.setItem('notices', JSON.stringify(notices));
+                showNoticeList();
+            }
+        }
+
+       function showNoticeList() {
+            let listHtml = '<h2>공지사항</h2><ul id="noticeList">';
+            notices.forEach((notice, index) => {
+                listHtml += `<li onclick="viewNotice(${index})">${notice.title}</li>`;
+            });
+            listHtml += '</ul>';
+            listHtml += '<div class="button-container"><button onclick="showNoticeWriteForm()">공지작성</button></div>';
+            document.getElementById('mainContent').innerHTML = listHtml;
+        }
+
+        function viewNotice(index) {
+            const notice = notices[index];
+            let noticeHtml = `
+                <h2>${notice.title}</h2>
+                <div class="post-content">${notice.content}</div>
+            `;
+            document.getElementById('mainContent').innerHTML = noticeHtml;
+        }
+
+        // 초기화 함수
+        function initializePage() {
+            showHomePage();
+            
+            // 코딩공부 하위 메뉴 추가
+            const codingStudyMenu = document.querySelector('.dropdown:nth-child(2) .dropdown-content');
+            codingStudyMenu.innerHTML = `
+                <a href="#" onclick="showCodingStudyList('python')">파이썬</a>
+                <a href="#" onclick="showCodingStudyList('autohotkey')">오토핫키</a>
+                <a href="#" onclick="showCodingStudyList('javascript')">자바스크립트</a>
+                <a href="#" onclick="showCodingStudyList('hwp')">hwp</a>
+                <a href="#" onclick="showCodingStudyList('indesign')">인디자인</a>
+            `;
+        }
+
+        // 페이지 로드 시 초기화 함수 호출
+        window.onload = initializePage;
+
+        // 뒤로 가기 기능
+        window.addEventListener('popstate', function(event) {
+            if (event.state) {
+                document.getElementById('mainContent').innerHTML = event.state.html;
+            } else {
+                showHomePage();
+            }
+        });
+
+        // 페이지 상태 저장
+        function saveState(html) {
+            const state = { html: html };
+            history.pushState(state, '', '');
+        }
+
+        // 홈페이지로 이동
+        function showHomePage() {
+            const homeHtml = '<h2>환영합니다!</h2><p>행복한 나날에 오신 것을 환영합니다.</p>';
+            document.getElementById('mainContent').innerHTML = homeHtml;
+            saveState(homeHtml);
+        }
+
+        // 이 부분은 기존 함수들을 수정하여 saveState를 호출하도록 업데이트해야 합니다.
+        // 예를 들어:
+        function showContent(content) {
+            const html = `<p>${content}</p>`;
+            document.getElementById('mainContent').innerHTML = html;
+            saveState(html);
+        }
+
+        // 나머지 함수들(showCodingStudyList, showCommunicationBoard 등)도 
+        // 비슷한 방식으로 saveState를 호출하도록 수정해야 합니다.
+    </script>
+</body>
+</html>
