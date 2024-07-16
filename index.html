@@ -190,9 +190,9 @@
         }
     </style>
     <!-- Firebase Configuration -->
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-analytics.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
     <script>
         // Firebase configuration
         const firebaseConfig = {
@@ -208,59 +208,16 @@
         // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const analytics = firebase.getAnalytics(app);
-        const database = firebase.database(app);
-    </script>
-</head>
-<body>
-    <div class="header">
-        <div class="support-message">당신의 칼퇴를 응원합니다!</div>
-        <div class="main-title">행복한 나날들이어라고</div>
-    </div>
+        const database = firebase.database();
 
-    <div class="menu-bar">
-        <div class="dropdown">
-            <button class="dropbtn">소개</button>
-            <div class="dropdown-content">
-                <a href="#" onclick="showContent('이 홈페이지는 글쓰고, 올리고, 지울려고 만드는 사이트 입니다.')">이 홈페이지는</a>
-                <a href="#" onclick="showContent('이 사이트는 깃헙을 바탕으로 만들어졌습니다')">참고하세요</a>
-                <a href="#" onclick="showContent('김상수가 만들었습니다')">라이센스</a>
-            </div>
-        </div>
-        <div class="dropdown">
-            <button class="dropbtn">코딩공부</button>
-            <div class="dropdown-content">
-                <a href="#" onclick="showStudyList('오토핫키')">오토핫키</a>
-                <a href="#" onclick="showStudyList('자바스크립트')">자바스크립트</a>
-                <a href="#" onclick="showStudyList('파이썬')">파이썬</a>
-                <a href="#" onclick="showStudyList('인디자인')">요약모음</a>
-            </div>
-        </div>
-        <div class="dropdown">
-            <button class="dropbtn">게시판</button>
-            <div class="dropdown-content">
-                <a href="#" onclick="showQnAList()">Q&A</a>
-                <a href="#" onclick="showNoticeList()">공지사항</a>
-                <a href="#" onclick="showFileUpload()">자료실</a>
-            </div>
-        </div>
-    </div>
+        // 뒤로 가기 기능
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Backspace" && !event.target.matches('input, textarea')) {
+                event.preventDefault();
+                window.history.back();
+            }
+        });
 
-    <div class="content">
-        <div class="main" id="mainContent">
-            <!-- 여기에 메뉴 선택에 따른 내용이 표시됩니다 -->
-        </div>
-    </div>
-    <div class="footer">
-        <p>&copy; 2024 개발자 도우미. All rights reserved.</p>
-    </div>
-    
-    <script>
-        // JavaScript 함수
-        let posts = JSON.parse(localStorage.getItem('posts')) || [];
-        let notices = JSON.parse(localStorage.getItem('notices')) || [];
-        let files = JSON.parse(localStorage.getItem('files')) || [];
-        let studyContents = JSON.parse(localStorage.getItem('studyContents')) || [];
-    
         function showContent(content) {
             let html = `<p>${content}</p>`;
             if (content === '이 홈페이지는 글쓰고, 올리고, 지울려고 만드는 사이트 입니다.') {
@@ -469,224 +426,215 @@
             );
             let resultHtml = '<h3>Q&A 검색 결과</h3><ul>';
             results.forEach((post, index) => {
-            resultHtml += `<li onclick="viewPost('${post.key}')">${post.title}</li>`;
-        });
-        resultHtml += '</ul>';
-        document.getElementById('mainContent').innerHTML = resultHtml;
-    }
-
-    function showNoticeList() {
-        let listHtml = '<h3>공지사항</h3><ul id="noticeList">';
-        notices.forEach((notice, index) => {
-            listHtml += `<li onclick="viewNotice(${index})">${notice.title}</li>`;
-        });
-        listHtml += '</ul>';
-        listHtml += `
-            <div class="search-container">
-                <input type="text" id="noticeSearchInput" placeholder="검색...">
-                <button onclick="searchNotice()">검색</button>
-            </div>
-            <div class="button-container">
-                <button onclick="showNoticePasswordForm()">공지사항 작성</button>
-            </div>
-        `;
-        document.getElementById('mainContent').innerHTML = listHtml;
-    }
-
-    function showNoticePasswordForm() {
-        document.getElementById('mainContent').innerHTML = `
-            <h3>비밀번호 입력</h3>
-            <input type="password" id="noticePassword" placeholder="비밀번호를 입력하세요">
-            <div class="button-container">
-                <button onclick="checkNoticePassword()">확인</button>
-            </div>
-        `;
-    }
-
-    function checkNoticePassword() {
-        const password = document.getElementById('noticePassword').value;
-        if (password === '369369') {
-            showNoticeForm();
-        } else {
-            alert('비밀번호가 올바르지 않습니다.');
+                resultHtml += `<li onclick="viewPost('${post.key}')">${post.title}</li>`;
+            });
+            resultHtml += '</ul>';
+            document.getElementById('mainContent').innerHTML = resultHtml;
         }
-    }
-
-    function showNoticeForm() {
-        document.getElementById('mainContent').innerHTML = `
-            <h3>공지사항 작성</h3>
-            <input type="text" id="noticeTitle" placeholder="제목을 입력하세요">
-            <textarea id="noticeContent" placeholder="내용을 입력하세요..."></textarea>
-            <div class="button-container">
-                <button onclick="saveNotice()">저장</button>
-            </div>
-        `;
-    }
-
-    function saveNotice() {
-        const title = document.getElementById('noticeTitle').value;
-        const content = document.getElementById('noticeContent').value;
-        if (title && content) {
-            const date = new Date().toLocaleString();
-            notices.push({title, content, date});
-            localStorage.setItem('notices', JSON.stringify(notices));
-            showNoticeList();
-        } else {
-            alert('제목과 내용을 모두 입력해주세요.');
+    
+        function showNoticeList() {
+            let listHtml = '<h3>공지사항</h3><ul id="noticeList">';
+            notices.forEach((notice, index) => {
+                listHtml += `<li onclick="viewNotice(${index})">${notice.title}</li>`;
+            });
+            listHtml += '</ul>';
+            listHtml += `
+                <div class="search-container">
+                    <input type="text" id="noticeSearchInput" placeholder="검색...">
+                    <button onclick="searchNotice()">검색</button>
+                </div>
+                <div class="button-container">
+                    <button onclick="showNoticePasswordForm()">공지사항 작성</button>
+                </div>
+            `;
+            document.getElementById('mainContent').innerHTML = listHtml;
         }
-    }
-
-    function viewNotice(index) {
-        const notice = notices[index];
-        let content = `
-            <h3>${notice.title}</h3>
-            <div class="date-display">${notice.date || '날짜 없음'}</div>
-            <p>${notice.content}</p>
-            <div class="button-container">
-                <button onclick="showNoticeList()">목록으로</button>
-                <button onclick="editNotice(${index})">수정</button>
-                <button onclick="deleteNotice(${index})">삭제</button>
-            </div>
-        `;
-        document.getElementById('mainContent').innerHTML = content;
-    }
-
-    function editNotice(index) {
-        const notice = notices[index];
-        document.getElementById('mainContent').innerHTML = `
-            <h3>공지사항 수정</h3>
-            <input type="text" id="noticeTitle" value="${notice.title}">
-            <textarea id="noticeContent">${notice.content}</textarea>
-            <div class="button-container">
-                <button onclick="updateNotice(${index})">업데이트</button>
-                <button onclick="showNoticeList()">취소</button>
-            </div>
-        `;
-    }
-
-    function updateNotice(index) {
-        const title = document.getElementById('noticeTitle').value;
-        const content = document.getElementById('noticeContent').value;
-        if (title && content) {
-            const date = new Date().toLocaleString();
-            notices[index] = {title, content, date};
-            localStorage.setItem('notices', JSON.stringify(notices));
-            viewNotice(index);
+    
+        function showNoticePasswordForm() {
+            document.getElementById('mainContent').innerHTML = `
+                <h3>비밀번호 입력</h3>
+                <input type="password" id="noticePassword" placeholder="비밀번호를 입력하세요">
+                <div class="button-container">
+                    <button onclick="checkNoticePassword()">확인</button>
+                </div>
+            `;
         }
-    }
-
-    function deleteNotice(index) {
-        if (confirm('정말로 이 공지사항을 삭제하시겠습니까?')) {
-            notices.splice(index, 1);
-            localStorage.setItem('notices', JSON.stringify(notices));
-            showNoticeList();
+    
+        function checkNoticePassword() {
+            const password = document.getElementById('noticePassword').value;
+            if (password === '369369') {
+                showNoticeForm();
+            } else {
+                alert('비밀번호가 올바르지 않습니다.');
+            }
         }
-    }
 
-    function searchNotice() {
-        const searchTerm = document.getElementById('noticeSearchInput').value.toLowerCase();
-        const results = notices.filter(notice => 
-            notice.title.toLowerCase().includes(searchTerm) || 
-            notice.content.toLowerCase().includes(searchTerm)
-        );
-        let resultHtml = '<h3>공지사항 검색 결과</h3><ul>';
-        results.forEach((notice, index) => {
-            resultHtml += `<li onclick="viewNotice(${notices.indexOf(notice)})">${notice.title}</li>`;
-        });
-        resultHtml += '</ul>';
-        document.getElementById('mainContent').innerHTML = resultHtml;
-    }
-
-    function showFileUpload() {
-        document.getElementById('mainContent').innerHTML = `
-            <h3>자료실</h3>
-            <div class="button-container">
-                <button onclick="showFileUploadForm()">글쓰기</button>
-            </div>
-            <h3>업로드된 파일 목록</h3>
-            <ul id="fileList"></ul>
-        `;
-        updateFileList();
-    }
-
-    function showFileUploadForm() {
-        document.getElementById('mainContent').innerHTML = `
-            <h3>파일 업로드</h3>
-            <input type="text" id="fileTitle" placeholder="제목을 입력하세요">
-            <textarea id="fileContent" placeholder="내용을 입력하세요..."></textarea>
-            <input type="file" id="fileInput">
-            <div class="button-container">
-                <button onclick="uploadFile()">업로드</button>
-            </div>
-        `;
-    }
-
-    function uploadFile() {
-        const title = document.getElementById('fileTitle').value;
-        const content = document.getElementById('fileContent').value;
-        const fileInput = document.getElementById('fileInput');
-        const file = fileInput.files[0];
-        if (title && content && file) {
-            const date = new Date().toLocaleString();
-            files.push({title, content, fileName: file.name, date});
-            localStorage.setItem('files', JSON.stringify(files));
-            showFileUpload();
+        function showNoticeForm() {
+            document.getElementById('mainContent').innerHTML = `
+                <h3>공지사항 작성</h3>
+                <input type="text" id="noticeTitle" placeholder="제목을 입력하세요">
+                <textarea id="noticeContent" placeholder="내용을 입력하세요..."></textarea>
+                <div class="button-container">
+                    <button onclick="saveNotice()">저장</button>
+                </div>
+            `;
         }
-    }
 
-    function updateFileList() {
-        const fileList = document.getElementById('fileList');
-        fileList.innerHTML = '';
-        files.forEach((file, index) => {
-            const li = document.createElement('li');
-            li.textContent = file.title;
-            li.onclick = () => viewFile(index);
-            fileList.appendChild(li);
-        });
-    }
-
-    function viewFile(index) {
-        const file = files[index];
-        let content = `
-            <h3>${file.title}</h3>
-            <div class="date-display">${file.date}</div>
-            <div class="file-download">
-                <a href="#" onclick="downloadFile('${file.fileName}')">파일 다운로드</a>
-            </div>
-            <p>${file.content}</p>
-        `;
-        document.getElementById('mainContent').innerHTML = content;
-    }
-
-    function downloadFile(fileName) {
-        // 실제 파일 다운로드 로직을 구현해야 합니다.
-        // 이 예제에서는 단순히 알림을 표시합니다.
-        alert(`${fileName} 다운로드를 시작합니다.`);
-    }
-
-    function pushState(content) {
-        history.pushState({content: content}, "", "");
-        document.getElementById('mainContent').innerHTML = content;
-    }
-
-    window.onpopstate = function(event) {
-        if (event.state) {
-            document.getElementById('mainContent').innerHTML = event.state.content;
+        function saveNotice() {
+            const title = document.getElementById('noticeTitle').value;
+            const content = document.getElementById('noticeContent').value;
+            if (title && content) {
+                const date = new Date().toLocaleString();
+                notices.push({title, content, date});
+                localStorage.setItem('notices', JSON.stringify(notices));
+                showNoticeList();
+            } else {
+                alert('제목과 내용을 모두 입력해주세요.');
+            }
         }
-    };
 
-    // 뒤로 가기 기능
-    document.addEventListener('keydown', function(event) {
-        if (event.key === "Backspace" && !event.target.matches('input, textarea')) {
-            event.preventDefault();
-            window.history.back();
+        function viewNotice(index) {
+            const notice = notices[index];
+            let content = `
+                <h3>${notice.title}</h3>
+                <div class="date-display">${notice.date || '날짜 없음'}</div>
+                <p>${notice.content}</p>
+                <div class="button-container">
+                    <button onclick="showNoticeList()">목록으로</button>
+                    <button onclick="editNotice(${index})">수정</button>
+                    <button onclick="deleteNotice(${index})">삭제</button>
+                </div>
+            `;
+            document.getElementById('mainContent').innerHTML = content;
         }
-    });
 
-    showContent('이 홈페이지는 글쓰고, 올리고, 지울려고 만드는 사이트 입니다.');
-</script>
+        function editNotice(index) {
+            const notice = notices[index];
+            document.getElementById('mainContent').innerHTML = `
+                <h3>공지사항 수정</h3>
+                <input type="text" id="noticeTitle" value="${notice.title}">
+                <textarea id="noticeContent">${notice.content}</textarea>
+                <div class="button-container">
+                    <button onclick="updateNotice(${index})">업데이트</button>
+                    <button onclick="showNoticeList()">취소</button>
+                </div>
+            `;
+        }
+
+        function updateNotice(index) {
+            const title = document.getElementById('noticeTitle').value;
+            const content = document.getElementById('noticeContent').value;
+            if (title && content) {
+                const date = new Date().toLocaleString();
+                notices[index] = {title, content, date};
+                localStorage.setItem('notices', JSON.stringify(notices));
+                viewNotice(index);
+            }
+        }
+
+        function deleteNotice(index) {
+            if (confirm('정말로 이 공지사항을 삭제하시겠습니까?')) {
+                notices.splice(index, 1);
+                localStorage.setItem('notices', JSON.stringify(notices));
+                showNoticeList();
+            }
+        }
+
+        function searchNotice() {
+            const searchTerm = document.getElementById('noticeSearchInput').value.toLowerCase();
+            const results = notices.filter(notice => 
+                notice.title.toLowerCase().includes(searchTerm) || 
+                notice.content.toLowerCase().includes(searchTerm)
+            );
+            let resultHtml = '<h3>공지사항 검색 결과</h3><ul>';
+            results.forEach((notice, index) => {
+                resultHtml += `<li onclick="viewNotice(${notices.indexOf(notice)})">${notice.title}</li>`;
+            });
+            resultHtml += '</ul>';
+            document.getElementById('mainContent').innerHTML = resultHtml;
+        }
+
+        function showFileUpload() {
+            document.getElementById('mainContent').innerHTML = `
+                <h3>자료실</h3>
+                <div class="button-container">
+                    <button onclick="showFileUploadForm()">글쓰기</button>
+                </div>
+                <h3>업로드된 파일 목록</h3>
+                <ul id="fileList"></ul>
+            `;
+            updateFileList();
+        }
+
+        function showFileUploadForm() {
+            document.getElementById('mainContent').innerHTML = `
+                <h3>파일 업로드</h3>
+                <input type="text" id="fileTitle" placeholder="제목을 입력하세요">
+                <textarea id="fileContent" placeholder="내용을 입력하세요..."></textarea>
+                <input type="file" id="fileInput">
+                <div class="button-container">
+                    <button onclick="uploadFile()">업로드</button>
+                </div>
+            `;
+        }
+
+        function uploadFile() {
+            const title = document.getElementById('fileTitle').value;
+            const content = document.getElementById('fileContent').value;
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if (title && content && file) {
+                const date = new Date().toLocaleString();
+                files.push({title, content, fileName: file.name, date});
+                localStorage.setItem('files', JSON.stringify(files));
+                showFileUpload();
+            }
+        }
+
+        function updateFileList() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            files.forEach((file, index) => {
+                const li = document.createElement('li');
+                li.textContent = file.title;
+                li.onclick = () => viewFile(index);
+                fileList.appendChild(li);
+            });
+        }
+
+        function viewFile(index) {
+            const file = files[index];
+            let content = `
+                <h3>${file.title}</h3>
+                <div class="date-display">${file.date}</div>
+                <div class="file-download">
+                    <a href="#" onclick="downloadFile('${file.fileName}')">파일 다운로드</a>
+                </div>
+                <p>${file.content}</p>
+            `;
+            document.getElementById('mainContent').innerHTML = content;
+        }
+
+        function downloadFile(fileName) {
+            // 실제 파일 다운로드 로직을 구현해야 합니다.
+            // 이 예제에서는 단순히 알림을 표시합니다.
+            alert(`${fileName} 다운로드를 시작합니다.`);
+        }
+
+        function pushState(content) {
+            history.pushState({content: content}, "", "");
+            document.getElementById('mainContent').innerHTML = content;
+        }
+
+        window.onpopstate = function(event) {
+            if (event.state) {
+                document.getElementById('mainContent').innerHTML = event.state.content;
+            }
+        };
+
+        // 초기 페이지 로드
+        showContent('이 홈페이지는 글쓰고, 올리고, 지울려고 만드는 사이트 입니다.');
+    </script>
 </body>
 </html>
 
-    
-   
