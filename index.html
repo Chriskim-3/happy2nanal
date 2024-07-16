@@ -1,180 +1,269 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive Layout with Dynamic Features</title>
+    <title>당근원!</title>
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-        .header {
-            display: flex;
-            background-color: #333;
-            color: white;
-            justify-content: space-around;
-            padding: 10px;
-            position: relative;
-        }
-        .header div {
-            padding: 10px;
-            cursor: pointer;
-            position: relative;
-        }
-        .header div:hover {
-            font-size: 1.2em;
-        }
-        .submenu {
-            display: none;
-            position: absolute;
-            top: 40px;
-            background-color: #444;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        .header div:hover .submenu {
-            display: block;
-        }
-        .submenu div {
-            padding: 5px 10px;
-            color: white;
-        }
-        .submenu div:hover {
-            background-color: #555;
-        }
-        .container {
-            display: flex;
-            flex-direction: column;
-        }
-        .main {
-            display: flex;
-            flex: 1;
-        }
-        .edit-area {
-            flex: 3;
-            padding: 20px;
-            border: 1px solid #ccc;
-            position: relative;
-        }
-        .edit-area button {
-            position: absolute;
-            right: 20px;
-            top: 20px;
-        }
-        .sidebar {
-            flex: 1;
-            padding: 20px;
-            border-left: 1px solid #ccc;
-            overflow-y: auto;
-        }
-        .footer {
-            display: flex;
-            justify-content: space-around;
-            padding: 10px;
-            background-color: #333;
-            color: white;
-        }
-        .footer button {
-            padding: 10px;
-            cursor: pointer;
-            background-color: #555;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-        @media (max-width: 768px) {
-            .main {
-                flex-direction: column;
-            }
-            .sidebar {
-                border-left: none;
-                border-top: 1px solid #ccc;
-            }
-        }
-    </style>
-    <script>
-        function openNewEditor() {
-            const newEditor = document.createElement('div');
-            newEditor.className = 'edit-area';
-            newEditor.contentEditable = true;
-            newEditor.innerText = 'Type your new content here...';
-            document.querySelector('.main').appendChild(newEditor);
+        @font-face {
+            font-family: 'GmarketSansMedium';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
         }
 
-        function searchContent() {
-            alert('Search functionality not implemented yet.');
+        body {
+            font-family: 'GmarketSansMedium', sans-serif;
+            margin: 0;
+            padding: 0;
         }
-    </script>
+        .header {
+            background-color: #f0f0f0;
+            padding: 20px;
+            text-align: center;
+        }
+        .support-message {
+            color: #006994;
+            margin-bottom: 10px;
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .site-title {
+            font-size: 3em;
+            font-weight: bold;
+        }
+        .menu-bar {
+            background-color: #333;
+            overflow: hidden;
+        }
+        .menu-bar a {
+            float: left;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .dropdown {
+            float: left;
+            overflow: hidden;
+        }
+        .dropdown .dropbtn {
+            font-size: 16px;
+            border: none;
+            outline: none;
+            color: white;
+            padding: 14px 16px;
+            background-color: inherit;
+            font-family: inherit;
+            margin: 0;
+            transition: 0.3s;
+        }
+        .dropdown:hover .dropbtn {
+            background-color: #555;
+            transform: scale(1.05);
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: rgba(249, 249, 249, 0.9);
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        .dropdown-content a {
+            float: none;
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .content {
+            margin: 20px;
+        }
+        .main {
+            padding: 20px;
+        }
+        .footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .search-bar {
+            float: right;
+            padding: 6px;
+            margin-top: 8px;
+            margin-right: 16px;
+        }
+        #editor {
+            width: 100%;
+            height: 300px;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
     <div class="header">
-        <div>Menu 1
-            <div class="submenu">
-                <div>Submenu 1-1</div>
-                <div>Submenu 1-2</div>
-                <div>Submenu 1-3</div>
-                <div>Submenu 1-4</div>
-                <div>Submenu 1-5</div>
+        <div class="support-message">당신의 퇴근을 응원합니다!</div>
+        <div class="site-title">당근원!</div>
+    </div>
+
+    <div class="menu-bar">
+        <div class="dropdown">
+            <button class="dropbtn">소개</button>
+            <div class="dropdown-content">
+                <a href="#" onclick="showContent('이 홈페이지는 글쓰고, 올리고, 지울려고 만드는 사이트 입니다. 모쪼록 방해마세요')">이 홈페이지는</a>
+                <a href="#" onclick="showContent('이 사이트는 깃헙을 바탕으로 만들어졌습니다')">참고하세요</a>
+                <a href="#" onclick="showContent('김상수가 만들었습니다')">라이센스</a>
             </div>
         </div>
-        <div>Menu 2
-            <div class="submenu">
-                <div>Submenu 2-1</div>
-                <div>Submenu 2-2</div>
-                <div>Submenu 2-3</div>
-                <div>Submenu 2-4</div>
-                <div>Submenu 2-5</div>
+        <div class="dropdown">
+            <button class="dropbtn">코딩공부</button>
+            <div class="dropdown-content">
+                <a href="#" onclick="showContent('파이썬')">파이썬</a>
+                <a href="#" onclick="showContent('오토핫키')">오토핫키</a>
+                <a href="#" onclick="showContent('자바스크립트')">자바스크립트</a>
+                <a href="#" onclick="showContent('hwp')">hwp</a>
+                <a href="#" onclick="showContent('인디자인')">인디자인</a>
             </div>
         </div>
-        <div>Menu 3
-            <div class="submenu">
-                <div>Submenu 3-1</div>
-                <div>Submenu 3-2</div>
-                <div>Submenu 3-3</div>
-                <div>Submenu 3-4</div>
-                <div>Submenu 3-5</div>
+        <div class="dropdown">
+            <button class="dropbtn">취미활동</button>
+            <div class="dropdown-content">
+                <a href="#" onclick="showContent('복싱')">복싱</a>
+                <a href="#" onclick="showContent('배드민턴')">배드민턴</a>
+                <a href="#" onclick="showContent('등산')">등산</a>
+                <a href="#" onclick="showContent('게임')">게임</a>
+                <a href="#" onclick="showContent('달리기')">달리기</a>
             </div>
         </div>
-        <div>Menu 4
-            <div class="submenu">
-                <div>Submenu 4-1</div>
-                <div>Submenu 4-2</div>
-                <div>Submenu 4-3</div>
-                <div>Submenu 4-4</div>
-                <div>Submenu 4-5</div>
+        <div class="dropdown">
+            <button class="dropbtn">궁금한 점</button>
+            <div class="dropdown-content">
+                <a href="#" onclick="showWriteForm()">글쓰기</a>
+                <a href="#" onclick="showList()">목록</a>
+                <a href="#" onclick="showSearch()">글찾기</a>
             </div>
         </div>
-        <div>Menu 5
-            <div class="submenu">
-                <div>Submenu 5-1</div>
-                <div>Submenu 5-2</div>
-                <div>Submenu 5-3</div>
-                <div>Submenu 5-4</div>
-                <div>Submenu 5-5</div>
+        <div class="dropdown">
+            <button class="dropbtn">여러가지</button>
+            <div class="dropdown-content">
+                <a href="#" onclick="showContent('미정1')">미정1</a>
+                <a href="#" onclick="showContent('미정2')">미정2</a>
+                <a href="#" onclick="showContent('미정3')">미정3</a>
             </div>
+        </div>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="검색...">
+            <button onclick="search()">검색</button>
         </div>
     </div>
-    <div class="container">
-        <div class="main">
-            <div class="edit-area" contenteditable="true">
-                <!-- Edit area content here -->
-                Type your content here...
-                <button onclick="searchContent()">Search</button>
-            </div>
-            <div class="sidebar">
-                <!-- Sidebar content here -->
-                <div>Post 1</div>
-                <div>Post 2</div>
-                <div>Post 3</div>
-                <div>Post 4</div>
-                <div>Post 5</div>
-            </div>
-        </div>
-        <div class="footer">
-            <button onclick="openNewEditor()">Write</button>
-            <button>Edit</button>
+
+    <div class="content">
+        <div class="main" id="mainContent">
+            <!-- 여기에 메뉴 선택에 따른 내용이 표시됩니다 -->
         </div>
     </div>
+
+    <div class="footer">
+        <button onclick="showWriteForm()">글쓰기</button>
+        <button onclick="showEditor()">에디터</button>
+        <button onclick="showList()">목록</button>
+    </div>
+
+    <script>
+        let posts = [];
+
+        function showContent(content) {
+            document.getElementById('mainContent').innerHTML = `<p>${content}</p>`;
+        }
+
+        function showWriteForm() {
+            document.getElementById('mainContent').innerHTML = `
+                <input type="text" id="postTitle" placeholder="제목을 입력하세요" style="width: 100%; margin-bottom: 10px;">
+                <textarea id="editor" placeholder="여기에 글을 작성하세요..."></textarea>
+                <button onclick="savePost()">저장</button>
+            `;
+        }
+
+        function showEditor() {
+            // 에디터 표시 로직
+        }
+
+        function showList() {
+            let listHtml = '<h2>글 목록</h2>';
+            posts.forEach((post, index) => {
+                listHtml += `<p>${index + 1}. ${post.title} <button onclick="viewPost(${index})">보기</button></p>`;
+            });
+            document.getElementById('mainContent').innerHTML = listHtml;
+        }
+
+        function showSearch() {
+            // 검색 기능 로직
+        }
+
+        function savePost() {
+            const title = document.getElementById('postTitle').value;
+            const content = document.getElementById('editor').value;
+            if (title && content) {
+                posts.push({title, content});
+                showList();
+            }
+        }
+
+        function viewPost(index) {
+            const post = posts[index];
+            document.getElementById('mainContent').innerHTML = `
+                <h2>${post.title}</h2>
+                <p>${post.content}</p>
+                <button onclick="editPost(${index})">수정</button>
+                <button onclick="deletePost(${index})">삭제</button>
+            `;
+        }
+
+        function editPost(index) {
+            const post = posts[index];
+            document.getElementById('mainContent').innerHTML = `
+                <input type="text" id="editTitle" value="${post.title}" style="width: 100%; margin-bottom: 10px;">
+                <textarea id="editEditor" style="width: 100%; height: 300px;">${post.content}</textarea>
+                <button onclick="updatePost(${index})">업데이트</button>
+            `;
+        }
+
+        function updatePost(index) {
+            const title = document.getElementById('editTitle').value;
+            const content = document.getElementById('editEditor').value;
+            if (title && content) {
+                posts[index] = {title, content};
+                viewPost(index);
+            }
+        }
+
+        function deletePost(index) {
+            posts.splice(index, 1);
+            showList();
+        }
+
+        function search() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const results = posts.filter(post => 
+                post.title.toLowerCase().includes(searchTerm) || 
+                post.content.toLowerCase().includes(searchTerm)
+            );
+            let resultHtml = '<h2>검색 결과</h2>';
+            results.forEach((post, index) => {
+                resultHtml += `<p>${index + 1}. ${post.title} <button onclick="viewPost(${posts.indexOf(post)})">보기</button></p>`;
+            });
+            document.getElementById('mainContent').innerHTML = resultHtml;
+        }
+    </script>
 </body>
 </html>
