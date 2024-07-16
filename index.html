@@ -16,7 +16,7 @@
             font-family: 'GmarketSansMedium', sans-serif;
             margin: 0;
             padding: 0;
-            font-size: 85%; /* 전체적으로 글꼴 크기를 15% 줄임 */
+            font-size: 85%;
         }
         .header {
             background-color: #f0f0f0;
@@ -170,7 +170,7 @@
     </div>
 
     <script>
-        let posts = [];
+        let posts = JSON.parse(localStorage.getItem('posts')) || [];
 
         function showContent(content) {
             document.getElementById('mainContent').innerHTML = `<p>${content}</p>`;
@@ -248,6 +248,7 @@
             const content = document.getElementById('editor').value;
             if (title && content) {
                 posts.push({title, content});
+                localStorage.setItem('posts', JSON.stringify(posts));
                 showList();
             }
         }
@@ -276,13 +277,19 @@
             const content = document.getElementById('editEditor').value;
             if (title && content) {
                 posts[index] = {title, content};
+                localStorage.setItem('posts', JSON.stringify(posts));
                 viewPost(index);
             }
         }
 
         function deletePost(index) {
             posts.splice(index, 1);
+            localStorage.setItem('posts', JSON.stringify(posts));
             showList();
+        }
+
+        function search() {
+            // 검색 로직 (필요하다면 구현)
         }
     </script>
 </body>
