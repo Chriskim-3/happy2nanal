@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>당근원!</title>
+    <title>개발자 도우미</title>
     <style>
         @font-face {
             font-family: 'GmarketSansMedium';
@@ -16,6 +16,7 @@
             font-family: 'GmarketSansMedium', sans-serif;
             margin: 0;
             padding: 0;
+            font-size: 85%; /* 전체적으로 글꼴 크기를 15% 줄임 */
         }
         .header {
             background-color: #f0f0f0;
@@ -25,11 +26,7 @@
         .support-message {
             color: #006994;
             margin-bottom: 10px;
-            font-size: 2em;
-            font-weight: bold;
-        }
-        .site-title {
-            font-size: 3em;
+            font-size: 1.7em;
             font-weight: bold;
         }
         .menu-bar {
@@ -108,12 +105,23 @@
             height: 300px;
             margin-bottom: 10px;
         }
+        #postList {
+            list-style-type: none;
+            padding: 0;
+        }
+        #postList li {
+            cursor: pointer;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        #postList li:hover {
+            background-color: #f5f5f5;
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="support-message">당신의 퇴근을 응원합니다!</div>
-        <div class="site-title">당근원!</div>
+        <div class="support-message">당신의 칼퇴를 응원합니다!</div>
     </div>
 
     <div class="menu-bar">
@@ -129,20 +137,10 @@
             <button class="dropbtn">코딩공부</button>
             <div class="dropdown-content">
                 <a href="#" onclick="showContent('파이썬')">파이썬</a>
-                <a href="#" onclick="showContent('오토핫키')">오토핫키</a>
+                <a href="#" onclick="showAutoHotkeyContent()">오토핫키</a>
                 <a href="#" onclick="showContent('자바스크립트')">자바스크립트</a>
                 <a href="#" onclick="showContent('hwp')">hwp</a>
                 <a href="#" onclick="showContent('인디자인')">인디자인</a>
-            </div>
-        </div>
-        <div class="dropdown">
-            <button class="dropbtn">취미활동</button>
-            <div class="dropdown-content">
-                <a href="#" onclick="showContent('복싱')">복싱</a>
-                <a href="#" onclick="showContent('배드민턴')">배드민턴</a>
-                <a href="#" onclick="showContent('등산')">등산</a>
-                <a href="#" onclick="showContent('게임')">게임</a>
-                <a href="#" onclick="showContent('달리기')">달리기</a>
             </div>
         </div>
         <div class="dropdown">
@@ -151,14 +149,6 @@
                 <a href="#" onclick="showWriteForm()">글쓰기</a>
                 <a href="#" onclick="showList()">목록</a>
                 <a href="#" onclick="showSearch()">글찾기</a>
-            </div>
-        </div>
-        <div class="dropdown">
-            <button class="dropbtn">여러가지</button>
-            <div class="dropdown-content">
-                <a href="#" onclick="showContent('미정1')">미정1</a>
-                <a href="#" onclick="showContent('미정2')">미정2</a>
-                <a href="#" onclick="showContent('미정3')">미정3</a>
             </div>
         </div>
         <div class="search-bar">
@@ -173,7 +163,7 @@
         </div>
     </div>
 
-    <div class="footer">
+    <div class="footer" id="footer" style="display: none;">
         <button onclick="showWriteForm()">글쓰기</button>
         <button onclick="showEditor()">에디터</button>
         <button onclick="showList()">목록</button>
@@ -184,6 +174,27 @@
 
         function showContent(content) {
             document.getElementById('mainContent').innerHTML = `<p>${content}</p>`;
+            document.getElementById('footer').style.display = 'none';
+        }
+
+        function showAutoHotkeyContent() {
+            const content = `
+                <h2>AutoHotkey Win 라이브러리</h2>
+                <p>AutoHotkey의 Win 라이브러리는 윈도우 관리와 관련된 다양한 함수를 제공합니다. 
+                이 라이브러리를 사용하면 윈도우의 위치 변경, 크기 조절, 활성화, 최소화, 최대화 등 
+                다양한 윈도우 조작을 할 수 있습니다.</p>
+                <p>주요 함수들:</p>
+                <ul>
+                    <li>WinActivate: 지정된 윈도우를 활성화합니다.</li>
+                    <li>WinClose: 지정된 윈도우를 닫습니다.</li>
+                    <li>WinGetPos: 윈도우의 위치와 크기를 가져옵니다.</li>
+                    <li>WinMove: 윈도우의 위치를 변경합니다.</li>
+                    <li>WinSetAlwaysOnTop: 윈도우를 항상 위에 표시되도록 설정합니다.</li>
+                </ul>
+                <p><a href="https://www.autohotkey.com/docs/v2/lib/Win.htm" target="_blank">자세한 내용은 여기를 클릭하세요</a></p>
+            `;
+            document.getElementById('mainContent').innerHTML = content;
+            document.getElementById('footer').style.display = 'none';
         }
 
         function showWriteForm() {
@@ -192,6 +203,7 @@
                 <textarea id="editor" placeholder="여기에 글을 작성하세요..."></textarea>
                 <button onclick="savePost()">저장</button>
             `;
+            document.getElementById('footer').style.display = 'block';
         }
 
         function showEditor() {
@@ -199,15 +211,36 @@
         }
 
         function showList() {
-            let listHtml = '<h2>글 목록</h2>';
+            let listHtml = '<h2>글 목록</h2><ul id="postList">';
             posts.forEach((post, index) => {
-                listHtml += `<p>${index + 1}. ${post.title} <button onclick="viewPost(${index})">보기</button></p>`;
+                listHtml += `<li onclick="viewPost(${index})">${post.title}</li>`;
             });
+            listHtml += '</ul>';
             document.getElementById('mainContent').innerHTML = listHtml;
+            document.getElementById('footer').style.display = 'block';
         }
 
         function showSearch() {
-            // 검색 기능 로직
+            document.getElementById('mainContent').innerHTML = `
+                <input type="text" id="searchTerm" placeholder="검색어를 입력하세요">
+                <button onclick="performSearch()">검색</button>
+                <div id="searchResults"></div>
+            `;
+            document.getElementById('footer').style.display = 'none';
+        }
+
+        function performSearch() {
+            const searchTerm = document.getElementById('searchTerm').value.toLowerCase();
+            const results = posts.filter(post => 
+                post.title.toLowerCase().includes(searchTerm) || 
+                post.content.toLowerCase().includes(searchTerm)
+            );
+            let resultHtml = '<h2>검색 결과</h2><ul>';
+            results.forEach((post, index) => {
+                resultHtml += `<li onclick="viewPost(${posts.indexOf(post)})">${post.title}</li>`;
+            });
+            resultHtml += '</ul>';
+            document.getElementById('searchResults').innerHTML = resultHtml;
         }
 
         function savePost() {
@@ -250,19 +283,6 @@
         function deletePost(index) {
             posts.splice(index, 1);
             showList();
-        }
-
-        function search() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const results = posts.filter(post => 
-                post.title.toLowerCase().includes(searchTerm) || 
-                post.content.toLowerCase().includes(searchTerm)
-            );
-            let resultHtml = '<h2>검색 결과</h2>';
-            results.forEach((post, index) => {
-                resultHtml += `<p>${index + 1}. ${post.title} <button onclick="viewPost(${posts.indexOf(post)})">보기</button></p>`;
-            });
-            document.getElementById('mainContent').innerHTML = resultHtml;
         }
     </script>
 </body>
