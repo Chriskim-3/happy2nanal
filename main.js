@@ -1,6 +1,67 @@
 // main.js
-import * as templates from './templates.js';
+import { database } from './firebaseConfig.js';
 import * as dataManager from './dataManager.js';
+import * as templates from './templates.js';
+
+// 홈페이지 소개
+window.showContent = function(content) {
+    document.getElementById('mainContent').innerHTML = templates.showContent(content);
+};
+
+// 학습 내용 관련 함수
+window.showStudyList = function(topic) {
+    const studyContents = dataManager.getFromLocalStorage('studyContents');
+    document.getElementById('mainContent').innerHTML = templates.showStudyList(topic, studyContents);
+};
+
+window.showStudyForm = function(topic) {
+    document.getElementById('mainContent').innerHTML = templates.showStudyForm(topic);
+};
+
+window.saveStudyContent = function(topic) {
+    const title = document.getElementById('studyTitle').value;
+    const content = document.getElementById('studyContent').value;
+    if (title && content) {
+        const studyContents = dataManager.getFromLocalStorage('studyContents');
+        const updatedContents = dataManager.addStudyContent(studyContents, topic, title, content);
+        dataManager.saveToLocalStorage('studyContents', updatedContents);
+        showStudyList(topic);
+    }
+};
+
+window.viewStudyContent = function(index) {
+    const studyContents = dataManager.getFromLocalStorage('studyContents');
+    const item = studyContents[index];
+    document.getElementById('mainContent').innerHTML = templates.viewStudyContent(item, index);
+};
+
+window.editStudyContent = function(index) {
+    const studyContents = dataManager.getFromLocalStorage('studyContents');
+    const item = studyContents[index];
+    document.getElementById('mainContent').innerHTML = templates.editStudyContent(item, index);
+};
+
+window.updateStudyContent = function(index) {
+    const title = document.getElementById('studyTitle').value;
+    const content = document.getElementById('studyContent').value;
+    if (title && content) {
+        const studyContents = dataManager.getFromLocalStorage('studyContents');
+        const topic = studyContents[index].topic;
+        const updatedContents = dataManager.updateStudyContent(studyContents, index, topic, title, content);
+        dataManager.saveToLocalStorage('studyContents', updatedContents);
+        viewStudyContent(index);
+    }
+};
+
+window.deleteStudyContent = function(index) {
+    if (confirm('정말로 이 학습 내용을 삭제하시겠습니까?')) {
+        const studyContents = dataManager.getFromLocalStorage('studyContents');
+        const topic = studyContents[index].topic;
+        const updatedContents = dataManager.deleteStudyContent(studyContents, index);
+        dataManager.saveToLocalStorage('studyContents', updatedContents);
+        showStudyList(topic);
+    }
+};
 
 // Q&A 관련 함수
 window.showQnAList = function() {
@@ -18,7 +79,7 @@ window.savePost = function() {
     const content = document.getElementById('editor').value;
     if (title && content) {
         dataManager.addPostToFirebase(title, content).then(() => {
-            window.showQnAList();
+            showQnAList();
         });
     }
 };
@@ -42,7 +103,7 @@ window.updatePost = function(key) {
     const content = document.getElementById('editEditor').value;
     if (title && content) {
         dataManager.updatePostInFirebase(key, title, content).then(() => {
-            window.viewPost(key);
+            viewPost(key);
         });
     }
 };
@@ -50,64 +111,69 @@ window.updatePost = function(key) {
 window.deletePost = function(key) {
     if (confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
         dataManager.deletePostFromFirebase(key).then(() => {
-            window.showQnAList();
+            showQnAList();
         });
     }
 };
 
-// 학습 내용 관련 함수
-window.showStudyList = function(topic) {
-    const studyContents = dataManager.getFromLocalStorage('studyContents');
-    document.getElementById('mainContent').innerHTML = templates.showStudyList(topic, studyContents);
+// 공지사항 관련 함수
+window.showNoticeList = function() {
+    const notices = dataManager.getFromLocalStorage('notices');
+    document.getElementById('mainContent').innerHTML = templates.showNoticeList(notices);
 };
 
-window.showStudyForm = function(topic) {
-    document.getElementById('mainContent').innerHTML = templates.showStudyForm(topic);
+window.showNoticePasswordForm = function() {
+    document.getElementById('mainContent').innerHTML = templates.showNoticePasswordForm();
 };
 
-window.saveStudyContent = function(topic) {
-    const title = document.getElementById('studyTitle').value;
-    const content = document.getElementById('studyContent').value;
+window.checkNoticePassword = function() {
+    const password = document.getElementById('noticePassword').value;
+    if (password === '369369') {
+        showNoticeForm();
+    } else {
+        alert('비밀번호가 올바르지 않습니다.');
+    }
+};
+
+window.showNoticeForm = function() {
+    document.getElementById('mainContent').innerHTML = templates.showNoticeForm();
+};
+
+window.saveNotice = function() {
+    const title = document.getElementById('noticeTitle').value;
+    const content = document.getElementById('noticeContent').value;
     if (title && content) {
-        const studyContents = dataManager.getFromLocalStorage('studyContents');
-        const updatedContents = dataManager.addStudyContent(studyContents, topic, title, content);
-        window.showStudyList(topic);
+        const notices = dataManager.getFromLocalStorage('notices');
+        const updatedNotices = dataManager.addNotice(notices, title, content);
+        dataManager.saveToLocalStorage('notices', updatedNotices);
+        showNoticeList();
+    } else {
+        alert('제목과 내용을 모두 입력해주세요.');
     }
 };
 
-window.viewStudyContent = function(index) {
-    const studyContents = dataManager.getFromLocalStorage('studyContents');
-    const item = studyContents[index];
-    document.getElementById('mainContent').innerHTML = templates.viewStudyContent(item, index);
+// 자료실 관련 함수
+window.showFileUpload = function() {
+    const files = dataManager.getFromLocalStorage('files');
+    document.getElementById('mainContent').innerHTML = templates.showFileUpload(files);
 };
 
-window.editStudyContent = function(index) {
-    const studyContents = dataManager.getFromLocalStorage('studyContents');
-    const item = studyContents[index];
-    document.getElementById('mainContent').innerHTML = templates.editStudyContent(item, index);
+window.showFileUploadForm = function() {
+    document.getElementById('mainContent').innerHTML = templates.showFileUploadForm();
 };
 
-window.updateStudyContent = function(index) {
-    const title = document.getElementById('studyTitle').value;
-    const content = document.getElementById('studyContent').value;
-    if (title && content) {
-        const studyContents = dataManager.getFromLocalStorage('studyContents');
-        const topic = studyContents[index].topic;
-        const updatedContents = dataManager.updateStudyContent(studyContents, index, topic, title, content);
-        window.viewStudyContent(index);
+window.uploadFile = function() {
+    const title = document.getElementById('fileTitle').value;
+    const content = document.getElementById('fileContent').value;
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    if (title && content && file) {
+        const files = dataManager.getFromLocalStorage('files');
+        const updatedFiles = dataManager.addFile(files, title, content, file.name);
+        dataManager.saveToLocalStorage('files', updatedFiles);
+        showFileUpload();
     }
 };
-
-window.deleteStudyContent = function(index) {
-    if (confirm('정말로 이 학습 내용을 삭제하시겠습니까?')) {
-        const studyContents = dataManager.getFromLocalStorage('studyContents');
-        const topic = studyContents[index].topic;
-        const updatedContents = dataManager.deleteStudyContent(studyContents, index);
-        window.showStudyList(topic);
-    }
-};
-
-// 기타 필요한 함수들...
 
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', () => {
