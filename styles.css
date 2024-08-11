@@ -10,14 +10,10 @@ body {
     margin: 0;
     padding: 0;
     font-size: 16px;
-    background-image: url('beach_img.webp');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
 }
 
 .header {
-    background-color: rgba(240, 240, 240, 0.8);
+    background-color: #f0f0f0;
     padding: 20px;
     text-align: center;
     font-family: 'GmarketSansMedium';
@@ -42,27 +38,24 @@ body {
     position: fixed;
     z-index: 1;
     top: 0;
-    background-color: rgba(17, 17, 17, 0.9);
+    left: 0;
+    background-color: #f8f8f8;
     overflow-x: hidden;
     transition: 0.5s;
     padding-top: 60px;
 }
 
-.sidebar.right {
-    right: 0;
-}
-
 .sidebar a {
     padding: 8px 8px 8px 32px;
     text-decoration: none;
-    font-size: 25px;
+    font-size: 18px;
     color: #818181;
     display: block;
     transition: 0.3s;
 }
 
 .sidebar a:hover {
-    color: #f1f1f1;
+    color: #333;
 }
 
 .sidebar .closebtn {
@@ -76,54 +69,40 @@ body {
 .openbtn {
     font-size: 20px;
     cursor: pointer;
-    background-color: rgba(17, 17, 17, 0.7);
-    color: white;
+    background-color: transparent;
+    color: #333;
     padding: 10px 15px;
     border: none;
     position: fixed;
     top: 20px;
+    left: 20px;
     z-index: 2;
 }
 
 .openbtn:hover {
-    background-color: rgba(68, 68, 68, 0.8);
-}
-
-.openbtn.left {
-    left: 20px;
-}
-
-.openbtn.right {
-    right: 20px;
+    color: #000;
 }
 
 #main {
-    transition: margin-left .5s, margin-right .5s;
+    transition: margin-left .5s;
     padding: 16px;
 }
 
 .content {
     margin: 20px;
     padding: 20px;
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: #fff;
     border-radius: 10px;
 }
 
 .footer {
-    background-color: rgba(51, 51, 51, 0.8);
-    color: white;
+    background-color: #f0f0f0;
+    color: #333;
     text-align: center;
     padding: 10px;
     position: fixed;
     bottom: 0;
     width: 100%;
-}
-
-.post-content {
-    background-color: #f0f0f0;
-    padding: 15px;
-    border-radius: 5px;
-    margin-top: 10px;
 }
 
 @media screen and (max-height: 450px) {
