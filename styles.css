@@ -196,17 +196,11 @@ h3 {
     object-fit: cover;
 }
 
-body {
-    margin-bottom: 400px; /* 이미지 높이 + 여유 공간 */
-}
-
 
 @media (max-width: 768px) {
     #footer-image img {
         max-height: 150px; /* 작은 화면에서는 이미지 높이를 줄임 */
     }
     
-    body {
-        margin-bottom: 170px; /* 여백도 함께 조정 */
-    }
+   
 }
