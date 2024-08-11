@@ -192,14 +192,14 @@ h3 {
 
 #footer-image img {
     max-width: 100%;
-    max-height: 1000px; /* 이미지의 최대 높이를 설정. 필요에 따라 조절하세요 */
+    max-height: 100%; /* 이미지의 최대 높이를 설정. 필요에 따라 조절하세요 */
     object-fit: cover;
 }
 
 
 @media (max-width: 768px) {
     #footer-image img {
-        max-height: 150px; /* 작은 화면에서는 이미지 높이를 줄임 */
+        max-height: 100%; /* 작은 화면에서는 이미지 높이를 줄임 */
     }
     
    
