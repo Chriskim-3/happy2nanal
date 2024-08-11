@@ -1,4 +1,3 @@
-// dataManager.js
 import { database } from './firebaseConfig.js';
 import { ref, push, set, get, remove, update } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
@@ -23,63 +22,60 @@ export function deletePostFromFirebase(key) {
     return remove(ref(database, `posts/${key}`));
 }
 
-// 로컬 스토리지 관련 함수
-export function getFromLocalStorage(key) {
-    return JSON.parse(localStorage.getItem(key)) || [];
-}
-
-export function saveToLocalStorage(key, data) {
-    localStorage.setItem(key, JSON.stringify(data));
-}
-
 // 학습 내용 관련 함수
-export function addStudyContent(studyContents, topic, title, content) {
-    const date = new Date().toLocaleString();
-    studyContents.push({ topic, title, content, date });
-    saveToLocalStorage('studyContents', studyContents);
-    return studyContents;
+export function fetchStudyContentsFromFirebase() {
+    return get(ref(database, 'studyContents')).then(snapshot => snapshot.val());
 }
 
-export function updateStudyContent(studyContents, index, topic, title, content) {
+export function addStudyContentToFirebase(topic, title, content) {
     const date = new Date().toLocaleString();
-    studyContents[index] = { topic, title, content, date };
-    saveToLocalStorage('studyContents', studyContents);
-    return studyContents;
+    const newContent = { topic, title, content, date };
+    const newContentRef = push(ref(database, 'studyContents'));
+    return set(newContentRef, newContent);
 }
 
-export function deleteStudyContent(studyContents, index) {
-    studyContents.splice(index, 1);
-    saveToLocalStorage('studyContents', studyContents);
-    return studyContents;
+export function updateStudyContentInFirebase(key, topic, title, content) {
+    const date = new Date().toLocaleString();
+    return update(ref(database, `studyContents/${key}`), { topic, title, content, date });
+}
+
+export function deleteStudyContentFromFirebase(key) {
+    return remove(ref(database, `studyContents/${key}`));
 }
 
 // 공지사항 관련 함수
-export function addNotice(notices, title, content) {
+export function fetchNoticesFromFirebase() {
+    return get(ref(database, 'notices')).then(snapshot => snapshot.val());
+}
+
+export function addNoticeToFirebase(title, content) {
     const date = new Date().toLocaleString();
-    notices.push({ title, content, date });
-    saveToLocalStorage('notices', notices);
-    return notices;
+    const newNotice = { title, content, date };
+    const newNoticeRef = push(ref(database, 'notices'));
+    return set(newNoticeRef, newNotice);
 }
 
-export function updateNotice(notices, index, title, content) {
+export function updateNoticeInFirebase(key, title, content) {
     const date = new Date().toLocaleString();
-    notices[index] = { title, content, date };
-    saveToLocalStorage('notices', notices);
-    return notices;
+    return update(ref(database, `notices/${key}`), { title, content, date });
 }
 
-export function deleteNotice(notices, index) {
-    notices.splice(index, 1);
-    saveToLocalStorage('notices', notices);
-    return notices;
+export function deleteNoticeFromFirebase(key) {
+    return remove(ref(database, `notices/${key}`));
 }
 
-// 파일 관련 함수
-export function addFile(files, title, content, fileName) {
+// 자료실 관련 함수
+export function fetchFilesFromFirebase() {
+    return get(ref(database, 'files')).then(snapshot => snapshot.val());
+}
+
+export function addFileToFirebase(title, content, fileName) {
     const date = new Date().toLocaleString();
-    files.push({ title, content, fileName, date });
-    saveToLocalStorage('files', files);
-    return files;
+    const newFile = { title, content, fileName, date };
+    const newFileRef = push(ref(database, 'files'));
+    return set(newFileRef, newFile);
 }
 
-// 기타 필요한 함수들...
+export function deleteFileFromFirebase(key) {
+    return remove(ref(database, `files/${key}`));
+}
