@@ -183,7 +183,7 @@ h3 {
 
 #footer-image {
     position: fixed;
-    bottom: 0;
+    bottom: 20;
     left: 0;
     width: 100%;
     text-align: center;
@@ -192,12 +192,12 @@ h3 {
 
 #footer-image img {
     max-width: 100%;
-    max-height: 600px; /* 이미지의 최대 높이를 설정. 필요에 따라 조절하세요 */
+    max-height: 1000px; /* 이미지의 최대 높이를 설정. 필요에 따라 조절하세요 */
     object-fit: cover;
 }
 
 body {
-    margin-bottom: 220px; /* 이미지 높이 + 여유 공간 */
+    margin-bottom: 400px; /* 이미지 높이 + 여유 공간 */
 }
 
 
