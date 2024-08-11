@@ -1,10 +1,9 @@
 // firebaseConfig.js
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js";
-import { getDatabase } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
+import { getAnalytics } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js';
+import { getDatabase } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBtyjw-rPmCLoXK7O471upPawvJmp6jaWA",
   authDomain: "nanal-9e758.firebaseapp.com",
@@ -21,10 +20,14 @@ let app;
 try {
   app = initializeApp(firebaseConfig);
 } catch (error) {
-  if (error.code !== 'app/duplicate-app') {
+  if (error.code === 'app/duplicate-app') {
+    // 이미 초기화된 앱이 있다면 그것을 사용
+    console.warn('Firebase app already initialized. Using existing app.');
+    app = firebase.app();
+  } else {
     console.error('Firebase initialization error', error);
+    throw error;
   }
-  app = firebase.app(); // 이미 초기화된 앱이 있다면 그것을 사용
 }
 
 const analytics = getAnalytics(app);
