@@ -53,19 +53,29 @@
     <div class="footer">
         Footer Content
     </div>
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js";
+        import { getDatabase } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            // Your config here
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const database = getDatabase(app);
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+        window.database = database;
+    </script>
 
-    <script type="module" src="firebaseConfig.js"></script>
+    <!-- Application scripts -->
     <script type="module" src="dataManager.js"></script>
     <script type="module" src="templates.js"></script>
     <script type="module" src="main.js"></script>
-    
-    <!-- <script src="firebaseConfig.js"></script>
-    <script src="dataManager.js"></script>
-    <script src="templates.js"></script>
-    <script src="main.js"></script> -->
 </body>
 </html>
