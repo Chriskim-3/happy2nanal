@@ -1,10 +1,11 @@
 export function showContent(content) {
     let html = `<p>${content}</p>`;
     if (content === '이 홈페이지는 글쓰고, 올리고, 지울려고 만드는 사이트 입니다.') {
-        '<img src="20240803_172504.jpg" alt="소개 이미지" class="intro-image">';
+        html += '<img src="20240803_172504.jpg" alt="소개 이미지" class="intro-image">';
     }
     return html;
 }
+
 
 export function showStudyList(topic, studyContents) {
     let listHtml = `<h2 class="study-title">${topic} 학습 내용</h2>`;
