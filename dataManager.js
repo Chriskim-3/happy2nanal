@@ -16,11 +16,11 @@ export function addPostToFirebase(title, content) {
 
 export function updatePostInFirebase(key, title, content) {
     const date = new Date().toLocaleString();
-    return update(ref(database, 'posts/' + key), { title, content, date });
+    return update(ref(database, `posts/${key}`), { title, content, date });
 }
 
 export function deletePostFromFirebase(key) {
-    return remove(ref(database, 'posts/' + key));
+    return remove(ref(database, `posts/${key}`));
 }
 
 // 로컬 스토리지 관련 함수
