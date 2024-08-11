@@ -1,5 +1,3 @@
-// main.js
-import { database } from './firebaseConfig.js';
 import * as dataManager from './dataManager.js';
 import * as templates from './templates.js';
 
@@ -10,8 +8,12 @@ window.showContent = function(content) {
 
 // 학습 내용 관련 함수
 window.showStudyList = function(topic) {
-    const studyContents = dataManager.getFromLocalStorage('studyContents');
-    document.getElementById('mainContent').innerHTML = templates.showStudyList(topic, studyContents);
+    dataManager.fetchStudyContentsFromFirebase().then(contents => {
+        const filteredContents = Object.entries(contents || {})
+            .filter(([key, value]) => value.topic === topic)
+            .map(([key, value]) => ({ ...value, key }));
+        document.getElementById('mainContent').innerHTML = templates.showStudyList(topic, filteredContents);
+    });
 };
 
 window.showStudyForm = function(topic) {
@@ -22,44 +24,42 @@ window.saveStudyContent = function(topic) {
     const title = document.getElementById('studyTitle').value;
     const content = document.getElementById('studyContent').value;
     if (title && content) {
-        const studyContents = dataManager.getFromLocalStorage('studyContents');
-        const updatedContents = dataManager.addStudyContent(studyContents, topic, title, content);
-        dataManager.saveToLocalStorage('studyContents', updatedContents);
-        showStudyList(topic);
+        dataManager.addStudyContentToFirebase(topic, title, content).then(() => {
+            showStudyList(topic);
+        });
     }
 };
 
-window.viewStudyContent = function(index) {
-    const studyContents = dataManager.getFromLocalStorage('studyContents');
-    const item = studyContents[index];
-    document.getElementById('mainContent').innerHTML = templates.viewStudyContent(item, index);
+window.viewStudyContent = function(key) {
+    dataManager.fetchStudyContentsFromFirebase().then(contents => {
+        const item = contents[key];
+        document.getElementById('mainContent').innerHTML = templates.viewStudyContent(item, key);
+    });
 };
 
-window.editStudyContent = function(index) {
-    const studyContents = dataManager.getFromLocalStorage('studyContents');
-    const item = studyContents[index];
-    document.getElementById('mainContent').innerHTML = templates.editStudyContent(item, index);
+window.editStudyContent = function(key) {
+    dataManager.fetchStudyContentsFromFirebase().then(contents => {
+        const item = contents[key];
+        document.getElementById('mainContent').innerHTML = templates.editStudyContent(item, key);
+    });
 };
 
-window.updateStudyContent = function(index) {
+window.updateStudyContent = function(key) {
     const title = document.getElementById('studyTitle').value;
     const content = document.getElementById('studyContent').value;
+    const topic = document.getElementById('studyTopic').value;
     if (title && content) {
-        const studyContents = dataManager.getFromLocalStorage('studyContents');
-        const topic = studyContents[index].topic;
-        const updatedContents = dataManager.updateStudyContent(studyContents, index, topic, title, content);
-        dataManager.saveToLocalStorage('studyContents', updatedContents);
-        viewStudyContent(index);
+        dataManager.updateStudyContentInFirebase(key, topic, title, content).then(() => {
+            viewStudyContent(key);
+        });
     }
 };
 
-window.deleteStudyContent = function(index) {
+window.deleteStudyContent = function(key) {
     if (confirm('정말로 이 학습 내용을 삭제하시겠습니까?')) {
-        const studyContents = dataManager.getFromLocalStorage('studyContents');
-        const topic = studyContents[index].topic;
-        const updatedContents = dataManager.deleteStudyContent(studyContents, index);
-        dataManager.saveToLocalStorage('studyContents', updatedContents);
-        showStudyList(topic);
+        dataManager.deleteStudyContentFromFirebase(key).then(() => {
+            showStudyList(document.getElementById('currentTopic').value);
+        });
     }
 };
 
@@ -118,8 +118,9 @@ window.deletePost = function(key) {
 
 // 공지사항 관련 함수
 window.showNoticeList = function() {
-    const notices = dataManager.getFromLocalStorage('notices');
-    document.getElementById('mainContent').innerHTML = templates.showNoticeList(notices);
+    dataManager.fetchNoticesFromFirebase().then(notices => {
+        document.getElementById('mainContent').innerHTML = templates.showNoticeList(notices);
+    });
 };
 
 window.showNoticePasswordForm = function() {
@@ -143,10 +144,9 @@ window.saveNotice = function() {
     const title = document.getElementById('noticeTitle').value;
     const content = document.getElementById('noticeContent').value;
     if (title && content) {
-        const notices = dataManager.getFromLocalStorage('notices');
-        const updatedNotices = dataManager.addNotice(notices, title, content);
-        dataManager.saveToLocalStorage('notices', updatedNotices);
-        showNoticeList();
+        dataManager.addNoticeToFirebase(title, content).then(() => {
+            showNoticeList();
+        });
     } else {
         alert('제목과 내용을 모두 입력해주세요.');
     }
@@ -154,8 +154,9 @@ window.saveNotice = function() {
 
 // 자료실 관련 함수
 window.showFileUpload = function() {
-    const files = dataManager.getFromLocalStorage('files');
-    document.getElementById('mainContent').innerHTML = templates.showFileUpload(files);
+    dataManager.fetchFilesFromFirebase().then(files => {
+        document.getElementById('mainContent').innerHTML = templates.showFileUpload(files);
+    });
 };
 
 window.showFileUploadForm = function() {
@@ -168,10 +169,9 @@ window.uploadFile = function() {
     const fileInput = document.getElementById('fileInput');
     const file = fileInput.files[0];
     if (title && content && file) {
-        const files = dataManager.getFromLocalStorage('files');
-        const updatedFiles = dataManager.addFile(files, title, content, file.name);
-        dataManager.saveToLocalStorage('files', updatedFiles);
-        showFileUpload();
+        dataManager.addFileToFirebase(title, content, file.name).then(() => {
+            showFileUpload();
+        });
     }
 };
 
