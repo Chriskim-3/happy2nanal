@@ -1,6 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getAnalytics } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js';
-import { getDatabase, enableIndexedDbPersistence } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
+import { getDatabase } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBtyjw-rPmCLoXK7O471upPawvJmp6jaWA",
@@ -17,12 +17,7 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const database = getDatabase(app);
 
-enableIndexedDbPersistence(database).catch((err) => {
-    if (err.code === 'failed-precondition') {
-        console.log('Multiple tabs open, persistence can only be enabled in one tab at a a time.');
-    } else if (err.code === 'unimplemented') {
-        console.log('The current browser does not support all of the features required to enable persistence');
-    }
-});
+// enableIndexedDbPersistence 부분을 제거하거나 주석 처리합니다.
+// 이 기능이 필요하다면 별도로 구현해야 합니다.
 
 export { app, analytics, database };
