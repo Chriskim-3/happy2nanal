@@ -8,23 +8,18 @@
     <link href="styles.css" rel="stylesheet">
 </head>
 <body>
-    <div id="leftSidebar" class="sidebar">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav('left')">×</a>
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
         <a href="#" onclick="showContent('홈페이지 소개')">홈페이지 소개</a>
-        <a href="#" onclick="showContent('JavaScript 공부')">JavaScript 공부</a>
-        <a href="#" onclick="showContent('Python 공부')">Python 공부</a>
-    </div>
-
-    <div id="rightSidebar" class="sidebar right">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav('right')">×</a>
-        <a href="#" onclick="showContent('Q&A')">Q&A</a>
-        <a href="#" onclick="showContent('공지사항')">공지사항</a>
-        <a href="#" onclick="showContent('자료실')">자료실</a>
+        <a href="#" onclick="showStudyList('JavaScript')">JavaScript 공부</a>
+        <a href="#" onclick="showStudyList('Python')">Python 공부</a>
+        <a href="#" onclick="showQnAList()">Q&A</a>
+        <a href="#" onclick="showNoticeList()">공지사항</a>
+        <a href="#" onclick="showFileUpload()">자료실</a>
     </div>
 
     <div id="main">
-        <button class="openbtn left" onclick="openNav('left')">☰</button>
-        <button class="openbtn right" onclick="openNav('right')">☰</button>
+        <button class="openbtn" onclick="openNav()">☰</button>
         
         <div class="header">
             <div class="support-message">당신의 칼퇴를 응원합니다</div>
@@ -40,6 +35,6 @@
         ©happy2nanal. All Rights Reserved.
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js" type="module"></script>
 </body>
 </html>
