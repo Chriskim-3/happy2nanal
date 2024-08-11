@@ -1,8 +1,6 @@
-// firebaseConfig.js
-
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getAnalytics } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js';
-import { getDatabase } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
+import { getDatabase, enableIndexedDbPersistence } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBtyjw-rPmCLoXK7O471upPawvJmp6jaWA",
@@ -15,22 +13,16 @@ const firebaseConfig = {
   measurementId: "G-L20RGTW4TC"
 };
 
-// Initialize Firebase
-let app;
-try {
-  app = initializeApp(firebaseConfig);
-} catch (error) {
-  if (error.code === 'app/duplicate-app') {
-    // 이미 초기화된 앱이 있다면 그것을 사용
-    console.warn('Firebase app already initialized. Using existing app.');
-    app = firebase.app();
-  } else {
-    console.error('Firebase initialization error', error);
-    throw error;
-  }
-}
-
+const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const database = getDatabase(app);
+
+enableIndexedDbPersistence(database).catch((err) => {
+    if (err.code === 'failed-precondition') {
+        console.log('Multiple tabs open, persistence can only be enabled in one tab at a a time.');
+    } else if (err.code === 'unimplemented') {
+        console.log('The current browser does not support all of the features required to enable persistence');
+    }
+});
 
 export { app, analytics, database };
