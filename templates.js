@@ -5,7 +5,7 @@ export function showContent(content) {
     if (content === '이 홈페이지는 글쓰고, 올리고, 지울려고 만드는 사이트 입니다.') {
         html += '<img src="https://apod.nasa.gov/apod/image/2407/CometaryGlobs_Pugh_1080.jpg" alt="소개 이미지" class="intro-image">';
     }
-    document.getElementById('mainContent').innerHTML = html;
+    return html;
 }
 
 export function showStudyList(topic, studyContents) {
@@ -76,6 +76,7 @@ export function showQnAList(posts) {
         listHtml += `<li onclick="viewPost('${key}')">${posts[key].title}</li>`;
     }
     listHtml += '</ul>';
+    listHtml += '<div class="button-container"><button onclick="showQnAForm()">글쓰기</button></div>';
     return listHtml;
 }
 
@@ -115,37 +116,4 @@ export function editPost(post, key) {
     `;
 }
 
-export function showNoticeList(notices) {
-    let listHtml = '<h3>공지사항</h3><ul id="noticeList">';
-    notices.forEach((notice, index) => {
-        listHtml += `<li onclick="viewNotice(${index})">${notice.title}</li>`;
-    });
-    listHtml += '</ul>';
-    listHtml += `
-        <div class="search-container">
-            <input type="text" id="noticeSearchInput" placeholder="검색...">
-            <button onclick="searchNotice()">검색</button>
-        </div>
-        <div class="button-container">
-            <button onclick="showNoticePasswordForm()">공지사항 작성</button>
-        </div>
-    `;
-    return listHtml;
-}
-
-// 나머지 함수들도 비슷한 방식으로 수정...
-
-export function showFileUpload(files) {
-    return `
-        <h3>자료실</h3>
-        <div class="button-container">
-            <button onclick="showFileUploadForm()">글쓰기</button>
-        </div>
-        <h3>업로드된 파일 목록</h3>
-        <ul id="fileList">
-        ${files.map((file, index) => `<li onclick="viewFile(${index})">${file.title}</li>`).join('')}
-        </ul>
-    `;
-}
-
-// 나머지 함수들...
+// 기타 필요한 템플릿 함수들...
