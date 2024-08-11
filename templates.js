@@ -1,5 +1,3 @@
-// templates.js
-
 export function showContent(content) {
     let html = `<p>${content}</p>`;
     if (content === '이 홈페이지는 글쓰고, 올리고, 지울려고 만드는 사이트 입니다.') {
@@ -12,9 +10,9 @@ export function showStudyList(topic, studyContents) {
     let listHtml = `<h2 class="study-title">${topic} 학습 내용</h2>`;
     
     listHtml += '<ul id="studyList">';
-    studyContents.filter(item => item.topic === topic).forEach((item, index) => {
+    studyContents.forEach((item) => {
         listHtml += `
-            <li onclick="viewStudyContent(${index})">
+            <li onclick="viewStudyContent('${item.key}')">
                 <h3>${item.title}</h3>
                 <div class="date-display">${item.date || '날짜 없음'}</div>
             </li>`;
@@ -39,32 +37,34 @@ export function showStudyForm(topic) {
         <h3>${topic} 내용 추가</h3>
         <input type="text" id="studyTitle" placeholder="제목을 입력하세요">
         <textarea id="studyContent" placeholder="내용을 입력하세요..."></textarea>
+        <input type="hidden" id="studyTopic" value="${topic}">
         <div class="button-container">
             <button onclick="saveStudyContent('${topic}')">저장</button>
         </div>
     `;
 }
 
-export function viewStudyContent(item, index) {
+export function viewStudyContent(item, key) {
     return `
         <h2>${item.title}</h2>
         <div class="date-display">${item.date || '날짜 없음'}</div>
         <div>${item.content}</div>
         <div class="button-container">
-            <button onclick="editStudyContent(${index})">수정</button>
-            <button onclick="deleteStudyContent(${index})">삭제</button>
+            <button onclick="editStudyContent('${key}')">수정</button>
+            <button onclick="deleteStudyContent('${key}')">삭제</button>
             <button onclick="showStudyList('${item.topic}')">목록으로</button>
         </div>
     `;
 }
 
-export function editStudyContent(item, index) {
+export function editStudyContent(item, key) {
     return `
         <h3>학습 내용 수정</h3>
         <input type="text" id="studyTitle" value="${item.title}">
         <textarea id="studyContent">${item.content}</textarea>
+        <input type="hidden" id="studyTopic" value="${item.topic}">
         <div class="button-container">
-            <button onclick="updateStudyContent(${index})">업데이트</button>
+            <button onclick="updateStudyContent('${key}')">업데이트</button>
             <button onclick="showStudyList('${item.topic}')">취소</button>
         </div>
     `;
@@ -116,4 +116,84 @@ export function editPost(post, key) {
     `;
 }
 
-// 기타 필요한 템플릿 함수들...
+export function showNoticeList(notices) {
+    let listHtml = '<h3>공지사항</h3><ul id="noticeList">';
+    for (let key in notices) {
+        listHtml += `<li onclick="viewNotice('${key}')">${notices[key].title}</li>`;
+    }
+    listHtml += '</ul>';
+    listHtml += `
+        <div class="search-container">
+            <input type="text" id="noticeSearchInput" placeholder="검색...">
+            <button onclick="searchNotice()">검색</button>
+        </div>
+        <div class="button-container">
+            <button onclick="showNoticePasswordForm()">공지사항 작성</button>
+        </div>
+    `;
+    return listHtml;
+}
+
+export function showNoticePasswordForm() {
+    return `
+        <h3>비밀번호 입력</h3>
+        <input type="password" id="noticePassword" placeholder="비밀번호를 입력하세요">
+        <div class="button-container">
+            <button onclick="checkNoticePassword()">확인</button>
+        </div>
+    `;
+}
+
+export function showNoticeForm() {
+    return `
+        <h3>공지사항 작성</h3>
+        <input type="text" id="noticeTitle" placeholder="제목을 입력하세요">
+        <textarea id="noticeContent" placeholder="내용을 입력하세요..."></textarea>
+        <div class="button-container">
+            <button onclick="saveNotice()">저장</button>
+        </div>
+    `;
+}
+
+export function showFileUpload(files) {
+    let listHtml = `
+        <h3>자료실</h3>
+        <div class="button-container">
+            <button onclick="showFileUploadForm()">파일 업로드</button>
+        </div>
+        <h3>업로드된 파일 목록</h3>
+        <ul id="fileList">
+    `;
+    for (let key in files) {
+        listHtml += `<li onclick="viewFile('${key}')">${files[key].title}</li>`;
+    }
+    listHtml += '</ul>';
+    return listHtml;
+}
+
+export function showFileUploadForm() {
+    return `
+        <h3>파일 업로드</h3>
+        <input type="text" id="fileTitle" placeholder="제목을 입력하세요">
+        <textarea id="fileContent" placeholder="내용을 입력하세요..."></textarea>
+        <input type="file" id="fileInput">
+        <div class="button-container">
+            <button onclick="uploadFile()">업로드</button>
+        </div>
+    `;
+}
+
+export function viewFile(file, key) {
+    return `
+        <h3>${file.title}</h3>
+        <div class="date-display">${file.date}</div>
+        <div class="file-download">
+            <a href="#" onclick="downloadFile('${file.fileName}')">파일 다운로드</a>
+        </div>
+        <p>${file.content}</p>
+        <div class="button-container">
+            <button onclick="deleteFile('${key}')">삭제</button>
+            <button onclick="showFileUpload()">목록으로</button>
+        </div>
+    `;
+}
