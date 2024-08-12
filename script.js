@@ -1,10 +1,12 @@
 import * as templates from './templates.js';
+import { database } from './firebase-config.js';
+import { ref, push, set, get, remove } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
 
-// 임시 데이터 저장소 (실제 구현에서는 데이터베이스를 사용해야 합니다)
-let studyContents = {};
-let qnaPosts = {};
-let notices = {};
-let files = {};
+// Firebase 레퍼런스 설정
+const studyContentsRef = ref(database, 'studyContents');
+const qnaPostsRef = ref(database, 'qnaPosts');
+const noticesRef = ref(database, 'notices');
+const filesRef = ref(database, 'files');
 
 function openNav() {
     document.getElementById("sidebar").style.width = "250px";
@@ -28,26 +30,33 @@ function showContent(content) {
     document.getElementById('mainContent').innerHTML = templates.showContent(content);
 }
 
-function showStudyList(topic) {
-    if (!studyContents[topic]) {
-        studyContents[topic] = [];
-    }
-    document.getElementById('mainContent').innerHTML = templates.showStudyList(topic, studyContents[topic]);
+async function showStudyList(topic) {
+    const topicRef = ref(database, `studyContents/${topic}`);
+    const snapshot = await get(topicRef);
+    const studyContents = snapshot.val() || {};
+    document.getElementById('mainContent').innerHTML = templates.showStudyList(topic, Object.values(studyContents));
 }
 
 function showStudyForm(topic) {
     document.getElementById('mainContent').innerHTML = templates.showStudyForm(topic);
 }
 
-function saveStudyContent(topic) {
+async function saveStudyContent(topic) {
     const title = document.getElementById('studyTitle').value;
     const content = document.getElementById('studyContent').value;
-    const key = Date.now().toString();
-    studyContents[topic].push({key, title, content, topic, date: new Date().toLocaleString()});
+    const newStudyRef = push(ref(database, `studyContents/${topic}`));
+    await set(newStudyRef, {
+        title,
+        content,
+        topic,
+        date: new Date().toLocaleString()
+    });
     showStudyList(topic);
 }
 
-function showQnAList() {
+async function showQnAList() {
+    const snapshot = await get(qnaPostsRef);
+    const qnaPosts = snapshot.val() || {};
     document.getElementById('mainContent').innerHTML = templates.showQnAList(qnaPosts);
 }
 
@@ -55,15 +64,21 @@ function showQnAForm() {
     document.getElementById('mainContent').innerHTML = templates.showQnAForm();
 }
 
-function savePost() {
+async function savePost() {
     const title = document.getElementById('postTitle').value;
     const content = document.getElementById('editor').value;
-    const key = Date.now().toString();
-    qnaPosts[key] = {title, content, date: new Date().toLocaleString()};
+    const newPostRef = push(qnaPostsRef);
+    await set(newPostRef, {
+        title,
+        content,
+        date: new Date().toLocaleString()
+    });
     showQnAList();
 }
 
-function showNoticeList() {
+async function showNoticeList() {
+    const snapshot = await get(noticesRef);
+    const notices = snapshot.val() || {};
     document.getElementById('mainContent').innerHTML = templates.showNoticeList(notices);
 }
 
@@ -84,15 +99,21 @@ function showNoticeForm() {
     document.getElementById('mainContent').innerHTML = templates.showNoticeForm();
 }
 
-function saveNotice() {
+async function saveNotice() {
     const title = document.getElementById('noticeTitle').value;
     const content = document.getElementById('noticeContent').value;
-    const key = Date.now().toString();
-    notices[key] = {title, content, date: new Date().toLocaleString()};
+    const newNoticeRef = push(noticesRef);
+    await set(newNoticeRef, {
+        title,
+        content,
+        date: new Date().toLocaleString()
+    });
     showNoticeList();
 }
 
-function showFileUpload() {
+async function showFileUpload() {
+    const snapshot = await get(filesRef);
+    const files = snapshot.val() || {};
     document.getElementById('mainContent').innerHTML = templates.showFileUpload(files);
 }
 
@@ -100,12 +121,17 @@ function showFileUploadForm() {
     document.getElementById('mainContent').innerHTML = templates.showFileUploadForm();
 }
 
-function uploadFile() {
+async function uploadFile() {
     const title = document.getElementById('fileTitle').value;
     const content = document.getElementById('fileContent').value;
     const fileName = document.getElementById('fileInput').value.split('\\').pop();
-    const key = Date.now().toString();
-    files[key] = {title, content, fileName, date: new Date().toLocaleString()};
+    const newFileRef = push(filesRef);
+    await set(newFileRef, {
+        title,
+        content,
+        fileName,
+        date: new Date().toLocaleString()
+    });
     showFileUpload();
 }
 
