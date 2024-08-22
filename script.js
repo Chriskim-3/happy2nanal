@@ -38,6 +38,15 @@ const menuHandlers = {
     }
 };
 
+// 수정된 openNav와 closeNav 함수
+function openNav() {
+    document.getElementById("sidebar").style.width = "250px";
+}
+
+function closeNav() {
+    document.getElementById("sidebar").style.width = "0";
+}
+
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
@@ -190,17 +199,6 @@ function uploadFile() {
             menuHandlers.showFileUpload();
         });
     }
-}
-
-// 사이드바 제어 함수
-function openNav() {
-    document.getElementById("sidebar").style.width = "250px";
-    document.getElementById("main").style.marginLeft = "250px";
-}
-
-function closeNav() {
-    document.getElementById("sidebar").style.width = "0";
-    document.getElementById("main").style.marginLeft = "0";
 }
 
 // 전역 스코프에 함수들 노출
