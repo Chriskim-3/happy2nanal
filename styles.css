@@ -4,34 +4,29 @@
     font-weight: normal;
     font-style: normal;
 }
-
 body {
     font-family: 'Noto Sans KR', sans-serif;
     margin: 0;
     padding: 0;
     font-size: 16px;
 }
-
 .header {
     background-color: #f0f0f0;
     padding: 20px;
     text-align: center;
     font-family: 'GmarketSansMedium';
 }
-
 .support-message {
     color: #006994;
     margin-bottom: 5px;
     font-size: 1.2em;
 }
-
 .main-title {
     color: #333;
     font-size: 1.8em;
     font-weight: bold;
     cursor: pointer;
 }
-
 .sidebar {
     height: 100%;
     width: 0;
@@ -44,7 +39,6 @@ body {
     transition: 0.5s;
     padding-top: 60px;
 }
-
 .sidebar a {
     padding: 8px 8px 8px 32px;
     text-decoration: none;
@@ -53,11 +47,9 @@ body {
     display: block;
     transition: 0.3s;
 }
-
 .sidebar a:hover {
     color: #333;
 }
-
 .sidebar .closebtn {
     position: absolute;
     top: 0;
@@ -65,7 +57,6 @@ body {
     font-size: 36px;
     margin-left: 50px;
 }
-
 .openbtn {
     font-size: 20px;
     cursor: pointer;
@@ -78,23 +69,19 @@ body {
     left: 20px;
     z-index: 2;
 }
-
 .openbtn:hover {
     color: #000;
 }
-
 #main {
     transition: margin-left .5s;
     padding: 16px;
 }
-
 .content {
     margin: 20px;
     padding: 20px;
     background-color: #fff;
     border-radius: 10px;
 }
-
 .footer {
     background-color: #f0f0f0;
     color: #333;
@@ -105,8 +92,29 @@ body {
     bottom: 0;
     width: 100%;
 }
-
 @media screen and (max-height: 450px) {
     .sidebar {padding-top: 15px;}
     .sidebar a {font-size: 18px;}
+}
+
+/* 새로 추가된 스타일 */
+#studyList li, #postList li, #noticeList li, #fileList li {
+    cursor: pointer;
+    padding: 10px;
+    border-bottom: 1px solid #e0e0e0;
+    transition: background-color 0.3s;
+}
+
+#studyList li:hover, #postList li:hover, #noticeList li:hover, #fileList li:hover {
+    background-color: #f5f5f5;
+}
+
+#studyList h3, #postList h3, #noticeList h3, #fileList h3 {
+    margin: 0;
+    color: #333;
+}
+
+.date-display {
+    font-size: 0.8em;
+    color: #666;
 }
