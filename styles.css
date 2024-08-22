@@ -128,9 +128,6 @@ textarea {
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
-    width: 180px;
-    display: block;
-    margin: 20px auto;
 }
 .submit-btn:hover {
     background-color: #4A6359;
@@ -143,115 +140,50 @@ textarea {
     text-decoration: underline;
 }
 
-.post-title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: #2c3e50;
-}
-
-.post-date {
-    color: #7f8c8d;
-    margin-bottom: 30px;
-    font-size: 14px;
-}
-
-.post-content {
-    margin-bottom: 30px;
-    line-height: 1.8;
-}
-
-.button-container {
+/* 새로 추가된 스타일 */
+.search-write-container {
     display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 30px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-.button {
+.write-btn {
+    background-color: #4CAF50;
+    color: white;
     padding: 10px 20px;
-    background-color: #3498db;
-    color: #fff;
     border: none;
-    border-radius: 5px;
+    border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    font-size: 16px;
 }
 
-.button:hover {
-    background-color: #2980b9;
+.write-btn:hover {
+    background-color: #45a049;
 }
 
 .search-container {
     display: flex;
-    justify-content: center;
-    margin-top: 30px;
+    align-items: center;
 }
 
-.search-input {
-    width: calc(100% - 80px);
+#searchInput {
     padding: 10px;
+    font-size: 16px;
     border: 1px solid #ddd;
-    border-radius: 5px 0 0 5px;
-    font-size: 16px;
+    border-radius: 4px 0 0 4px;
+    width: 200px;
 }
 
-.search-button {
-    width: 80px;
-    padding: 10px 20px;
-    background-color: #2ecc71;
-    color: #fff;
-    border: 1px solid #2ecc71;
+.search-container button {
+    padding: 10px 15px;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
     border-left: none;
-    border-radius: 0 5px 5px 0;
+    border-radius: 0 4px 4px 0;
     cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
 }
 
-.search-button:hover {
-    background-color: #27ae60;
-}
-
-#studyList li {
-    cursor: pointer;
-    padding: 10px;
-    border-bottom: 1px solid #e0e0e0;
-    transition: background-color 0.3s;
-}
-
-#studyList li:hover {
-    background-color: #f5f5f5;
-}
-
-#studyList h3 {
-    margin: 0;
-    color: #333;
-}
-
-.date-display {
-    font-size: 0.8em;
-    color: #666;
-}
-
-@media (max-width: 600px) {
-    .content {
-        padding: 10px;
-    }
-    
-    .post-title {
-        font-size: 20px;
-    }
-    
-    .button-container {
-        flex-direction: column;
-    }
-    
-    .search-input {
-        width: calc(100% - 60px);
-    }
-    
-    .search-button {
-        width: 60px;
-    }
+.search-container button:hover {
+    background-color: #e8e8e8;
 }
