@@ -167,7 +167,7 @@ textarea {
     font-size: 16px;
     border: 1px solid #ddd;
     border-radius: 4px 0 0 4px;
-    width: 150px;
+    width: 200px;
 }
 .search-container button {
     padding: 10px 15px;
@@ -186,5 +186,5 @@ textarea {
 }
 /* 추가: 내용과 버튼 사이의 여백 증가 */
 .content > *:not(:last-child) {
-    margin-bottom: 60px;
+    margin-bottom: 30px;
 }
