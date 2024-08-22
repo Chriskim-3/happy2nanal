@@ -123,11 +123,13 @@ textarea {
 .submit-btn {
     background-color: #5D7B6F;
     color: white;
+    align: center;
     padding: 10px 20px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
+    width: 180px;
 }
 .submit-btn:hover {
     background-color: #4A6359;
