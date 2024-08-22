@@ -1,47 +1,60 @@
+/* 웹 폰트 정의 */
 @font-face {
     font-family: 'GmarketSansMedium';
     src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 }
+
+/* 기본 body 스타일 설정 */
 body {
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: 'Noto Sans KR', sans-serif; /* 기본 글꼴 설정 */
     margin: 0;
     padding: 0;
     font-size: 16px;
     line-height: 1.6;
     color: #333;
 }
+
+/* 헤더 스타일 */
 .header {
     background-color: #f0f0f0;
     padding: 20px;
     text-align: center;
-    font-family: 'GmarketSansMedium';
+    font-family: 'GmarketSansMedium'; /* 헤더에 특정 폰트 적용 */
 }
+
+/* 지원 메시지 스타일 */
 .support-message {
     color: #006994;
     margin-bottom: 5px;
     font-size: 1.2em;
 }
+
+/* 메인 타이틀 스타일 */
 .main-title {
     color: #333;
     font-size: 1.8em;
     font-weight: bold;
-    cursor: pointer;
+    cursor: pointer; /* 마우스 오버시 커서 변경 */
 }
+
+/* 사이드바 스타일 */
 .sidebar {
     height: 100%;
-    width: 0;
+    width: 0; /* 초기에는 닫혀있음 */
     position: fixed;
     z-index: 1000;
     top: 0;
     left: 0;
     background-color: #f8f8f8;
     overflow-x: hidden;
-    transition: 0.5s;
+    transition: 0.5s; /* 부드러운 열림/닫힘 효과 */
     padding-top: 60px;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
 }
+
+/* 사이드바 링크 스타일 */
 .sidebar a {
     padding: 8px 8px 8px 32px;
     text-decoration: none;
@@ -49,11 +62,15 @@ body {
     color: #818181;
     display: block;
     transition: 0.3s;
-    cursor: pointer; /* 추가: 커서를 손가락 모양으로 변경 */
+    cursor: pointer; /* 마우스 오버시 커서 변경 */
 }
+
+/* 사이드바 링크 호버 효과 */
 .sidebar a:hover {
     color: #333;
 }
+
+/* 사이드바 닫기 버튼 스타일 */
 .sidebar .closebtn {
     position: absolute;
     top: 0;
@@ -61,6 +78,8 @@ body {
     font-size: 36px;
     margin-left: 50px;
 }
+
+/* 사이드바 열기 버튼 스타일 */
 .openbtn {
     font-size: 20px;
     cursor: pointer;
@@ -73,13 +92,19 @@ body {
     left: 20px;
     z-index: 1001;
 }
+
+/* 사이드바 열기 버튼 호버 효과 */
 .openbtn:hover {
     color: #000;
 }
+
+/* 메인 콘텐츠 영역 스타일 */
 #main {
-    transition: margin-left .5s;
+    transition: margin-left .5s; /* 사이드바와 연동된 부드러운 이동 */
     padding: 16px;
 }
+
+/* 콘텐츠 영역 스타일 */
 .content {
     max-width: 800px;
     margin: 20px auto;
@@ -87,6 +112,8 @@ body {
     background-color: #fff;
     border-radius: 10px;
 }
+
+/* 푸터 스타일 */
 .footer {
     background-color: #f0f0f0;
     color: #333;
@@ -96,30 +123,44 @@ body {
     bottom: 0;
     width: 100%;
 }
+
+/* 화면 높이가 낮을 때 사이드바 조정 */
 @media screen and (max-height: 450px) {
     .sidebar {padding-top: 15px;}
     .sidebar a {font-size: 18px;}
 }
+
+/* 제목 스타일 */
 h1 {
     border-bottom: 1px solid #ddd;
     padding-bottom: 10px;
 }
+
+/* 폼 그룹 스타일 */
 .form-group {
     margin-bottom: 15px;
 }
+
+/* 라벨 스타일 */
 label {
     display: block;
     margin-bottom: 5px;
 }
+
+/* 입력 필드 스타일 */
 input[type="text"], input[type="password"], textarea {
     width: 100%;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
 }
+
+/* 텍스트 영역 높이 설정 */
 textarea {
     height: 200px;
 }
+
+/* 제출 버튼 스타일 */
 .submit-btn {
     background-color: #5D7B6F;
     color: white;
@@ -128,24 +169,34 @@ textarea {
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
-    margin-top: 60px; /* 추가: 버튼 위의 여백 증가 */
+    margin-top: 60px; /* 버튼 위의 여백 증가 */
 }
+
+/* 제출 버튼 호버 효과 */
 .submit-btn:hover {
     background-color: #4A6359;
 }
+
+/* 코드 링크 스타일 */
 .code-link {
     color: #0066cc;
     text-decoration: none;
 }
+
+/* 코드 링크 호버 효과 */
 .code-link:hover {
     text-decoration: underline;
 }
+
+/* 검색 및 글쓰기 버튼 컨테이너 */
 .search-write-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
 }
+
+/* 글쓰기 버튼 스타일 */
 .write-btn {
     background-color: #4CAF50;
     color: white;
@@ -155,13 +206,19 @@ textarea {
     cursor: pointer;
     font-size: 16px;
 }
+
+/* 글쓰기 버튼 호버 효과 */
 .write-btn:hover {
     background-color: #45a049;
 }
+
+/* 검색 컨테이너 스타일 */
 .search-container {
     display: flex;
     align-items: center;
 }
+
+/* 검색 입력 필드 스타일 */
 #searchInput {
     padding: 10px;
     font-size: 16px;
@@ -169,6 +226,8 @@ textarea {
     border-radius: 4px 0 0 4px;
     width: 200px;
 }
+
+/* 검색 버튼 스타일 */
 .search-container button {
     padding: 10px 15px;
     background-color: #f8f8f8;
@@ -176,15 +235,20 @@ textarea {
     border-left: none;
     border-radius: 0 4px 4px 0;
     cursor: pointer;
+    width: 60px;
 }
+
+/* 검색 버튼 호버 효과 */
 .search-container button:hover {
     background-color: #e8e8e8;
 }
-/* 추가: 리스트 항목에 커서 스타일 적용 */
+
+/* 리스트 항목에 커서 스타일 적용 */
 .content ul li, .content ol li {
     cursor: pointer;
 }
-/* 추가: 내용과 버튼 사이의 여백 증가 */
+
+/* 내용과 버튼 사이의 여백 증가 */
 .content > *:not(:last-child) {
     margin-bottom: 30px;
 }
