@@ -28,17 +28,15 @@
         <div id="mainContent" class="content">
             <h1>질문 및 답변</h1>
             
-            <div class="info-box">
-                <p>이곳에 글을 쓰면 <a href="#" class="code-link">개인정보 처리방침</a>과 아래의 댓글 관리 정책에 동의하는 것으로 간주됩니다.</p>
-                <ul>
-                    <li>실제 허용 여부를 막론하고 모든 게임에 관한 질문은 받지 않습니다.</li>
-                    <li>홈페이지 유지 보수 및 구조 변경으로 인해 작성한 모든 글이 삭제될 수 있습니다.</li>
-                    <li>이 곳에 질문을 쓰는 것은 불법적인 프로그램 개발 및 사용을 하지 않음에 동의하는 것입니다.</li>
-                    <li>프로그래밍과 관련이 없는 글은 삭제될 수 있습니다.</li>
-                </ul>
-            </div>
-
             <p>총 <span id="questionCount">222</span>건의 질문</p>
+
+            <div class="search-write-container">
+                <button onclick="showWriteForm()" class="write-btn">글쓰기</button>
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="검색...">
+                    <button onclick="performSearch()">검색</button>
+                </div>
+            </div>
 
             <form id="questionForm">
                 <div class="form-group">
