@@ -128,7 +128,7 @@ textarea {
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
-    margin-top: 30px; /* 추가: 버튼 위의 여백 증가 */
+    margin-top: 60px; /* 추가: 버튼 위의 여백 증가 */
 }
 .submit-btn:hover {
     background-color: #4A6359;
@@ -167,7 +167,7 @@ textarea {
     font-size: 16px;
     border: 1px solid #ddd;
     border-radius: 4px 0 0 4px;
-    width: 200px;
+    width: 150px;
 }
 .search-container button {
     padding: 10px 15px;
@@ -186,5 +186,5 @@ textarea {
 }
 /* 추가: 내용과 버튼 사이의 여백 증가 */
 .content > *:not(:last-child) {
-    margin-bottom: 30px;
+    margin-bottom: 60px;
 }
