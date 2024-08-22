@@ -85,7 +85,6 @@ body {
     padding: 20px;
     background-color: #fff;
     border-radius: 10px;
-    text-align: left;
 }
 .footer {
     background-color: #f0f0f0;
@@ -104,8 +103,6 @@ body {
 h1 {
     border-bottom: 1px solid #ddd;
     padding-bottom: 10px;
-    text-align: center;
-    margin-bottom: 30px;
 }
 .form-group {
     margin-bottom: 15px;
@@ -216,16 +213,9 @@ textarea {
     background-color: #27ae60;
 }
 
-#studyList {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    text-align: left;
-}
-
 #studyList li {
     cursor: pointer;
-    padding: 15px 20px;
+    padding: 10px;
     border-bottom: 1px solid #e0e0e0;
     transition: background-color 0.3s;
 }
@@ -235,9 +225,8 @@ textarea {
 }
 
 #studyList h3 {
-    margin: 0 0 5px 0;
+    margin: 0;
     color: #333;
-    font-size: 18px;
 }
 
 .date-display {
