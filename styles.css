@@ -9,6 +9,8 @@ body {
     margin: 0;
     padding: 0;
     font-size: 16px;
+    line-height: 1.6;
+    color: #333;
 }
 .header {
     background-color: #f0f0f0;
@@ -77,7 +79,8 @@ body {
     padding: 16px;
 }
 .content {
-    margin: 20px;
+    max-width: 800px;
+    margin: 20px auto;
     padding: 20px;
     background-color: #fff;
     border-radius: 10px;
@@ -86,7 +89,6 @@ body {
     background-color: #f0f0f0;
     color: #333;
     text-align: center;
-    imagine-align: center;
     padding: 10px;
     position: fixed;
     bottom: 0;
@@ -98,23 +100,55 @@ body {
 }
 
 /* 새로 추가된 스타일 */
-#studyList li, #postList li, #noticeList li, #fileList li {
-    cursor: pointer;
-    padding: 10px;
-    border-bottom: 1px solid #e0e0e0;
-    transition: background-color 0.3s;
+h1 {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
 }
-
-#studyList li:hover, #postList li:hover, #noticeList li:hover, #fileList li:hover {
-    background-color: #f5f5f5;
+.info-box {
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 20px;
 }
-
-#studyList h3, #postList h3, #noticeList h3, #fileList h3 {
+.info-box p {
+    margin: 0 0 10px 0;
+}
+.info-box ul {
     margin: 0;
-    color: #333;
+    padding-left: 20px;
 }
-
-.date-display {
-    font-size: 0.8em;
-    color: #666;
+.form-group {
+    margin-bottom: 15px;
+}
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+input[type="text"], input[type="password"], textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+textarea {
+    height: 200px;
+}
+.submit-btn {
+    background-color: #5D7B6F;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+.submit-btn:hover {
+    background-color: #4A6359;
+}
+.code-link {
+    color: #0066cc;
+    text-decoration: none;
+}
+.code-link:hover {
+    text-decoration: underline;
 }
