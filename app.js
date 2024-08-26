@@ -1,3 +1,6 @@
+import { database } from './firebaseConfig.js';
+import { ref, push, set, get, query, orderByChild } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
+
 document.addEventListener('DOMContentLoaded', function() {
     const scrollUpButton = document.getElementById('scrollUp');
     const scrollDownButton = document.getElementById('scrollDown');
@@ -48,31 +51,46 @@ function loadPage(page) {
 function loadHome() {
     const mainContent = document.getElementById('main-content');
     mainContent.innerHTML = '<h1>최근 블로그 포스트</h1>';
-    const posts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
-    displayBlogPosts(posts, mainContent);
+    loadBlogPosts(mainContent);
 }
 
 function loadBlog() {
     const mainContent = document.getElementById('main-content');
     mainContent.innerHTML = '<h1>BLOG</h1>';
-    const posts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
-    displayBlogPosts(posts, mainContent);
+    loadBlogPosts(mainContent);
+}
+
+async function loadBlogPosts(container) {
+    const postsRef = ref(database, 'posts');
+    const postsQuery = query(postsRef, orderByChild('date'));
+    
+    try {
+        const snapshot = await get(postsQuery);
+        if (snapshot.exists()) {
+            const posts = [];
+            snapshot.forEach((childSnapshot) => {
+                posts.unshift(childSnapshot.val());
+            });
+            displayBlogPosts(posts, container);
+        } else {
+            container.innerHTML += '<p>아직 작성된 블로그 포스트가 없습니다.</p>';
+        }
+    } catch (error) {
+        console.error("블로그 포스트를 불러오는 중 오류 발생:", error);
+        container.innerHTML += '<p>블로그 포스트를 불러오는 중 오류가 발생했습니다.</p>';
+    }
 }
 
 function displayBlogPosts(posts, container) {
-    if (posts.length === 0) {
-        container.innerHTML += '<p>아직 작성된 블로그 포스트가 없습니다.</p>';
-    } else {
-        posts.forEach(post => {
-            container.innerHTML += `
-                <div class="blog-post">
-                    <h2>${post.title}</h2>
-                    <p class="date">${post.date}</p>
-                    <p>${post.content}</p>
-                </div>
-            `;
-        });
-    }
+    posts.forEach(post => {
+        container.innerHTML += `
+            <div class="blog-post">
+                <h2>${post.title}</h2>
+                <p class="date">${new Date(post.date).toLocaleDateString()}</p>
+                <p>${post.content}</p>
+            </div>
+        `;
+    });
 }
 
 function openSettings() {
@@ -88,17 +106,21 @@ function openSettings() {
     document.getElementById('blog-form').addEventListener('submit', submitBlogPost);
 }
 
-function submitBlogPost(e) {
+async function submitBlogPost(e) {
     e.preventDefault();
     const title = document.getElementById('blog-title').value;
     const content = document.getElementById('blog-content').value;
-    const date = new Date().toLocaleDateString();
+    const date = new Date().toISOString();
 
     const post = { title, content, date };
-    const posts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
-    posts.unshift(post);
-    localStorage.setItem('blogPosts', JSON.stringify(posts));
-
-    alert('블로그 글이 등록되었습니다.');
-    loadHome();
+    const postsRef = ref(database, 'posts');
+    
+    try {
+        await push(postsRef, post);
+        alert('블로그 글이 등록되었습니다.');
+        loadHome();
+    } catch (error) {
+        console.error("블로그 포스트 등록 중 오류 발생:", error);
+        alert('블로그 글 등록에 실패했습니다. 다시 시도해주세요.');
+    }
 }
