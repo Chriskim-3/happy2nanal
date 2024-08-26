@@ -1,182 +1,254 @@
-/* CSS 스타일 */
+/* 웹 폰트 정의 */
 @font-face {
     font-family: 'GmarketSansMedium';
     src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 }
+
+/* 기본 body 스타일 설정 */
 body {
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: 'Noto Sans KR', sans-serif; /* 기본 글꼴 설정 */
     margin: 0;
     padding: 0;
     font-size: 16px;
+    line-height: 1.6;
+    color: #333;
 }
+
+/* 헤더 스타일 */
 .header {
     background-color: #f0f0f0;
     padding: 20px;
     text-align: center;
-    font-family: 'GmarketSansMedium';
+    font-family: 'GmarketSansMedium'; /* 헤더에 특정 폰트 적용 */
 }
+
+/* 지원 메시지 스타일 */
 .support-message {
     color: #006994;
     margin-bottom: 5px;
     font-size: 1.2em;
 }
+
+/* 메인 타이틀 스타일 */
 .main-title {
     color: #333;
     font-size: 1.8em;
     font-weight: bold;
+    cursor: pointer; /* 마우스 오버시 커서 변경 */
 }
-.menu-bar {
-    background-color: #333;
-    overflow: visible;
-    padding: 0 20px;
-    position: relative;
+
+/* 사이드바 스타일 */
+.sidebar {
+    height: 100%;
+    width: 0; /* 초기에는 닫혀있음 */
+    position: fixed;
     z-index: 1000;
-}
-.menu-bar a, .dropdown .dropbtn {
-    float: left;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    font-size: 14px;
-    transition: 0.3s;
-}
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-.dropdown .dropbtn {
-    border: none;
-    outline: none;
-    background-color: inherit;
-    font-family: inherit;
-    margin: 0;
-}
-.menu-bar a:hover, .dropdown:hover .dropbtn {
-    background-color: #555;
-}
-.dropdown-content {
-    display: none;
-    position: absolute;
-    border-radius: 8px;
-    background-color: rgba(249, 249, 249, 0.9);
-    top: 100%;
+    top: 0;
     left: 0;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 10001;
+    background-color: #f8f8f8;
+    overflow-x: hidden;
+    transition: 0.5s; /* 부드러운 열림/닫힘 효과 */
+    padding-top: 60px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
 }
-.dropdown-content a {
-    float: none;
-    border-radius: 8px;
-    color: black;
-    padding: 12px 16px;
+
+/* 사이드바 링크 스타일 */
+.sidebar a {
+    padding: 8px 8px 8px 32px;
     text-decoration: none;
+    font-size: 18px;
+    color: #818181;
     display: block;
-    text-align: left;
+    transition: 0.3s;
+    cursor: pointer; /* 마우스 오버시 커서 변경 */
 }
-.dropdown-content a:hover {
-    background-color: #ddd;
+
+/* 사이드바 링크 호버 효과 */
+.sidebar a:hover {
+    color: #333;
 }
-.dropdown:hover .dropdown-content {
-    display: block;
+
+/* 사이드바 닫기 버튼 스타일 */
+.sidebar .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
 }
+
+/* 사이드바 열기 버튼 스타일 */
+.openbtn {
+    font-size: 20px;
+    cursor: pointer;
+    background-color: transparent;
+    color: #333;
+    padding: 10px 15px;
+    border: none;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+}
+
+/* 사이드바 열기 버튼 호버 효과 */
+.openbtn:hover {
+    color: #000;
+}
+
+/* 메인 콘텐츠 영역 스타일 */
+#main {
+    transition: margin-left .5s; /* 사이드바와 연동된 부드러운 이동 */
+    padding: 16px;
+}
+
+/* 콘텐츠 영역 스타일 */
 .content {
-    margin: 20px;
-    padding-bottom: 60px;
-    position: relative;
-    z-index: 1;
-}
-.main {
+    max-width: 800px;
+    margin: 20px auto;
     padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
 }
+
+/* 푸터 스타일 */
 .footer {
-    background-color: #333;
-    color: white;
+    background-color: #f0f0f0;
+    color: #333;
     text-align: center;
-    padding: 6px;
+    padding: 10px;
     position: fixed;
     bottom: 0;
     width: 100%;
-    font-size: 0.8em;
-    font-family: 'Google Sans', sans-serif;
-    z-index: 1000; /* 다른 요소보다 높게 설정 */
 }
-.search-bar {
-    display: inline-block;
+
+/* 화면 높이가 낮을 때 사이드바 조정 */
+@media screen and (max-height: 450px) {
+    .sidebar {padding-top: 15px;}
+    .sidebar a {font-size: 18px;}
 }
-#editor, #editEditor, #studyContent, #noticeContent, #fileContent {
-    width: 100%;
-    height: 300px;
-    margin-bottom: 10px;
-    padding: 10px;
-    box-sizing: border-box;
-}
-#postList, #noticeList, #studyList, #fileList {
-    list-style-type: none;
-    padding: 0;
-}
-#postList li, #noticeList li, #studyList li, #fileList li {
-    cursor: pointer;
-    padding: 10px;
+
+/* 제목 스타일 */
+h1 {
     border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
 }
-#postList li:hover, #noticeList li:hover, #studyList li:hover, #fileList li:hover {
-    background-color: #f5f5f5;
+
+/* 폼 그룹 스타일 */
+.form-group {
+    margin-bottom: 15px;
 }
-.button-container {
-    text-align: center;
-    margin-top: 20px;
-}
-.button-container button {
-    margin: 0 5px;
-    padding: 10px 20px;
-}
-h2 {
-    font-size: 1.1em;
-}
-h3 {
-    font-size: 1.2em;
-    margin-top: 10px;
-}
-#studyTitle, #noticeTitle, #postTitle, #fileTitle {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    box-sizing: border-box;
-}
-.date-display {
-    color: #888;
-    font-size: 0.9em;
-    text-align: right;
-    margin-bottom: 10px;
-}
-.study-title {
-    text-align: center;
-    background-color: #f0f0f0;
-    padding: 10px;
-    margin-bottom: 20px;
-}
-.search-container {
-    text-align: center;
-    margin: 20px 0;
-}
-.intro-image {
-    max-width: 100%;
-    height: auto;
+
+/* 라벨 스타일 */
+label {
     display: block;
-    margin: 20px auto;
+    margin-bottom: 5px;
 }
-.file-download {
-    text-align: center;
+
+/* 입력 필드 스타일 */
+input[type="text"], input[type="password"], textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* 텍스트 영역 높이 설정 */
+textarea {
+    height: 200px;
+}
+
+/* 제출 버튼 스타일 */
+.submit-btn {
+    background-color: #5D7B6F;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 60px; /* 버튼 위의 여백 증가 */
+}
+
+/* 제출 버튼 호버 효과 */
+.submit-btn:hover {
+    background-color: #4A6359;
+}
+
+/* 코드 링크 스타일 */
+.code-link {
+    color: #0066cc;
+    text-decoration: none;
+}
+
+/* 코드 링크 호버 효과 */
+.code-link:hover {
+    text-decoration: underline;
+}
+
+/* 검색 및 글쓰기 버튼 컨테이너 */
+.search-write-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
 }
-.file-download a {
-    padding: 10px 20px;
+
+/* 글쓰기 버튼 스타일 */
+.write-btn {
     background-color: #4CAF50;
     color: white;
-    text-decoration: none;
-    border-radius: 5px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* 글쓰기 버튼 호버 효과 */
+.write-btn:hover {
+    background-color: #45a049;
+}
+
+/* 검색 컨테이너 스타일 */
+.search-container {
+    display: flex;
+    align-items: center;
+}
+
+/* 검색 입력 필드 스타일 */
+#searchInput {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px 0 0 4px;
+    width: 200px;
+}
+
+/* 검색 버튼 스타일 */
+.search-container button {
+    padding: 10px 15px;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-left: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    width: 60px;
+}
+
+/* 검색 버튼 호버 효과 */
+.search-container button:hover {
+    background-color: #e8e8e8;
+}
+
+/* 리스트 항목에 커서 스타일 적용 */
+.content ul li, .content ol li {
+    cursor: pointer;
+}
+
+/* 내용과 버튼 사이의 여백 증가 */
+.content > *:not(:last-child) {
+    margin-bottom: 30px;
 }
