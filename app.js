@@ -1,23 +1,18 @@
+// Firebase 모듈 import
 import { database } from './firebaseConfig.js';
-import { ref, push, set, get, query, orderByChild } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
+import { ref, push, get, query, orderByChild } from 'firebase/database';
 
 document.addEventListener('DOMContentLoaded', function() {
     const scrollUpButton = document.getElementById('scrollUp');
     const scrollDownButton = document.getElementById('scrollDown');
     const mainContent = document.getElementById('main-content');
 
-    scrollUpButton.addEventListener('click', function() {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
+    scrollUpButton.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    scrollDownButton.addEventListener('click', function() {
-        window.scrollTo({
-            top: document.body.scrollHeight,
-            behavior: 'smooth'
-        });
+    scrollDownButton.addEventListener('click', () => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     });
 
     // 초기 홈 페이지 로드
@@ -33,31 +28,37 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function loadPage(page) {
+async function loadPage(page) {
     const mainContent = document.getElementById('main-content');
-    switch(page) {
-        case 'home':
-            loadHome();
-            break;
-        case 'blog':
-            loadBlog();
-            break;
-        case 'qa':
-            mainContent.innerHTML = '<h1>Q&A</h1><p>Q&A 내용이 여기에 표시됩니다.</p>';
-            break;
+    mainContent.innerHTML = '<p>Loading...</p>'; // 로딩 표시
+    try {
+        switch(page) {
+            case 'home':
+                await loadHome();
+                break;
+            case 'blog':
+                await loadBlog();
+                break;
+            case 'qa':
+                mainContent.innerHTML = '<h1>Q&A</h1><p>Q&A 내용이 여기에 표시됩니다.</p>';
+                break;
+        }
+    } catch (error) {
+        console.error("페이지 로딩 중 오류 발생:", error);
+        mainContent.innerHTML = '<p>페이지를 불러오는 중 오류가 발생했습니다.</p>';
     }
 }
 
-function loadHome() {
+async function loadHome() {
     const mainContent = document.getElementById('main-content');
     mainContent.innerHTML = '<h1>최근 블로그 포스트</h1>';
-    loadBlogPosts(mainContent);
+    await loadBlogPosts(mainContent);
 }
 
-function loadBlog() {
+async function loadBlog() {
     const mainContent = document.getElementById('main-content');
     mainContent.innerHTML = '<h1>BLOG</h1>';
-    loadBlogPosts(mainContent);
+    await loadBlogPosts(mainContent);
 }
 
 async function loadBlogPosts(container) {
@@ -78,6 +79,7 @@ async function loadBlogPosts(container) {
     } catch (error) {
         console.error("블로그 포스트를 불러오는 중 오류 발생:", error);
         container.innerHTML += '<p>블로그 포스트를 불러오는 중 오류가 발생했습니다.</p>';
+        throw error; // 에러를 상위로 전파
     }
 }
 
@@ -118,7 +120,7 @@ async function submitBlogPost(e) {
     try {
         await push(postsRef, post);
         alert('블로그 글이 등록되었습니다.');
-        loadHome();
+        await loadHome();
     } catch (error) {
         console.error("블로그 포스트 등록 중 오류 발생:", error);
         alert('블로그 글 등록에 실패했습니다. 다시 시도해주세요.');
