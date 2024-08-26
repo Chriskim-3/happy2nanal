@@ -8,58 +8,59 @@
     <link href="styles.css" rel="stylesheet">
 </head>
 <body>
-    <div class="header">
-        <div class="support-message">당신의 칼퇴를 응원합니다</div>
-        <div class="main-title">Happy2Nanal</div>
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+        <a href="#" onclick="showContent('홈페이지 소개')">홈페이지 소개</a>
+        <a href="#" onclick="showStudyList('JavaScript')">JavaScript 공부</a>
+        <a href="#" onclick="showStudyList('Python')">Python 공부</a>
+        <a href="#" onclick="showQnAList()">Q&A</a>
+        <a href="#" onclick="showNoticeList()">공지사항</a>
+        <a href="#" onclick="showFileUpload()">자료실</a>
     </div>
-    <div class="menu-bar">
-        <div class="dropdown">
-            <button class="dropbtn">홈페이지 소개</button>
-            <div class="dropdown-content">
-                <a href="#" onclick="showContent('이 홈페이지는 글도 쓰고, 이것저것 올리고, 맘대로 지울려고 만드는 사이트 입니다.')">소개</a>
-            </div>
+    <div id="main">
+        <button class="openbtn" onclick="openNav()">☰</button>
+        
+        <div class="header">
+            <div class="support-message">당신의 칼퇴를 응원합니다</div>
+            <div class="main-title" onclick="showHomePage()">Happy2Nanal</div>
         </div>
-        <div class="dropdown">
-            <button class="dropbtn">코딩공부</button>
-            <div class="dropdown-content">
-                <a href="#" onclick="showStudyList('JavaScript')">JavaScript</a>
-                <a href="#" onclick="showStudyList('Python')">Python</a>
+        
+        <div id="mainContent" class="content">
+            <h1>질문 및 답변</h1>
+            
+            <p>총 <span id="questionCount">222</span>건의 질문</p>
+
+            <div class="search-write-container">
+                <button onclick="showWriteForm()" class="write-btn">글쓰기</button>
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="검색...">
+                    <button onclick="performSearch()">검색</button>
+                </div>
             </div>
+
+            <form id="questionForm">
+                <div class="form-group">
+                    <label for="nickname">닉네임</label>
+                    <input type="text" id="nickname" name="nickname">
+                </div>
+                <div class="form-group">
+                    <label for="password">비밀번호</label>
+                    <input type="password" id="password" name="password">
+                </div>
+                <div class="form-group">
+                    <a href="#" class="code-link">질문 내 코드 입력 방법 ></a>
+                </div>
+                <div class="form-group">
+                    <label for="content">질문을 입력해주세요.</label>
+                    <textarea id="content" name="content"></textarea>
+                </div>
+                <button type="submit" class="submit-btn">등록</button>
+            </form>
         </div>
-        <div class="dropdown">
-            <button class="dropbtn">Q&A</button>
-            <div class="dropdown-content">
-                <a href="#" onclick="showQnAList()">Q&A 목록</a>
-                <a href="#" onclick="showQnAForm()">Q&A 작성</a>
-            </div>
-        </div>
-        <div class="dropdown">
-            <button class="dropbtn">공지사항</button>
-            <div class="dropdown-content">
-                <a href="#" onclick="showNoticeList()">공지사항 목록</a>
-                <a href="#" onclick="showNoticePasswordForm()">공지사항 작성</a>
-            </div>
-        </div>
-        <div class="dropdown">
-            <button class="dropbtn">자료실</button>
-            <div class="dropdown-content">
-                <a href="#" onclick="showFileUpload()">자료실</a>
-            </div>
-        </div>
-    </div>
-    <div id="mainContent" class="content">
-        <div class="main"></div>
     </div>
     <div class="footer">
-        Footer Content
+        ©happy2nanal. All Rights Reserved.
     </div>
-
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-    <script src="firebaseConfig.js"></script>
-    <script src="dataManager.js"></script>
-    <script src="templates.js"></script>
-    <script src="main.js"></script>
+    <script src="script.js" type="module"></script>
 </body>
 </html>
