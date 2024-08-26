@@ -9,55 +9,26 @@
 </head>
 <body>
     <div id="sidebar" class="sidebar">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
-        <a href="#" onclick="showContent('홈페이지 소개')">홈페이지 소개</a>
-        <a href="#" onclick="showStudyList('JavaScript')">JavaScript 공부</a>
-        <a href="#" onclick="showStudyList('Python')">Python 공부</a>
-        <a href="#" onclick="showQnAList()">Q&A</a>
-        <a href="#" onclick="showNoticeList()">공지사항</a>
-        <a href="#" onclick="showFileUpload()">자료실</a>
+        <a href="javascript:void(0)" class="closebtn" data-action="closeNav">×</a>
+        <a href="#" data-action="showContent" data-content="홈페이지 소개">홈페이지 소개</a>
+        <a href="#" data-action="showStudyList" data-topic="JavaScript">JavaScript 공부</a>
+        <a href="#" data-action="showStudyList" data-topic="Python">Python 공부</a>
+        <a href="#" data-action="showQnAList">Q&A</a>
+        <a href="#" data-action="showNoticeList">공지사항</a>
+        <a href="#" data-action="showFileUpload">자료실</a>
     </div>
     <div id="main">
-        <button class="openbtn" onclick="openNav()">☰</button>
+        <button class="openbtn" onclick="openNav()" aria-label="사이드바 열기">☰</button>
         
         <div class="header">
             <div class="support-message">당신의 칼퇴를 응원합니다</div>
             <div class="main-title" onclick="showHomePage()">Happy2Nanal</div>
         </div>
         
-<!--         <div id="mainContent" class="content">
-            <h1>질문 및 답변</h1>
-            
-            <p>총 <span id="questionCount">222</span>건의 질문</p>
-
-            <div class="search-write-container">
-                <button onclick="showWriteForm()" class="write-btn">글쓰기</button>
-                <div class="search-container">
-                    <input type="text" id="searchInput" placeholder="검색...">
-                    <button onclick="performSearch()">검색</button>
-                </div>
-            </div>
-
-            <form id="questionForm">
-                <div class="form-group">
-                    <label for="nickname">닉네임</label>
-                    <input type="text" id="nickname" name="nickname">
-                </div>
-                <div class="form-group">
-                    <label for="password">비밀번호</label>
-                    <input type="password" id="password" name="password">
-                </div>
-                <div class="form-group">
-                    <a href="#" class="code-link">질문 내 코드 입력 방법 ></a>
-                </div>
-                <div class="form-group">
-                    <label for="content">질문을 입력해주세요.</label>
-                    <textarea id="content" name="content"></textarea>
-                </div>
-                <button type="submit" class="submit-btn">등록</button>
-            </form>
+        <div id="content">
+            <!-- 여기에 동적으로 콘텐츠가 로드됩니다 -->
         </div>
-    </div> -->
+    </div>
     <div class="footer">
         ©happy2nanal. All Rights Reserved.
     </div>
