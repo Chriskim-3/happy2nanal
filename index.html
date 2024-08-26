@@ -4,34 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Happy2Nanal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="sidebar" class="sidebar">
-        <a href="javascript:void(0)" class="closebtn" data-action="closeNav">×</a>
-        <a href="#" data-action="showContent" data-content="홈페이지 소개">홈페이지 소개</a>
-        <a href="#" data-action="showStudyList" data-topic="JavaScript">JavaScript 공부</a>
-        <a href="#" data-action="showStudyList" data-topic="Python">Python 공부</a>
-        <a href="#" data-action="showQnAList">Q&A</a>
-        <a href="#" data-action="showNoticeList">공지사항</a>
-        <a href="#" data-action="showFileUpload">자료실</a>
+    <header>
+        <nav>
+            <div class="left-section">
+                <div class="logo">Happy2Nanal</div>
+                <p class="subtitle">당신의 칼퇴를 응원합니다.</p>
+            </div>
+            <ul>
+                <li><a href="#home">HOME</a></li>
+                <li><a href="#blog">BLOG</a></li>
+                <li><a href="#qa">Q&A</a></li>
+                <li><a href="#" onclick="openSettings()">설정</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main id="main-content">
+        <!-- 메인 콘텐츠가 여기에 동적으로 로드됩니다 -->
+    </main>
+    <div class="scroll-buttons">
+        <button id="scrollUp">&#9650;</button>
+        <button id="scrollDown">&#9660;</button>
     </div>
-    <div id="main">
-        <button class="openbtn" onclick="openNav()" aria-label="사이드바 열기">☰</button>
-        
-        <div class="header">
-            <div class="support-message">당신의 칼퇴를 응원합니다</div>
-            <div class="main-title" onclick="showHomePage()">Happy2Nanal</div>
-        </div>
-        
-        <div id="content">
-            <!-- 여기에 동적으로 콘텐츠가 로드됩니다 -->
-        </div>
-    </div>
-    <div class="footer">
-        ©happy2nanal. All Rights Reserved.
-    </div>
-    <script src="script.js" type="module"></script>
+    <script src="app.js"></script>
 </body>
 </html>
