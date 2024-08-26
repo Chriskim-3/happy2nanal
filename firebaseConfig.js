@@ -17,7 +17,4 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const database = getDatabase(app);
 
-// enableIndexedDbPersistence 부분을 제거하거나 주석 처리합니다.
-// 이 기능이 필요하다면 별도로 구현해야 합니다.
-
 export { app, analytics, database };
