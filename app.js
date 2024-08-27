@@ -5,7 +5,6 @@ import { ref, push, get, query, orderByChild } from 'firebase/database';
 document.addEventListener('DOMContentLoaded', function() {
     const scrollUpButton = document.getElementById('scrollUp');
     const scrollDownButton = document.getElementById('scrollDown');
-    const mainContent = document.getElementById('main-content');
 
     scrollUpButton.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -19,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadHome();
 
     // 네비게이션 이벤트 리스너 추가
-    document.querySelector('nav').addEventListener('click', function(e) {
+    document.querySelector('.nav-links').addEventListener('click', function(e) {
         if (e.target.tagName === 'A') {
             e.preventDefault();
             const page = e.target.getAttribute('href').slice(1);
@@ -40,7 +39,7 @@ async function loadPage(page) {
                 await loadBlog();
                 break;
             case 'qa':
-                mainContent.innerHTML = '<h1>Q&A</h1><p>Q&A 내용이 여기에 표시됩니다.</p>';
+                loadQA();
                 break;
         }
     } catch (error) {
@@ -59,6 +58,11 @@ async function loadBlog() {
     const mainContent = document.getElementById('main-content');
     mainContent.innerHTML = '<h1>BLOG</h1>';
     await loadBlogPosts(mainContent);
+}
+
+function loadQA() {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = '<h1>Q&A</h1><p>Q&A 내용이 여기에 표시됩니다.</p>';
 }
 
 async function loadBlogPosts(container) {
@@ -95,6 +99,25 @@ function displayBlogPosts(posts, container) {
     });
 }
 
+function openWriteForm() {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <div class="password-form">
+            <input type="password" id="write-password" placeholder="비밀번호를 입력하세요">
+            <button onclick="checkPassword()">확인</button>
+        </div>
+    `;
+}
+
+function checkPassword() {
+    const password = document.getElementById('write-password').value;
+    if (password === "your_secret_password") {  // 실제 비밀번호로 변경하세요
+        openSettings();
+    } else {
+        alert("비밀번호가 올바르지 않습니다.");
+    }
+}
+
 function openSettings() {
     const mainContent = document.getElementById('main-content');
     mainContent.innerHTML = `
@@ -126,3 +149,7 @@ async function submitBlogPost(e) {
         alert('블로그 글 등록에 실패했습니다. 다시 시도해주세요.');
     }
 }
+
+// 전역 스코프에서 함수들을 사용할 수 있도록 window 객체에 할당
+window.openWriteForm = openWriteForm;
+window.checkPassword = checkPassword;

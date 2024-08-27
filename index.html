@@ -8,19 +8,23 @@
 </head>
 <body>
     <header>
-        <div class="left-section">
-            <div class="logo">Happy2Nanal</div>
-            <p>당신의 칼퇴를 응원합니다.</p>
-        </div>
         <nav>
-            <a href="#home">HOME</a>
-            <a href="#blog">BLOG</a>
-            <a href="#qa">Q&A</a>
-            <a href="#" onclick="openSettings()">설정</a>
+            <div class="top-right">
+                <button id="write-button" onclick="openWriteForm()">작성</button>
+            </div>
+            <div class="logo-section">
+                <h1 class="logo">Happy2Nanal</h1>
+                <p class="subtitle">당신의 칼퇴를 응원합니다.</p>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home" onclick="loadHome()">HOME</a></li>
+                <li><a href="#blog" onclick="loadBlog()">BLOG</a></li>
+                <li><a href="#qa" onclick="loadQA()">Q&A</a></li>
+            </ul>
         </nav>
     </header>
 
-    <main id="main-content" role="main">
+    <main id="main-content">
         <!-- 컨텐츠가 여기에 동적으로 로드됩니다 -->
     </main>
 
@@ -29,7 +33,6 @@
         <button id="scrollDown">▼</button>
     </div>
 
-    <script type="module" src="firebaseConfig.js"></script>
     <script type="module" src="app.js"></script>
 </body>
 </html>
