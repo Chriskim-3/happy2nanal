@@ -43,7 +43,13 @@ function loadHome() {
 
 function loadBlog() {
     const mainContent = document.getElementById('main-content');
-    mainContent.innerHTML = '<h1>BLOG</h1><button onclick="openBlogPostForm()">작성</button>';
+    mainContent.innerHTML = `
+        <div class="blog-header">
+            <h1>BLOG</h1>
+            <button onclick="checkPasswordForBlogPost()">작성</button>
+        </div>
+        <hr>
+    `;
     loadBlogPosts(mainContent);
 }
 
@@ -72,6 +78,15 @@ function displayBlogPosts(posts, container) {
                 </div>
             `;
         });
+    }
+}
+
+function checkPasswordForBlogPost() {
+    const password = prompt("비밀번호를 입력하세요:");
+    if (password === "1234") { // 실제 구현시 보안을 강화해야 합니다
+        openBlogPostForm();
+    } else {
+        alert("비밀번호가 올바르지 않습니다.");
     }
 }
 
@@ -282,9 +297,15 @@ function deleteQAPost(postId) {
     }
 }
 
+function goBack() {
+    window.history.back();
+}
+
 // 전역 스코프에 함수들을 노출
+window.checkPasswordForBlogPost = checkPasswordForBlogPost;
 window.openBlogPostForm = openBlogPostForm;
 window.editBlogPost = editBlogPost;
 window.openQAForm = openQAForm;
 window.editQAPost = editQAPost;
 window.deleteQAPost = deleteQAPost;
+window.goBack = goBack;
