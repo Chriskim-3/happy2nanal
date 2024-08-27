@@ -5,52 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Happy2Nanal</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
         <nav>
-            <div class="top-right">
-                <button id="write-button">작성</button>
-            </div>
-            <div class="logo-section">
-                <h1 class="logo">Happy2Nanal</h1>
+            <div class="left-section">
+                <div class="logo">Happy2Nanal</div>
                 <p class="subtitle">당신의 칼퇴를 응원합니다.</p>
             </div>
-            <ul class="nav-links">
+            <ul>
                 <li><a href="#home">HOME</a></li>
                 <li><a href="#blog">BLOG</a></li>
                 <li><a href="#qa">Q&A</a></li>
+                <li><a href="#" onclick="openSettings()">설정</a></li>
             </ul>
         </nav>
     </header>
-
     <main id="main-content">
-        <!-- 컨텐츠가 여기에 동적으로 로드됩니다 -->
+        <!-- 메인 콘텐츠가 여기에 동적으로 로드됩니다 -->
     </main>
-
     <div class="scroll-buttons">
-        <button id="scrollUp">▲</button>
-        <button id="scrollDown">▼</button>
+        <button id="scrollUp">&#9650;</button>
+        <button id="scrollDown">&#9660;</button>
     </div>
-
-    <script type="module">
-        import app from './app.js';
-        
-        // app 모듈이 로드된 후에 이벤트 리스너를 설정합니다
-        document.getElementById('write-button').addEventListener('click', () => {
-            app.openWriteForm();
-        });
-
-        document.querySelector('.nav-links').addEventListener('click', (e) => {
-            if (e.target.tagName === 'A') {
-                e.preventDefault();
-                const page = e.target.getAttribute('href').slice(1);
-                app.loadPage(page);
-            }
-        });
-
-        // 초기 홈 페이지 로드
-        app.loadHome();
-    </script>
+    <script type="module" src="app.js"></script>
+    <!-- <script src="app.js"></script> -->
 </body>
 </html>

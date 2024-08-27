@@ -13,57 +13,42 @@ header {
 
 nav {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
-    position: relative;
 }
 
-.top-right {
-    position: absolute;
-    top: 0;
-    right: 20px;
-}
-
-#write-button {
-    padding: 5px 10px;
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.logo-section {
-    text-align: center;
-    margin-bottom: 10px;
+.left-section {
+    display: flex;
+    align-items: baseline;
 }
 
 .logo {
-    font-size: 36px;
+    font-size: 24px;
     font-weight: bold;
     color: #333;
-    margin: 0;
+    margin-right: 20px;
 }
 
 .subtitle {
     color: #666;
-    margin: 5px 0 0;
+    margin: 0;
 }
 
-.nav-links {
+nav ul {
     display: flex;
     list-style-type: none;
     padding: 0;
-    margin: 20px 0 0;
+    margin: 0;
 }
 
-.nav-links li {
-    margin: 0 30px;
+nav ul li {
+    margin-left: 30px;
 }
 
-.nav-links li a {
+nav ul li a {
     text-decoration: none;
     color: #333;
     font-weight: 500;
@@ -135,24 +120,4 @@ form button {
 
 form button:hover {
     background-color: #555;
-}
-
-.password-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 20px;
-}
-
-.password-form input {
-    margin-bottom: 10px;
-    padding: 5px;
-}
-
-.password-form button {
-    padding: 5px 10px;
-    background-color: #333;
-    color: white;
-    border: none;
-    cursor: pointer;
 }
