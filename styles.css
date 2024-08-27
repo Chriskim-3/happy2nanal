@@ -41,7 +41,7 @@ nav {
 }
 
 .logo {
-    font-size: 24px;
+    font-size: 36px;
     font-weight: bold;
     color: #333;
     margin: 0;
@@ -56,11 +56,11 @@ nav {
     display: flex;
     list-style-type: none;
     padding: 0;
-    margin: 10px 0 0;
+    margin: 20px 0 0;
 }
 
 .nav-links li {
-    margin: 0 15px;
+    margin: 0 30px;
 }
 
 .nav-links li a {

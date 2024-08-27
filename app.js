@@ -153,3 +153,6 @@ async function submitBlogPost(e) {
 // 전역 스코프에서 함수들을 사용할 수 있도록 window 객체에 할당
 window.openWriteForm = openWriteForm;
 window.checkPassword = checkPassword;
+window.loadHome = loadHome;
+window.loadBlog = loadBlog;
+window.loadQA = loadQA;
