@@ -1,6 +1,6 @@
 // Firebase 모듈 import
-import { database } from './firebaseConfig.js';
-import { ref, push, get, query, orderByChild } from 'firebase/database';
+import { database } from '.\firebaseConfig.js';
+import { ref, push, get, query, orderByChild } from 'firebase\database';
 
 // 모든 함수들을 객체로 감싸서 export
 const app = {
