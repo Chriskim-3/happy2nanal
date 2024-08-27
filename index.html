@@ -10,16 +10,16 @@
     <header>
         <nav>
             <div class="top-right">
-                <button id="write-button" onclick="openWriteForm()">작성</button>
+                <button id="write-button">작성</button>
             </div>
             <div class="logo-section">
                 <h1 class="logo">Happy2Nanal</h1>
                 <p class="subtitle">당신의 칼퇴를 응원합니다.</p>
             </div>
             <ul class="nav-links">
-                <li><a href="#home" onclick="loadHome()">HOME</a></li>
-                <li><a href="#blog" onclick="loadBlog()">BLOG</a></li>
-                <li><a href="#qa" onclick="loadQA()">Q&A</a></li>
+                <li><a href="#home">HOME</a></li>
+                <li><a href="#blog">BLOG</a></li>
+                <li><a href="#qa">Q&A</a></li>
             </ul>
         </nav>
     </header>
@@ -33,6 +33,24 @@
         <button id="scrollDown">▼</button>
     </div>
 
-    <script type="module" src="app.js"></script>
+    <script type="module">
+        import app from './app.js';
+        
+        // app 모듈이 로드된 후에 이벤트 리스너를 설정합니다
+        document.getElementById('write-button').addEventListener('click', () => {
+            app.openWriteForm();
+        });
+
+        document.querySelector('.nav-links').addEventListener('click', (e) => {
+            if (e.target.tagName === 'A') {
+                e.preventDefault();
+                const page = e.target.getAttribute('href').slice(1);
+                app.loadPage(page);
+            }
+        });
+
+        // 초기 홈 페이지 로드
+        app.loadHome();
+    </script>
 </body>
 </html>
