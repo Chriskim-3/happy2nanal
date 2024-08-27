@@ -22,20 +22,21 @@ nav {
 
 .left-section {
     display: flex;
-    align-items: baseline;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .logo {
     font-size: 24px;
     font-weight: bold;
     color: #333;
-    margin-right: 20px;
     text-decoration: none;
 }
 
 .subtitle {
     color: #666;
-    margin: 0;
+    margin: 5px 0 0 0;
+    font-size: 14px;
 }
 
 nav ul {
@@ -46,7 +47,7 @@ nav ul {
 }
 
 nav ul li {
-    margin-left: 30px;
+    margin-left: 20px;
 }
 
 nav ul li a {
@@ -91,11 +92,16 @@ nav ul li a {
 
 .blog-post h2, .qa-post h3 {
     color: #333;
+    font-size: 1.3em;
 }
 
 .blog-post .date, .qa-post p {
     color: #666;
     font-size: 0.9em;
+}
+
+.blog-post p {
+    font-size: 0.95em;
 }
 
 form {
@@ -124,27 +130,29 @@ form button:hover {
     background-color: #555;
 }
 
-.blog-header {
+.blog-header, .qa-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
 }
 
-#backButton {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    padding: 10px;
-    background-color: #f0f0f0;
-    border: none;
-    color: #333;
-    cursor: pointer;
-    font-size: 16px;
+h1 {
+    margin-bottom: 30px;
 }
 
-#backButton:hover {
-    background-color: #e0e0e0;
+@media (max-width: 600px) {
+    nav {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    nav ul {
+        margin-top: 10px;
+    }
+
+    nav ul li {
+        margin-left: 0;
+        margin-right: 20px;
+    }
 }

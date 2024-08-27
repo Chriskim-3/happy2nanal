@@ -18,6 +18,14 @@ document.addEventListener('DOMContentLoaded', function() {
             loadPage(page);
         }
     });
+
+    // 백스페이스 이벤트 리스너 추가
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && !['input', 'textarea'].includes(e.target.tagName.toLowerCase())) {
+            e.preventDefault();
+            window.history.back();
+        }
+    });
 });
 
 function loadPage(page) {
@@ -48,7 +56,6 @@ function loadBlog() {
             <h1>BLOG</h1>
             <button onclick="checkPasswordForBlogPost()">작성</button>
         </div>
-        <hr>
     `;
     loadBlogPosts(mainContent);
 }
@@ -79,6 +86,62 @@ function displayBlogPosts(posts, container) {
             `;
         });
     }
+}
+
+function loadQA() {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <div class="qa-header">
+            <h1>Q&A</h1>
+            <button onclick="manageQA()">관리</button>
+        </div>
+        <div id="qa-list"></div>
+    `;
+    loadQAPosts();
+}
+
+function loadQAPosts() {
+    const qaListElement = document.getElementById('qa-list');
+    const qaRef = ref(database, 'qa');
+    onValue(qaRef, (snapshot) => {
+        qaListElement.innerHTML = '';
+        snapshot.forEach((childSnapshot) => {
+            const qaPost = childSnapshot.val();
+            qaListElement.innerHTML += `
+                <div class="qa-post">
+                    <h3>${qaPost.title}</h3>
+                    <p>작성자: ${qaPost.nickname}</p>
+                    <p>${qaPost.content}</p>
+                    <button onclick="editQAPost('${childSnapshot.key}')">수정/삭제</button>
+                </div>
+            `;
+        });
+    });
+}
+
+function manageQA() {
+    const qaListElement = document.getElementById('qa-list');
+    const qaRef = ref(database, 'qa');
+    onValue(qaRef, (snapshot) => {
+        qaListElement.innerHTML = '';
+        snapshot.forEach((childSnapshot) => {
+            const qaPost = childSnapshot.val();
+            qaListElement.innerHTML += `
+                <div class="qa-post">
+                    <input type="checkbox" id="${childSnapshot.key}">
+                    <h3>${qaPost.title}</h3>
+                    <p>작성자: ${qaPost.nickname}</p>
+                    <p>비밀번호: <span class="password" style="display: none;">${qaPost.password}</span></p>
+                    <button onclick="togglePassword('${childSnapshot.key}')">비밀번호 보기/숨기기</button>
+                </div>
+            `;
+        });
+    });
+}
+
+function togglePassword(postId) {
+    const passwordSpan = document.querySelector(`#${postId} + h3 + p + p .password`);
+    passwordSpan.style.display = passwordSpan.style.display === 'none' ? 'inline' : 'none';
 }
 
 function checkPasswordForBlogPost() {
@@ -161,32 +224,16 @@ function updateBlogPost(e, postId) {
         });
 }
 
-function loadQA() {
-    const mainContent = document.getElementById('main-content');
-    mainContent.innerHTML = `
-        <h1>Q&A</h1>
-        <button onclick="openQAForm()">질문하기</button>
-        <div id="qa-list"></div>
-    `;
-    loadQAPosts();
-}
-
-function loadQAPosts() {
-    const qaListElement = document.getElementById('qa-list');
-    const qaRef = ref(database, 'qa');
-    onValue(qaRef, (snapshot) => {
-        qaListElement.innerHTML = '';
-        snapshot.forEach((childSnapshot) => {
-            const qaPost = childSnapshot.val();
-            qaListElement.innerHTML += `
-                <div class="qa-post">
-                    <h3>${qaPost.title}</h3>
-                    <p>작성자: ${qaPost.nickname}</p>
-                    <p>${qaPost.content}</p>
-                    <button onclick="editQAPost('${childSnapshot.key}')">수정/삭제</button>
-                </div>
-            `;
-        });
+function editQAPost(postId) {
+    const password = prompt("비밀번호를 입력하세요:");
+    const qaRef = ref(database, `qa/${postId}`);
+    get(qaRef).then((snapshot) => {
+        const qa = snapshot.val();
+        if (password === qa.password) {
+            openQAForm(postId);
+        } else {
+            alert("비밀번호가 올바르지 않습니다.");
+        }
     });
 }
 
@@ -245,19 +292,6 @@ function submitQAPost(e) {
         });
 }
 
-function editQAPost(postId) {
-    const password = prompt("비밀번호를 입력하세요:");
-    const qaRef = ref(database, `qa/${postId}`);
-    get(qaRef).then((snapshot) => {
-        const qa = snapshot.val();
-        if (password === qa.password) {
-            openQAForm(postId);
-        } else {
-            alert("비밀번호가 올바르지 않습니다.");
-        }
-    });
-}
-
 function updateQAPost(e, postId) {
     e.preventDefault();
     const title = document.getElementById('qa-title').value;
@@ -297,15 +331,11 @@ function deleteQAPost(postId) {
     }
 }
 
-function goBack() {
-    window.history.back();
-}
-
 // 전역 스코프에 함수들을 노출
 window.checkPasswordForBlogPost = checkPasswordForBlogPost;
 window.openBlogPostForm = openBlogPostForm;
 window.editBlogPost = editBlogPost;
-window.openQAForm = openQAForm;
+window.manageQA = manageQA;
 window.editQAPost = editQAPost;
 window.deleteQAPost = deleteQAPost;
-window.goBack = goBack;
+window.togglePassword = togglePassword;
