@@ -1,29 +1,52 @@
-// Firebase 모듈 import
 import { database } from './firebaseConfig.js';
-import { ref, push, get, query, orderByChild } from 'firebase/database';
+import { ref, push, onValue, remove } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
 
-// 모든 함수들을 객체로 감싸서 export
-const app = {
-    async loadPage(page) {
-        const mainContent = document.getElementById('main-content');
-        mainContent.innerHTML = '<p>Loading...</p>'; // 로딩 표시
-        try {
-            switch(page) {
-                case 'home':
-                    await this.loadHome();
-                    break;
-                case 'blog':
-                    await this.loadBlog();
-                    break;
-                case 'qa':
-                    this.loadQA();
-                    break;
-            }
-        } catch (error) {
-            console.error("페이지 로딩 중 오류 발생:", error);
-            mainContent.innerHTML = '<p>페이지를 불러오는 중 오류가 발생했습니다.</p>';
+document.addEventListener('DOMContentLoaded', function() {
+    const scrollUpButton = document.getElementById('scrollUp');
+    const scrollDownButton = document.getElementById('scrollDown');
+    const mainContent = document.getElementById('main-content');
+
+    scrollUpButton.addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+
+    scrollDownButton.addEventListener('click', function() {
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
+    });
+
+    // 초기 홈 페이지 로드
+    loadHome();
+
+    // 네비게이션 이벤트 리스너 추가
+    document.querySelector('nav').addEventListener('click', function(e) {
+        if (e.target.tagName === 'A') {
+            e.preventDefault();
+            const page = e.target.getAttribute('href').slice(1);
+            loadPage(page);
         }
-    },
+    });
+});
+
+function loadPage(page) {
+    const mainContent = document.getElementById('main-content');
+    switch(page) {
+        case 'home':
+            loadHome();
+            break;
+        case 'blog':
+            loadBlog();
+            break;
+        case 'qa':
+            mainContent.innerHTML = '<h1>Q&A</h1><p>Q&A 내용이 여기에 표시됩니다.</p>';
+            break;
+    }
+}
 
 function loadHome() {
     const mainContent = document.getElementById('main-content');
