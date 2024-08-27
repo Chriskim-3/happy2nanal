@@ -201,4 +201,90 @@ function openQAForm(postId = null) {
         });
         form.onsubmit = (e) => updateQAPost(e, postId);
     } else {
-        form.onsub
+        form.onsubmit = submitQAPost;
+    }
+}
+
+function submitQAPost(e) {
+    e.preventDefault();
+    const title = document.getElementById('qa-title').value;
+    const content = document.getElementById('qa-content').value;
+    const nickname = document.getElementById('qa-nickname').value;
+    const password = document.getElementById('qa-password').value;
+
+    if (!title || !content || !nickname || !password) {
+        alert('모든 필드를 채워주세요.');
+        return;
+    }
+
+    const qa = { title, content, nickname, password };
+    const qaRef = ref(database, 'qa');
+    push(qaRef, qa)
+        .then(() => {
+            alert('Q&A가 등록되었습니다.');
+            loadQA();
+        })
+        .catch((error) => {
+            console.error("Error adding Q&A: ", error);
+            alert('Q&A 등록 중 오류가 발생했습니다.');
+        });
+}
+
+function editQAPost(postId) {
+    const password = prompt("비밀번호를 입력하세요:");
+    const qaRef = ref(database, `qa/${postId}`);
+    get(qaRef).then((snapshot) => {
+        const qa = snapshot.val();
+        if (password === qa.password) {
+            openQAForm(postId);
+        } else {
+            alert("비밀번호가 올바르지 않습니다.");
+        }
+    });
+}
+
+function updateQAPost(e, postId) {
+    e.preventDefault();
+    const title = document.getElementById('qa-title').value;
+    const content = document.getElementById('qa-content').value;
+    const nickname = document.getElementById('qa-nickname').value;
+    const password = document.getElementById('qa-password').value;
+
+    if (!title || !content || !nickname || !password) {
+        alert('모든 필드를 채워주세요.');
+        return;
+    }
+
+    const qaRef = ref(database, `qa/${postId}`);
+    update(qaRef, { title, content, nickname, password })
+        .then(() => {
+            alert('Q&A가 수정되었습니다.');
+            loadQA();
+        })
+        .catch((error) => {
+            console.error("Error updating Q&A: ", error);
+            alert('Q&A 수정 중 오류가 발생했습니다.');
+        });
+}
+
+function deleteQAPost(postId) {
+    if (confirm('정말로 이 Q&A를 삭제하시겠습니까?')) {
+        const qaRef = ref(database, `qa/${postId}`);
+        remove(qaRef)
+            .then(() => {
+                alert('Q&A가 삭제되었습니다.');
+                loadQA();
+            })
+            .catch((error) => {
+                console.error("Error removing Q&A: ", error);
+                alert('Q&A 삭제 중 오류가 발생했습니다.');
+            });
+    }
+}
+
+// 전역 스코프에 함수들을 노출
+window.openBlogPostForm = openBlogPostForm;
+window.editBlogPost = editBlogPost;
+window.openQAForm = openQAForm;
+window.editQAPost = editQAPost;
+window.deleteQAPost = deleteQAPost;
