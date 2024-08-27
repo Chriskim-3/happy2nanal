@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Happy2Nanal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
@@ -18,18 +18,19 @@
                 <li><a href="#home">HOME</a></li>
                 <li><a href="#blog">BLOG</a></li>
                 <li><a href="#qa">Q&A</a></li>
-                <li><a href="#" onclick="openSettings()">설정</a></li>
             </ul>
         </nav>
     </header>
-    <main id="main-content">
-        <!-- 메인 콘텐츠가 여기에 동적으로 로드됩니다 -->
+
+    <main id="main-content" role="main">
+        <!-- 컨텐츠가 여기에 동적으로 로드됩니다 -->
     </main>
+
     <div class="scroll-buttons">
-        <button id="scrollUp">&#9650;</button>
-        <button id="scrollDown">&#9660;</button>
+        <button id="scrollUp">▲</button>
+        <button id="scrollDown">▼</button>
     </div>
+
     <script type="module" src="app.js"></script>
-    <!-- <script src="app.js"></script> -->
 </body>
 </html>
