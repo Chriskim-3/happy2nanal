@@ -235,33 +235,6 @@ function submitBlogPost(e) {
     saveBlogPost(post);
 }
 
-function updateBlogPost(e, postId) {
-    e.preventDefault();
-    const title = document.getElementById('blog-title').value;
-    const content = document.getElementById('blog-editor').innerHTML;
-
-    const post = { title, content };
-    saveUpdatedBlogPost(postId, post);
-}
-
-function displayBlogPosts(posts, container) {
-    if (posts.length === 0) {
-        container.innerHTML += '<p>아직 작성된 블로그 포스트가 없습니다.</p>';
-    } else {
-        posts.forEach(post => {
-            container.innerHTML += `
-                <div class="blog-post">
-                    <h2>${post.title} <span class="date">${post.date}</span></h2>
-                    <div class="blog-content">${post.content}</div>
-                    <div class="actions">
-                        <button onclick="editBlogPost('${post.id}')">수정</button>
-                    </div>
-                </div>
-            `;
-        });
-    }
-}
-
 function saveBlogPost(post) {
     const postsRef = ref(database, 'posts');
     push(postsRef, post)
@@ -273,6 +246,24 @@ function saveBlogPost(post) {
             console.error("Error adding post: ", error);
             alert('글 등록 중 오류가 발생했습니다.');
         });
+}
+
+function editBlogPost(postId) {
+    const password = prompt("비밀번호를 입력하세요:");
+    if (password === "1234") { // 실제 구현시 보안을 강화해야 합니다
+        openBlogPostForm(postId);
+    } else {
+        alert("비밀번호가 올바르지 않습니다.");
+    }
+}
+
+function updateBlogPost(e, postId) {
+    e.preventDefault();
+    const title = document.getElementById('blog-title').value;
+    const content = document.getElementById('blog-editor').innerHTML;
+
+    const post = { title, content };
+    saveUpdatedBlogPost(postId, post);
 }
 
 function saveUpdatedBlogPost(postId, post) {
