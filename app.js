@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const scrollUpButton = document.getElementById('scrollUp');
     const scrollDownButton = document.getElementById('scrollDown');
     const mainContent = document.getElementById('main-content');
+    const footer = document.getElementById('footer');
 
     scrollUpButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
     scrollDownButton.addEventListener('click', () => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }));
@@ -26,6 +27,15 @@ document.addEventListener('DOMContentLoaded', function() {
             window.history.back();
         }
     });
+
+    // Footer visibility
+    window.addEventListener('scroll', function() {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+            footer.style.display = 'block';
+        } else {
+            footer.style.display = 'none';
+        }
+    });
 });
 
 function loadPage(page) {
@@ -45,7 +55,7 @@ function loadPage(page) {
 
 function loadHome() {
     const mainContent = document.getElementById('main-content');
-    mainContent.innerHTML = '<h1>최근 블로그 포스트</h1>';
+    mainContent.innerHTML = '<h1>최근 블로그 포스트</h1><hr>';
     loadBlogPosts(mainContent);
 }
 
@@ -56,6 +66,7 @@ function loadBlog() {
             <h1>BLOG</h1>
             <button onclick="checkPasswordForBlogPost()">작성</button>
         </div>
+        <hr>
     `;
     loadBlogPosts(mainContent);
 }
@@ -80,7 +91,7 @@ function displayBlogPosts(posts, container) {
                 <div class="blog-post">
                     <h2>${post.title}</h2>
                     <p class="date">${post.date}</p>
-                    <p>${post.content}</p>
+                    <div class="blog-content">${post.content}</div>
                     <button onclick="editBlogPost('${post.id}')">수정</button>
                 </div>
             `;
@@ -93,8 +104,9 @@ function loadQA() {
     mainContent.innerHTML = `
         <div class="qa-header">
             <h1>Q&A</h1>
-            <button onclick="manageQA()">관리</button>
+            <button onclick="checkPasswordForQAManagement()">관리</button>
         </div>
+        <hr>
         <div id="qa-list"></div>
     `;
     loadQAPosts();
@@ -119,6 +131,15 @@ function loadQAPosts() {
     });
 }
 
+function checkPasswordForQAManagement() {
+    const password = prompt("관리자 비밀번호를 입력하세요:");
+    if (password === "1234") { // 실제 구현시 보안을 강화해야 합니다
+        manageQA();
+    } else {
+        alert("비밀번호가 올바르지 않습니다.");
+    }
+}
+
 function manageQA() {
     const qaListElement = document.getElementById('qa-list');
     const qaRef = ref(database, 'qa');
@@ -133,6 +154,8 @@ function manageQA() {
                     <p>작성자: ${qaPost.nickname}</p>
                     <p>비밀번호: <span class="password" style="display: none;">${qaPost.password}</span></p>
                     <button onclick="togglePassword('${childSnapshot.key}')">비밀번호 보기/숨기기</button>
+                    <button onclick="editQAPost('${childSnapshot.key}')">수정</button>
+                    <button onclick="deleteQAPost('${childSnapshot.key}')">삭제</button>
                 </div>
             `;
         });
@@ -161,6 +184,7 @@ function openBlogPostForm(postId = null) {
         <form id="blog-form">
             <input type="text" id="blog-title" placeholder="제목" required>
             <textarea id="blog-content" placeholder="내용" required></textarea>
+            <input type="file" id="blog-image" accept="image/*">
             <button type="submit">${postId ? '수정' : '등록'}</button>
         </form>
     `;
@@ -184,8 +208,23 @@ function submitBlogPost(e) {
     const title = document.getElementById('blog-title').value;
     const content = document.getElementById('blog-content').value;
     const date = new Date().toLocaleDateString();
+    const imageFile = document.getElementById('blog-image').files[0];
 
-    const post = { title, content, date };
+    if (imageFile) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const imageData = event.target.result;
+            const post = { title, content, date, image: imageData };
+            saveBlogPost(post);
+        };
+        reader.readAsDataURL(imageFile);
+    } else {
+        const post = { title, content, date };
+        saveBlogPost(post);
+    }
+}
+
+function saveBlogPost(post) {
     const postsRef = ref(database, 'posts');
     push(postsRef, post)
         .then(() => {
@@ -211,9 +250,25 @@ function updateBlogPost(e, postId) {
     e.preventDefault();
     const title = document.getElementById('blog-title').value;
     const content = document.getElementById('blog-content').value;
+    const imageFile = document.getElementById('blog-image').files[0];
 
+    if (imageFile) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const imageData = event.target.result;
+            const post = { title, content, image: imageData };
+            saveUpdatedBlogPost(postId, post);
+        };
+        reader.readAsDataURL(imageFile);
+    } else {
+        const post = { title, content };
+        saveUpdatedBlogPost(postId, post);
+    }
+}
+
+function saveUpdatedBlogPost(postId, post) {
     const postRef = ref(database, `posts/${postId}`);
-    update(postRef, { title, content })
+    update(postRef, post)
         .then(() => {
             alert('블로그 글이 수정되었습니다.');
             loadBlog();
@@ -335,6 +390,7 @@ function deleteQAPost(postId) {
 window.checkPasswordForBlogPost = checkPasswordForBlogPost;
 window.openBlogPostForm = openBlogPostForm;
 window.editBlogPost = editBlogPost;
+window.checkPasswordForQAManagement = checkPasswordForQAManagement;
 window.manageQA = manageQA;
 window.editQAPost = editQAPost;
 window.deleteQAPost = deleteQAPost;
