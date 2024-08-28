@@ -95,13 +95,19 @@ nav ul li a {
     font-size: 1.3em;
 }
 
-.blog-post .date, .qa-post p {
+.blog-post .date, .qa-post .date {
     color: #666;
     font-size: 0.9em;
+    float: right;
 }
 
-.blog-post p {
+.blog-post p, .qa-post p {
     font-size: 0.95em;
+    margin-bottom: 20px;
+}
+
+.blog-post .actions, .qa-post .actions {
+    text-align: right;
 }
 
 form {
@@ -155,9 +161,9 @@ hr {
 
 #footer {
     background-color: #f8f8f8;
-    padding: 20px;
+    padding: 10px;
     text-align: center;
-    font-size: 0.9em;
+    font-size: 0.7em;
     color: #666;
     position: fixed;
     bottom: 0;

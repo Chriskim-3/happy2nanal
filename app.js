@@ -89,10 +89,11 @@ function displayBlogPosts(posts, container) {
         posts.forEach(post => {
             container.innerHTML += `
                 <div class="blog-post">
-                    <h2>${post.title}</h2>
-                    <p class="date">${post.date}</p>
+                    <h2>${post.title} <span class="date">${post.date}</span></h2>
                     <div class="blog-content">${post.content}</div>
-                    <button onclick="editBlogPost('${post.id}')">수정</button>
+                    <div class="actions">
+                        <button onclick="editBlogPost('${post.id}')">수정</button>
+                    </div>
                 </div>
             `;
         });
@@ -104,7 +105,10 @@ function loadQA() {
     mainContent.innerHTML = `
         <div class="qa-header">
             <h1>Q&A</h1>
-            <button onclick="checkPasswordForQAManagement()">관리</button>
+            <div>
+                <button onclick="openQAForm()">작성</button>
+                <button onclick="checkPasswordForQAManagement()">관리</button>
+            </div>
         </div>
         <hr>
         <div id="qa-list"></div>
@@ -121,10 +125,13 @@ function loadQAPosts() {
             const qaPost = childSnapshot.val();
             qaListElement.innerHTML += `
                 <div class="qa-post">
-                    <h3>${qaPost.title}</h3>
+                    <h3>${qaPost.title} <span class="date">${qaPost.date}</span></h3>
                     <p>작성자: ${qaPost.nickname}</p>
                     <p>${qaPost.content}</p>
-                    <button onclick="editQAPost('${childSnapshot.key}')">수정/삭제</button>
+                    <div class="actions">
+                        <button onclick="editQAPost('${childSnapshot.key}')">수정</button>
+                        <button onclick="deleteQAPost('${childSnapshot.key}')">삭제</button>
+                    </div>
                 </div>
             `;
         });
@@ -279,19 +286,6 @@ function saveUpdatedBlogPost(postId, post) {
         });
 }
 
-function editQAPost(postId) {
-    const password = prompt("비밀번호를 입력하세요:");
-    const qaRef = ref(database, `qa/${postId}`);
-    get(qaRef).then((snapshot) => {
-        const qa = snapshot.val();
-        if (password === qa.password) {
-            openQAForm(postId);
-        } else {
-            alert("비밀번호가 올바르지 않습니다.");
-        }
-    });
-}
-
 function openQAForm(postId = null) {
     const mainContent = document.getElementById('main-content');
     const formTitle = postId ? 'Q&A 수정' : '새 Q&A 작성';
@@ -328,13 +322,14 @@ function submitQAPost(e) {
     const content = document.getElementById('qa-content').value;
     const nickname = document.getElementById('qa-nickname').value;
     const password = document.getElementById('qa-password').value;
+    const date = new Date().toLocaleDateString();
 
     if (!title || !content || !nickname || !password) {
         alert('모든 필드를 채워주세요.');
         return;
     }
 
-    const qa = { title, content, nickname, password };
+    const qa = { title, content, nickname, password, date };
     const qaRef = ref(database, 'qa');
     push(qaRef, qa)
         .then(() => {
@@ -345,6 +340,19 @@ function submitQAPost(e) {
             console.error("Error adding Q&A: ", error);
             alert('Q&A 등록 중 오류가 발생했습니다.');
         });
+}
+
+function editQAPost(postId) {
+    const password = prompt("비밀번호를 입력하세요:");
+    const qaRef = ref(database, `qa/${postId}`);
+    get(qaRef).then((snapshot) => {
+        const qa = snapshot.val();
+        if (password === qa.password) {
+            openQAForm(postId);
+        } else {
+            alert("비밀번호가 올바르지 않습니다.");
+        }
+    });
 }
 
 function updateQAPost(e, postId) {
@@ -395,3 +403,4 @@ window.manageQA = manageQA;
 window.editQAPost = editQAPost;
 window.deleteQAPost = deleteQAPost;
 window.togglePassword = togglePassword;
+window.openQAForm = openQAForm;
