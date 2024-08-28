@@ -20,14 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // 백스페이스 이벤트 리스너 추가
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Backspace' && !['input', 'textarea'].includes(e.target.tagName.toLowerCase())) {
-            e.preventDefault();
-            window.history.back();
-        }
-    });
-
     // Footer visibility
     window.addEventListener('scroll', function() {
         if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
@@ -35,6 +27,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             footer.style.display = 'none';
         }
+    });
+
+    // Back navigation
+    window.addEventListener('popstate', function(event) {
+        loadPage(event.state ? event.state.page : 'home');
     });
 });
 
@@ -51,6 +48,7 @@ function loadPage(page) {
             loadQA();
             break;
     }
+    history.pushState({ page: page }, '', `#${page}`);
 }
 
 function loadHome() {
@@ -190,19 +188,36 @@ function openBlogPostForm(postId = null) {
         <h1>${formTitle}</h1>
         <form id="blog-form">
             <input type="text" id="blog-title" placeholder="제목" required>
-            <textarea id="blog-content" placeholder="내용" required></textarea>
-            <input type="file" id="blog-image" accept="image/*">
+            <div id="blog-editor" contenteditable="true"></div>
+            <input type="file" id="blog-image" accept="image/*" multiple>
             <button type="submit">${postId ? '수정' : '등록'}</button>
         </form>
     `;
     const form = document.getElementById('blog-form');
+    const editor = document.getElementById('blog-editor');
+    const imageInput = document.getElementById('blog-image');
+
+    imageInput.addEventListener('change', function(e) {
+        const files = e.target.files;
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = document.createElement('img');
+                img.src = event.target.result;
+                editor.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
     if (postId) {
         // 기존 포스트 데이터 불러오기
         const postRef = ref(database, `posts/${postId}`);
         get(postRef).then((snapshot) => {
             const post = snapshot.val();
             document.getElementById('blog-title').value = post.title;
-            document.getElementById('blog-content').value = post.content;
+            editor.innerHTML = post.content;
         });
         form.onsubmit = (e) => updateBlogPost(e, postId);
     } else {
@@ -213,21 +228,37 @@ function openBlogPostForm(postId = null) {
 function submitBlogPost(e) {
     e.preventDefault();
     const title = document.getElementById('blog-title').value;
-    const content = document.getElementById('blog-content').value;
+    const content = document.getElementById('blog-editor').innerHTML;
     const date = new Date().toLocaleDateString();
-    const imageFile = document.getElementById('blog-image').files[0];
 
-    if (imageFile) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            const imageData = event.target.result;
-            const post = { title, content, date, image: imageData };
-            saveBlogPost(post);
-        };
-        reader.readAsDataURL(imageFile);
+    const post = { title, content, date };
+    saveBlogPost(post);
+}
+
+function updateBlogPost(e, postId) {
+    e.preventDefault();
+    const title = document.getElementById('blog-title').value;
+    const content = document.getElementById('blog-editor').innerHTML;
+
+    const post = { title, content };
+    saveUpdatedBlogPost(postId, post);
+}
+
+function displayBlogPosts(posts, container) {
+    if (posts.length === 0) {
+        container.innerHTML += '<p>아직 작성된 블로그 포스트가 없습니다.</p>';
     } else {
-        const post = { title, content, date };
-        saveBlogPost(post);
+        posts.forEach(post => {
+            container.innerHTML += `
+                <div class="blog-post">
+                    <h2>${post.title} <span class="date">${post.date}</span></h2>
+                    <div class="blog-content">${post.content}</div>
+                    <div class="actions">
+                        <button onclick="editBlogPost('${post.id}')">수정</button>
+                    </div>
+                </div>
+            `;
+        });
     }
 }
 
@@ -242,35 +273,6 @@ function saveBlogPost(post) {
             console.error("Error adding post: ", error);
             alert('글 등록 중 오류가 발생했습니다.');
         });
-}
-
-function editBlogPost(postId) {
-    const password = prompt("비밀번호를 입력하세요:");
-    if (password === "1234") { // 실제 구현시 보안을 강화해야 합니다
-        openBlogPostForm(postId);
-    } else {
-        alert("비밀번호가 올바르지 않습니다.");
-    }
-}
-
-function updateBlogPost(e, postId) {
-    e.preventDefault();
-    const title = document.getElementById('blog-title').value;
-    const content = document.getElementById('blog-content').value;
-    const imageFile = document.getElementById('blog-image').files[0];
-
-    if (imageFile) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            const imageData = event.target.result;
-            const post = { title, content, image: imageData };
-            saveUpdatedBlogPost(postId, post);
-        };
-        reader.readAsDataURL(imageFile);
-    } else {
-        const post = { title, content };
-        saveUpdatedBlogPost(postId, post);
-    }
 }
 
 function saveUpdatedBlogPost(postId, post) {
