@@ -5,12 +5,6 @@ body, html {
     background-color: white;
 }
 
-body {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
 header {
     background-color: white;
     padding: 20px 0;
@@ -85,11 +79,9 @@ nav ul li a {
 }
 
 #main-content {
-    flex: 1;
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
-    padding-bottom: 60px; /* footer의 높이만큼 여백 추가 */
 }
 
 .blog-post, .qa-post {
