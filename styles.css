@@ -74,10 +74,10 @@ nav ul li a {
     background-color: #f0f0f0;
     border: none;
     color: #333;
-    padding: 8px;
-    margin: 4px;
+    padding: 10px;
+    margin: 5px;
     cursor: pointer;
-    font-size: 10px;
+    font-size: 16px;
 }
 
 .scroll-buttons button:hover {
@@ -153,8 +153,8 @@ form button:hover {
 }
 
 .blog-header h1, .qa-header h1 {
-    font-size: 1.2em;  /* 4포인트 줄임 */
-    margin-bottom: 50px;  /* 하단 여백 증가 */
+    font-size: 1.8em;  /* 4포인트 줄임 */
+    margin-bottom: 30px;  /* 하단 여백 증가 */
 }
 
 hr {
@@ -185,7 +185,7 @@ hr {
 }
 
 .blog-header button, .qa-header button {
-    padding: 8px 12px;
+    padding: 10px 15px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -194,12 +194,12 @@ hr {
 }
 
 .blog-header button, .qa-header button:first-child {
-    background-color: #4c93af;
+    background-color: #4CAF50;
     color: white;
 }
 
 .qa-header button:last-child {
-    background-color: rgb(165, 53, 45);
+    background-color: #f44336;
     color: white;
     margin-left: 10px;
 }
