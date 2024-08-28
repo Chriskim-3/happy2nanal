@@ -190,7 +190,10 @@ function openBlogPostForm(postId = null) {
             <input type="text" id="blog-title" placeholder="제목" required>
             <div id="blog-editor" contenteditable="true"></div>
             <input type="file" id="blog-image" accept="image/*" multiple>
-            <button type="submit">${postId ? '수정' : '등록'}</button>
+            <div class="form-buttons">
+                <button type="submit">${postId ? '수정' : '등록'}</button>
+                ${postId ? '<button type="button" onclick="deleteBlogPost(\'' + postId + '\')" class="delete-button">삭제</button>' : ''}
+            </div>
         </form>
     `;
     const form = document.getElementById('blog-form');
@@ -279,6 +282,21 @@ function saveUpdatedBlogPost(postId, post) {
         });
 }
 
+function deleteBlogPost(postId) {
+    if (confirm('정말로 이 블로그 글을 삭제하시겠습니까?')) {
+        const postRef = ref(database, `posts/${postId}`);
+        remove(postRef)
+            .then(() => {
+                alert('블로그 글이 삭제되었습니다.');
+                loadBlog();
+            })
+            .catch((error) => {
+                console.error("Error removing post: ", error);
+                alert('글 삭제 중 오류가 발생했습니다.');
+            });
+    }
+}
+
 function openQAForm(postId = null) {
     const mainContent = document.getElementById('main-content');
     const formTitle = postId ? 'Q&A 수정' : '새 Q&A 작성';
@@ -289,8 +307,10 @@ function openQAForm(postId = null) {
             <textarea id="qa-content" placeholder="내용" required></textarea>
             <input type="text" id="qa-nickname" placeholder="닉네임" required>
             <input type="password" id="qa-password" placeholder="비밀번호" required>
-            <button type="submit">${postId ? '수정' : '등록'}</button>
-            ${postId ? '<button type="button" onclick="deleteQAPost(\'' + postId + '\')">삭제</button>' : ''}
+            <div class="form-buttons">
+                <button type="submit">${postId ? '수정' : '등록'}</button>
+                ${postId ? '<button type="button" onclick="deleteQAPost(\'' + postId + '\')" class="delete-button">삭제</button>' : ''}
+            </div>
         </form>
     `;
     const form = document.getElementById('qa-form');
@@ -391,6 +411,7 @@ function deleteQAPost(postId) {
 window.checkPasswordForBlogPost = checkPasswordForBlogPost;
 window.openBlogPostForm = openBlogPostForm;
 window.editBlogPost = editBlogPost;
+window.deleteBlogPost = deleteBlogPost;
 window.checkPasswordForQAManagement = checkPasswordForQAManagement;
 window.manageQA = manageQA;
 window.editQAPost = editQAPost;
