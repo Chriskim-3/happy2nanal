@@ -63,7 +63,7 @@ nav ul li a {
 }
 
 .scroll-buttons {
-    position: fixed;
+    position: sticky;
     bottom: 20px;
     right: 20px;
     display: flex;
@@ -71,13 +71,13 @@ nav ul li a {
 }
 
 .scroll-buttons button {
-    background-color: #f0f0f0;
+    background-color: #ffffff;
     border: none;
     color: #333;
     padding: 10px;
     margin: 5px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 12px;
 }
 
 .scroll-buttons button:hover {
@@ -201,7 +201,7 @@ hr {
 .qa-header button:last-child {
     background-color: #ffffff;
     color: rgb(255, 0, 0);
-    margin-left: 10px;
+    margin-left: 5px;
 }
 
 .blog-header button:hover, .qa-header button:hover {
