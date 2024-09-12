@@ -194,13 +194,13 @@ hr {
 }
 
 .blog-header button, .qa-header button:first-child {
-    background-color: #4CAF50;
-    color: white;
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
 }
 
 .qa-header button:last-child {
-    background-color: #f44336;
-    color: white;
+    background-color: #ffffff;
+    color: rgb(255, 0, 0);
     margin-left: 10px;
 }
 
