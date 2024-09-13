@@ -64,8 +64,8 @@ nav ul li a {
 
 .scroll-buttons {
     position: sticky;
-    bottom: 20px;
-    right: 20px;
+    bottom: 5px;
+    right: 5px;
     display: flex;
     flex-direction: column;
 }
