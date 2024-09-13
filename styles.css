@@ -63,11 +63,14 @@ nav ul li a {
 }
 
 .scroll-buttons {
-    position: sticky;
+    position: fixed;
     bottom: 5px;
     right: 5px;
+    left: auto;
     display: flex;
     flex-direction: column;
+    z-index: 1000; /* 다른 요소 위에 표시되도록 z-index 추가 */
+    bottom: 50px; /* 푸터의 높이(40px)보다 약간 더 큰 값으로 설정 */
 }
 
 .scroll-buttons button {
