@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyHappyWay</title>
+    <title>Happy2Nanal</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlNqL1nO0b2a7p+4N4JjN+K4Tz4PzB0/x5z5w5p5u5g5v5p5q5u5i5j5k5l5m5n5o5p5q5r5s5t5u5v5w5x5y5z5" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         /* Tailwind CSS 기본 설정 및 커스텀 폰트 */
         @layer base {
@@ -20,13 +21,13 @@
     <header class="bg-white shadow-lg py-4 sticky top-0 z-40">
         <div class="container mx-auto px-4 flex flex-col items-center">
             <div class="flex flex-col items-center mb-4">
-                <a href="#blog" class="text-5xl font-extrabold text-gray-800 logo font-playfair">MyHappyWay</a>
+                <a href="#blog" class="text-5xl font-extrabold text-gray-800 logo font-playfair">Happy2Nanal</a>
                 <p class="text-gray-600 text-base mt-1 subtitle">당신의 칼퇴를 응원합니다</p>
             </div>
             <div class="w-full flex justify-center lg:justify-between items-center py-3 border-t border-b border-gray-200">
                 <nav class="flex-grow">
                     <ul class="flex justify-center lg:justify-start space-x-10">
-                        <li><a href="#blog" class="nav-item">BLOG</a></li>
+                        <li><a href="#blog" class="nav-item">MyHappyWay</a></li>
                         <li><a href="#qa" class="nav-item">Q&A</a></li>
                         <li><a href="#notice" class="nav-item">공지사항</a></li>
                     </ul>
@@ -50,28 +51,43 @@
         <main id="main-content" role="main" class="flex-1 bg-white p-8 rounded-xl shadow-lg"></main>
 
         <aside class="w-full lg:w-80 space-y-8">
-             <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+             <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 sidebar-section notice-section">
                 <h3 class="text-2xl font-bold text-gray-800 mb-5 border-b pb-3 border-gray-200">최신 공지</h3>
                 <ul id="latest-notices-sidebar" class="space-y-4">
                     <li class="text-gray-700">최신 공지가 없습니다.</li>
                 </ul>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 sidebar-section blog-section">
                 <h3 class="text-2xl font-bold text-gray-800 mb-5 border-b pb-3 border-gray-200">인기글</h3>
                 <ul id="popular-posts-sidebar" class="space-y-4">
                     <li class="text-gray-700">인기글이 없습니다.</li>
                 </ul>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 sidebar-section blog-section">
                 <h3 class="text-2xl font-bold text-gray-800 mb-5 border-b pb-3 border-gray-200">최신 글</h3>
                 <ul id="latest-posts-sidebar" class="space-y-4">
                     <li class="text-gray-700">최신 글이 없습니다.</li>
                 </ul>
             </div>
-             <div id="weather-info-section" class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 hidden">
-                <h3 class="text-2xl font-bold text-gray-800 mb-5 border-b pb-3 border-gray-200">오늘의 날씨</h3>
-                <div id="weather-data" class="text-center text-gray-700">
-                    <p class="text-gray-500">날씨 정보를 불러오는 중...</p>
+             <div id="calendar-info-section" class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 hidden">
+                <h3 class="text-2xl font-bold text-gray-800 mb-5 border-b pb-3 border-gray-200">캘린더</h3>
+                <div id="calendar-widget" class="text-center text-gray-700">
+                    <div class="calendar-header flex justify-between items-center mb-4">
+                        <button id="prevMonth" class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-700">&lt;</button>
+                        <span id="currentMonthYear" class="text-xl font-semibold"></span>
+                        <button id="nextMonth" class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-700">&gt;</button>
+                    </div>
+                    <div class="calendar-grid grid grid-cols-7 gap-1 text-sm">
+                        <div class="day-label text-gray-600 font-medium">일</div>
+                        <div class="day-label text-gray-600 font-medium">월</div>
+                        <div class="day-label text-gray-600 font-medium">화</div>
+                        <div class="day-label text-gray-600 font-medium">수</div>
+                        <div class="day-label text-gray-600 font-medium">목</div>
+                        <div class="day-label text-gray-600 font-medium">금</div>
+                        <div class="day-label text-gray-600 font-medium">토</div>
+                    </div>
+                    <div id="calendar-days" class="calendar-grid grid grid-cols-7 gap-1">
+                        </div>
                 </div>
             </div>
         </aside>
@@ -98,7 +114,7 @@
     </div>
 
     <footer id="footer" class="bg-gray-800 text-white text-center p-6 text-sm mt-auto shadow-inner" style="display: none;">
-        <p>copyright ⓒ 2024 <strong>MyHappyWay</strong> All Rights Reserved. |
+        <p>copyright ⓒ 2024 <strong>Happy2Nanal</strong> All Rights Reserved. |
         개인정보 처리방침 | 출판 및 사이트와 관련된 기타 문의는 게시판을 이용해주세요.</p>
     </footer>
 
