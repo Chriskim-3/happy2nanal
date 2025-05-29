@@ -12,10 +12,16 @@
     --text-color-dark: #1F2937; /* Gray-900 for headings/main text */
     --text-color-medium: #4B5563; /* Gray-700 for paragraphs */
     --text-color-light: #6B7280; /* Gray-500 for meta info/subtitles */
-    --accent-color: #3B82F6; /* Blue-500 for primary actions/links (minimal use) */
-    --hover-color: #2563EB; /* Blue-600 for hover states */
-    --danger-color: #EF4444; /* Red-500 for delete actions */
-    --danger-hover-color: #DC2626; /* Red-600 for danger hover */
+    --accent-color: #5A67D8; /* Deeper Indigo/Blue for primary actions/links (기존 유지) */
+    --accent-hover-color: #434190; /* Darker Indigo/Blue for hover states (기존 유지) */
+    --danger-color: #EF4444; /* Red-500 for delete actions (기존 유지) */
+    --danger-hover-color: #DC2626; /* Red-600 for danger hover (기존 유지) */
+    --header-bg: #FFFFFF; /* White for header background */
+    --header-border: #E0E0E0; /* Lighter gray for header border */
+
+    /* 새로운 무채색 계열 강조색 */
+    --neutral-accent: #6B7280; /* Gray-500 */
+    --neutral-accent-hover: #4B5563; /* Gray-700 */
 }
 
 body {
@@ -26,31 +32,34 @@ body {
 
 /* 헤더 및 내비게이션 */
 header {
-    background-color: var(--secondary-bg);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); /* subtle shadow */
-    border-bottom: 1px solid var(--border-color);
+    background-color: var(--header-bg); /* 메뉴바 배경색 */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* 더 고급스러운 그림자 */
+    border-bottom: 1px solid var(--header-border);
 }
 
 .logo {
-    font-size: 2.8rem; /* 더 크게 강조 */
+    font-family: 'Playfair Display', serif; /* Happy2Nanal 폰트 변경 */
+    font-size: 3.2rem; /* 더 크게 강조 */
     font-weight: 900; /* 더 굵게 */
     color: var(--text-color-dark);
+    letter-spacing: -0.05em; /* 자간 조정 */
 }
 
 .subtitle {
-    font-size: 0.9rem;
+    font-size: 1rem; /* 부제목 글꼴 크기 키움 */
     color: var(--text-color-light);
 }
 
 nav ul {
-    border-color: var(--border-color);
+    border-bottom: none !important; /* 메뉴바 하단 보더 제거 (부모 div에 border-bottom이 적용됨) */
+    border-top: none !important; /* 메뉴바 상단 보더 제거 */
 }
 
 .nav-item {
     color: var(--text-color-medium);
     font-weight: 500;
-    font-size: 1.1rem; /* 메뉴 아이템 글꼴 크기 */
-    padding: 0.5rem 0.8rem;
+    font-size: 1.15rem; /* 메뉴 아이템 글꼴 크기 */
+    padding: 0.7rem 1.2rem;
     border-radius: 0.5rem;
     transition: all 0.2s ease-in-out;
 }
@@ -58,24 +67,31 @@ nav ul {
 .nav-item:hover, .nav-item.active {
     color: var(--text-color-dark);
     background-color: var(--primary-bg);
+    transform: translateY(-2px); /* 살짝 올라오는 효과 */
 }
 
-/* 보기 방식 버튼 (메뉴바 내) */
-.nav-view-btn {
-    padding: 0.4rem 0.8rem;
-    border-radius: 0.4rem;
-    font-weight: 500;
-    font-size: 0.9rem; /* 버튼 글꼴 크기 줄임 */
-    transition: all 0.2s ease-in-out;
+/* 보기 방식 그룹박스 (메뉴바 내) */
+#blog-view-toggle-group {
+    border-color: var(--border-color);
     background-color: var(--primary-bg);
+}
+
+.nav-view-btn {
+    padding: 0.3rem 0.7rem; /* 패딩 조정 */
+    border-radius: 0.3rem; /* 덜 둥글게 */
+    font-weight: 500;
+    font-size: 0.8rem; /* 글꼴 크기 더 줄임 */
+    transition: all 0.2s ease-in-out;
+    background-color: var(--secondary-bg); /* 버튼 배경 흰색 */
     color: var(--text-color-medium);
     border: 1px solid var(--border-color);
 }
 
 .nav-view-btn.active {
-    background-color: var(--accent-color);
+    background-color: var(--neutral-accent); /* 무채색 강조색으로 변경 */
     color: white;
-    border-color: var(--accent-color);
+    border-color: var(--neutral-accent);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .nav-view-btn:hover:not(.active) {
@@ -113,6 +129,49 @@ aside ul li span {
     color: var(--text-color-light);
 }
 
+/* 사이드바 최신글/인기글/공지사항 구분 디자인 */
+.sidebar-section {
+    position: relative;
+    overflow: hidden;
+    padding-top: 1.5rem; /* 제목과 아이콘 공간 확보 */
+}
+
+.sidebar-section h3 {
+    position: relative;
+    z-index: 10;
+    background-color: var(--secondary-bg); /* 배경색으로 덮어씌움 */
+    display: inline-block;
+    padding-right: 1rem; /* 제목과 보더 사이 간격 */
+}
+
+/* 공지사항 섹션 */
+.notice-section::before {
+    content: "\f0a1"; /* Bell icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 2.5rem; /* 아이콘 크기 */
+    color: var(--neutral-accent); /* 무채색 계열 */
+    opacity: 0.15;
+    z-index: 5;
+}
+
+/* 블로그 섹션 (최신글, 인기글) */
+.blog-section::before {
+    content: "\f1da"; /* Book open icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 2.5rem;
+    color: var(--neutral-accent);
+    opacity: 0.15;
+    z-index: 5;
+}
+
 /* 블로그/Q&A/공지사항 공통 카드 스타일 */
 .blog-post, .qa-post, .notice-post {
     background-color: var(--secondary-bg);
@@ -124,13 +183,14 @@ aside ul li span {
 
 .blog-post:hover, .qa-post:hover, .notice-post:hover {
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12); /* hover:shadow-lg */
-    transform: translateY(-2px); /* 살짝 올라오는 효과 */
+    transform: translateY(-3px); /* 살짝 올라오는 효과 강화 */
 }
 
 .blog-post h2, .qa-post h3, .notice-post h3 {
     color: var(--text-color-dark);
-    font-weight: 600;
+    font-weight: 700; /* 더 굵게 */
     line-height: 1.4;
+    font-size: 1.75rem; /* 제목 글꼴 크기 키움 */
 }
 
 .blog-post h2 a {
@@ -138,16 +198,16 @@ aside ul li span {
 }
 .blog-post h2 a:hover {
     text-decoration: underline;
-    color: var(--accent-color); /* 호버 시에만 포인트 색상 */
+    color: var(--neutral-accent); /* 호버 시에만 포인트 색상 (무채색 계열) */
 }
 
 
 .meta-info {
-    font-size: 0.875rem; /* text-sm */
+    font-size: 0.9rem; /* text-sm 보다 살짝 키움 */
     color: var(--text-color-light);
-    margin-top: 0.5rem;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
+    margin-top: 0.6rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.6rem;
     border-bottom: 1px dashed var(--border-color); /* 점선 구분선 */
 }
 
@@ -158,30 +218,30 @@ aside ul li span {
 
 .post-summary {
     color: var(--text-color-medium);
-    line-height: 1.6;
-    margin-bottom: 1rem;
-    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 1.2rem;
+    font-size: 1rem; /* 글꼴 크기 살짝 키움 */
 }
 
 .post-full-content {
     color: var(--text-color-dark);
-    line-height: 1.7;
-    font-size: 1.05rem;
+    line-height: 1.8;
+    font-size: 1.1rem; /* 글꼴 크기 살짝 키움 */
 }
 
 /* 블로그 에디터 내부 이미지 스타일 (Q&A/공지사항에도 적용될 수 있음) */
 #blog-editor img, .post-full-content img, #notice-editor img {
     max-width: 100%;
     height: auto;
-    border-radius: 0.5rem; /* rounded-md */
-    margin: 1rem 0; /* my-4 */
+    border-radius: 0.6rem; /* rounded-md */
+    margin: 1.2rem 0; /* my-4 */
     display: block; /* 이미지 하단 여백 제거 */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); /* subtle shadow */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* subtle shadow */
 }
 
-/* 버튼 공통 스타일 (모던하고 글꼴 작게) */
+/* 버튼 공통 스타일 (모던하고 아이콘 기반) */
 .btn {
-    padding: 0.5rem 1rem; /* 글꼴 크기 줄임에 맞춰 패딩 조정 */
+    padding: 0.6rem 1.1rem; /* 글꼴 크기 줄임에 맞춰 패딩 조정 */
     border-radius: 0.4rem; /* rounded-md 보다 조금 덜 둥글게 */
     font-weight: 500;
     font-size: 0.9rem; /* 글꼴 크기 줄임 */
@@ -190,24 +250,27 @@ aside ul li span {
     display: inline-flex; /* 텍스트 및 아이콘 정렬 */
     align-items: center;
     justify-content: center;
-    gap: 0.4rem; /* 아이콘과 텍스트 사이 간격 */
+    gap: 0.5rem; /* 아이콘과 텍스트 사이 간격 */
+    border: 1px solid transparent; /* 기본 테두리 */
 }
 
 .btn-primary {
-    background-color: var(--text-color-dark); /* Dark Gray */
+    background-color: var(--neutral-accent); /* 무채색 강조색으로 변경 */
     color: white;
 }
 .btn-primary:hover {
-    background-color: #333; /* Darker Gray */
+    background-color: var(--neutral-accent-hover);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .btn-secondary {
     background-color: var(--primary-bg);
     color: var(--text-color-dark);
-    border: 1px solid var(--border-color);
+    border-color: var(--border-color);
 }
 .btn-secondary:hover {
     background-color: var(--border-color);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .btn-danger {
@@ -216,46 +279,100 @@ aside ul li span {
 }
 .btn-danger:hover {
     background-color: var(--danger-hover-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .btn-outline-primary {
     background-color: transparent;
-    color: var(--text-color-dark);
-    border: 1px solid var(--border-color);
+    color: var(--text-color-medium);
+    border-color: var(--border-color);
 }
 .btn-outline-primary:hover {
+    background-color: var(--primary-bg);
+    color: var(--text-color-dark);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* 아이콘 버튼 스타일 (수정 및 텍스트 추가) */
+.icon-btn-text {
+    width: auto; /* 내용에 맞춰 너비 조정 */
+    min-width: 40px; /* 최소 너비 */
+    height: 40px; /* 높이 고정 */
+    border-radius: 20px; /* 타원형 또는 둥근 모서리 */
+    background-color: var(--primary-bg);
+    border: 1px solid var(--border-color);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    color: var(--text-color-medium);
+    font-size: 0.85rem; /* 텍스트 크기 */
+    font-weight: 500;
+    padding: 0 1rem; /* 좌우 패딩 */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+}
+
+.icon-btn-text .icon {
+    margin-right: 0.4rem; /* 아이콘과 텍스트 사이 간격 */
+    font-size: 1.1rem; /* 아이콘 크기 */
+    color: var(--text-color-light); /* 아이콘 색상 */
+}
+
+.icon-btn-text:hover {
     background-color: var(--border-color);
     color: var(--text-color-dark);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.icon-btn-text:hover .icon {
+    color: var(--text-color-medium);
+}
+
+.icon-btn-text.danger {
+    background-color: var(--danger-color);
+    color: white;
+    border-color: var(--danger-color);
+}
+.icon-btn-text.danger:hover {
+    background-color: var(--danger-hover-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+.icon-btn-text.danger .icon {
+    color: white; /* 삭제 아이콘은 항상 흰색 */
 }
 
 /* 폼 요소 스타일 */
 input[type="text"], input[type="password"], textarea, #blog-editor, #notice-editor {
     border: 1px solid var(--border-color);
-    border-radius: 0.4rem;
-    padding: 0.8rem;
+    border-radius: 0.5rem; /* rounded-md */
+    padding: 0.9rem;
     font-size: 1rem;
     color: var(--text-color-dark);
     background-color: var(--primary-bg); /* Input background */
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05); /* 미세한 내부 그림자 */
 }
 input[type="text"]:focus, input[type="password"]:focus, textarea:focus, #blog-editor:focus, #notice-editor:focus {
     outline: none;
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); /* Focus ring */
+    border-color: var(--neutral-accent); /* 포커스 시 무채색 강조색 */
+    box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.2); /* Focus ring */
+    background-color: white; /* 포커스 시 배경 흰색 */
 }
 
 /* 검색 입력 필드 (아이콘 겹침 방지) */
 .search-input-wrapper {
     position: relative;
-    width: 100%; /* 너비 조정 가능 */
+    /* width: 100%; / 너비 조정 가능 / */
 }
 
 .search-input-wrapper input {
-    padding-left: 2.5rem; /* 아이콘 공간 확보 */
+    padding-left: 2.2rem; /* 아이콘 공간 확보 */
 }
 
 .search-input-wrapper svg {
     position: absolute;
-    left: 0.75rem; /* 아이콘 왼쪽 여백 */
+    left: 0.6rem; /* 아이콘 왼쪽 여백 */
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-color-light);
@@ -266,8 +383,8 @@ input[type="text"]:focus, input[type="password"]:focus, textarea:focus, #blog-ed
 /* 블로그 타일형 레이아웃 */
 #blog-posts-container.tile-view {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* 300px 최소 너비 */
-    gap: 1.5rem; /* grid-gap-6 */
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* 320px 최소 너비 */
+    gap: 1.75rem; /* grid-gap-7 */
 }
 
 #blog-posts-container.tile-view .blog-post {
@@ -278,18 +395,18 @@ input[type="text"]:focus, input[type="password"]:focus, textarea:focus, #blog-ed
 
 /* 블로그 상세 모달 */
 #blog-detail-modal > div { /* 모달 콘텐츠 박스 */
-    max-width: 900px; /* 더 넓게 */
-    width: 90%;
+    max-width: 960px; /* 더 넓게 */
+    width: 95%;
     max-height: 90vh;
     overflow-y: auto;
-    padding: 3rem;
+    padding: 3.5rem;
 }
 
 #blog-detail-modal #close-blog-detail {
     color: var(--text-color-light);
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     line-height: 1;
-    padding: 0.5rem;
+    padding: 0.6rem;
     border-radius: 50%;
     background-color: var(--primary-bg);
     transition: all 0.2s;
@@ -297,6 +414,7 @@ input[type="text"]:focus, input[type="password"]:focus, textarea:focus, #blog-ed
 #blog-detail-modal #close-blog-detail:hover {
     color: var(--text-color-dark);
     background-color: var(--border-color);
+    transform: rotate(90deg); /* 닫기 버튼 회전 효과 */
 }
 
 /* Q&A 관리 비밀번호 보기 버튼 */
@@ -324,19 +442,122 @@ footer {
 .scroll-buttons button {
     background-color: var(--text-color-dark); /* Dark Gray */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 32px; /* 버튼 크기 더 작게 */
+    height: 32px;
+    font-size: 1.2rem; /* 아이콘 크기 조정 */
+    line-height: 1; /* 중앙 정렬 */
+    padding: 0; /* 패딩 제거 */
 }
 .scroll-buttons button:hover {
     background-color: #333; /* Darker Gray */
 }
 
+/* 달력 위젯 스타일 */
+#calendar-widget .calendar-grid {
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    background-color: var(--primary-bg);
+}
+
+#calendar-widget .day-label {
+    padding: 0.5rem 0.2rem;
+    font-weight: 500;
+    text-align: center;
+    color: var(--text-color-medium);
+}
+
+#calendar-days .day {
+    padding: 0.6rem 0.2rem;
+    border-radius: 0.3rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+    text-align: center;
+    color: var(--text-color-dark);
+}
+
+#calendar-days .day:hover {
+    background-color: var(--border-color);
+}
+
+#calendar-days .day.current-month {
+    color: var(--text-color-dark);
+}
+
+#calendar-days .day.prev-month,
+#calendar-days .day.next-month {
+    color: var(--text-color-light);
+    opacity: 0.6;
+}
+
+#calendar-days .day.today {
+    background-color: var(--neutral-accent); /* 오늘 날짜 강조 */
+    color: white;
+    font-weight: 700;
+}
+
+#calendar-days .day.has-post {
+    background-color: #A7F3D0; /* Green-200 (글 있는 날짜) */
+    color: #065F46; /* Green-900 */
+    font-weight: 600;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+#calendar-days .day.has-post.today {
+    background-color: #34D399; /* Green-500 */
+    color: white;
+}
+
+#calendar-days .day.has-post::after {
+    content: '';
+    position: absolute;
+    bottom: 0.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    background-color: var(--text-color-medium); /* 점 표시 */
+    border-radius: 50%;
+}
+#calendar-days .day.has-post.today::after {
+    background-color: white;
+}
+
+
 /* 모바일 반응형 조정 */
-@media (max-width: 768px) {
+@media (max-width: 1024px) { /* lg 이하 */
+    header .container {
+        flex-direction: column;
+    }
+    header .flex.justify-center.lg\:justify-between {
+        flex-direction: column;
+        align-items: center;
+    }
+    nav ul {
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+    #blog-view-toggle-group, .search-input-wrapper {
+        width: 100%;
+        justify-content: center;
+    }
+    #blog-view-toggle-group {
+        margin-top: 1rem;
+    }
+}
+
+@media (max-width: 768px) { /* sm 이하 */
     .container {
         padding: 0 1rem;
     }
 
-    header .container {
-        flex-direction: column;
+    .logo {
+        font-size: 2.5rem;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
     }
 
     nav ul {
@@ -374,5 +595,9 @@ footer {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.25rem;
+    }
+
+    #blog-detail-modal > div {
+        padding: 2rem;
     }
 }
