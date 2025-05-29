@@ -3,35 +3,28 @@
     body {
         font-family: 'Noto Sans KR', sans-serif;
     }
+    .ql-editor { /* Quill 에디터 내 폰트 */
+        font-family: 'Noto Sans KR', sans-serif;
+    }
 }
 
-/* styles.css에서 Tailwind CSS와 충돌할 수 있는 대부분의 스타일은 제거 */
 /* Tailwind CSS를 사용하므로, 여기에 복잡한 레이아웃/색상/폰트 스타일은 최소화합니다. */
 
 body, html {
     margin: 0;
     padding: 0;
-    /* font-family와 background-color는 Tailwind에서 처리 */
-    /* font-family: 'Noto Sans KR', sans-serif; */
-    /* background-color: white; */
 }
 
 body {
     min-height: 100vh;
-    /* display: flex; */
     flex-direction: column;
 }
-
-/* 헤더, 내비게이션, 로고, 서브타이틀 등은 index.html의 Tailwind 클래스로 대체됨 */
-/* .header, .nav, .logo, .subtitle 등의 기존 CSS 규칙들은 삭제하거나 비활성화 */
-
-/* 메인 콘텐츠와 사이드바 간의 간격은 index.html의 flexbox gap으로 처리 */
-/* .container 등도 Tailwind의 mx-auto, px-4 등으로 처리 */
 
 /* 블로그 목록 스타일 (list-view) */
 .blog-list-view .blog-post-item {
     display: flex;
-    align-items: center; /* 세로 중앙 정렬 */
+    flex-direction: column; /* 제목, 요약, 메타, 버튼이 세로로 정렬되도록 변경 */
+    align-items: flex-start; /* 왼쪽 정렬 */
     padding: 1rem;
     border-bottom: 1px solid #e2e8f0; /* gray-200 */
     cursor: pointer;
@@ -47,8 +40,8 @@ body {
 }
 
 .blog-list-view .blog-post-item .post-text-content {
-    flex-grow: 1;
-    margin-right: 1rem; /* 텍스트와 메타 정보 사이 간격 */
+    width: 100%; /* 너비를 100%로 설정하여 텍스트가 전체 너비를 차지하도록 */
+    margin-bottom: 1rem; /* 텍스트와 버튼 사이 간격 */
 }
 
 .blog-list-view .blog-post-item .post-title {
@@ -266,7 +259,7 @@ body {
 
 /* 블로그/Q&A/공지사항 관리 버튼 */
 .post-management-buttons button {
-    @apply px-4 py-2 rounded-md font-medium text-sm transition-colors duration-200;
+    @apply px-3 py-1 rounded-md font-medium text-xs transition-colors duration-200 flex items-center justify-center space-x-1; /* 폰트 크기 및 아이콘 정렬 */
 }
 .post-management-buttons .view-button {
     @apply bg-blue-500 text-white hover:bg-blue-600;
@@ -286,96 +279,59 @@ body {
 }
 
 
-/* Q&A 관리 비밀번호 입력 모달 스타일 (예시, Tailwind로 직접 적용 권장) */
-/* .password-modal 등은 app.js에서 동적으로 생성될 때 Tailwind 클래스를 부여 */
-
 /* 커스텀 모달/프롬프트 관련 스타일 (app.js에서 동적으로 생성될 때 Tailwind 클래스 적용) */
 /* #custom-modal-container 안에 들어가는 요소들에 대한 기본적인 z-index 및 위치 */
 #custom-modal-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
-    z-index: 1000; /* Ensure it's above other content */
+    /* hidden 클래스는 app.js에서 토글 */
+    /* position: fixed; */ /* Tailwind 'fixed' 사용 */
+    /* top: 0; left: 0; width: 100%; height: 100%; */ /* Tailwind 'inset-0' 사용 */
+    /* display: flex; justify-content: center; align-items: center; */ /* Tailwind 'flex items-center justify-center' 사용 */
+    /* background-color: rgba(0, 0, 0, 0.5); */ /* Tailwind 'bg-gray-900 bg-opacity-75' 사용 */
+    /* z-index: 1000; */ /* Tailwind 'z-[9999]' 사용 */
 }
 
 .custom-modal, .custom-prompt {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 0.75rem;
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-    max-width: 90%;
-    max-height: 90%;
-    overflow-y: auto;
-    position: relative;
+    /* background-color: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); */ /* Tailwind 클래스 사용 */
+    /* max-width: 90%; max-height: 90%; overflow-y: auto; position: relative; */ /* Tailwind 클래스 사용 */
 }
 
 .custom-modal h3, .custom-prompt h3 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: #1a202c;
+    /* font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: #1a202c; */ /* Tailwind 클래스 사용 */
 }
 
 .custom-modal p, .custom-prompt p {
-    margin-bottom: 1rem;
-    color: #4a5568;
+    /* margin-bottom: 1rem; color: #4a5568; */ /* Tailwind 클래스 사용 */
 }
 
 .custom-prompt input[type="password"] {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #cbd5e0;
-    border-radius: 0.375rem;
-    margin-bottom: 1rem;
-    font-size: 1rem;
+    /* width: 100%; padding: 0.75rem; border: 1px solid #cbd5e0; border-radius: 0.375rem; margin-bottom: 1rem; font-size: 1rem; */ /* Tailwind 클래스 사용 */
 }
 
 .custom-modal-buttons, .custom-prompt-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
-    margin-top: 1.5rem;
+    /* display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem; */ /* Tailwind 클래스 사용 */
 }
 
 .custom-modal-buttons button, .custom-prompt-buttons button {
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    transition: background-color 0.2s ease-in-out;
+    /* padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; transition: background-color 0.2s ease-in-out; */ /* Tailwind 클래스 사용 */
 }
 
 .custom-modal-buttons .confirm-button, .custom-prompt-buttons .confirm-button {
-    background-color: #2563eb;
-    color: white;
-    &:hover {
-        background-color: #1d4ed8;
-    }
+    @apply bg-blue-600 text-white hover:bg-blue-700;
 }
 
 .custom-modal-buttons .cancel-button, .custom-prompt-buttons .cancel-button {
-    background-color: #e2e8f0;
-    color: #4a5568;
-    &:hover {
-        background-color: #cbd5e0;
-    }
+    @apply bg-gray-300 text-gray-800 hover:bg-gray-400;
 }
 
 /* Rich Text Editor (Quill) 기본 스타일 */
 #blog-editor, #qa-editor, #notice-editor {
     width: 100%;
     min-height: 300px;
-    border: 1px solid #ddd;
-    padding: 10px;
+    /* border: 1px solid #ddd; */ /* Quill 자체 스타일이 적용되므로 제거 */
+    /* padding: 10px; */ /* Quill 자체 스타일이 적용되므로 제거 */
     margin-bottom: 10px;
-    background-color: #fff;
-    font-size: 1rem;
-    line-height: 1.5;
+    /* background-color: #fff; */ /* Quill 자체 스타일이 적용되므로 제거 */
+    /* font-size: 1rem; line-height: 1.5; */ /* Quill 자체 스타일이 적용되므로 제거 */
 }
 
 .ql-editor {
