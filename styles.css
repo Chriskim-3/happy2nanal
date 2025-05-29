@@ -247,13 +247,6 @@ body {
     margin-left: 10px; /* 제목과 날짜 사이 간격 */
 }
 
-/* 스크롤 버튼 스타일 */
-/* index.html에서 Tailwind 클래스로 직접 적용됨 */
-/* .scroll-buttons, #scrollUp, #scrollDown 등은 삭제하거나 간소화 */
-
-/* 푸터는 index.html에서 Tailwind 클래스로 직접 적용됨 */
-/* #footer 등은 삭제하거나 간소화 */
-
 /* --- 새로 추가되거나 수정된 스타일 --- */
 
 /* 네비게이션 아이템 활성화 시 스타일 */
