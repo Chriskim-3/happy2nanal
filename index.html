@@ -20,13 +20,13 @@
     <header class="bg-white shadow-md py-4 sticky top-0 z-40">
         <nav class="container mx-auto px-4 flex justify-between items-center">
             <div class="flex flex-col items-start">
-                <a href="#home" class="text-3xl font-extrabold text-gray-900 logo">Happy2Nanal</a>
+                <a href="#blog" class="text-3xl font-extrabold text-gray-900 logo">Happy2Nanal</a>
                 <p class="text-gray-600 text-sm mt-1 subtitle">당신의 칼퇴를 응원합니다</p>
             </div>
             <ul class="flex space-x-8">
-                <li><a href="#home" class="text-gray-700 hover:text-blue-600 font-medium text-lg transition-colors duration-200">HOME</a></li>
                 <li><a href="#blog" class="text-gray-700 hover:text-blue-600 font-medium text-lg transition-colors duration-200">BLOG</a></li>
                 <li><a href="#qa" class="text-gray-700 hover:text-blue-600 font-medium text-lg transition-colors duration-200">Q&A</a></li>
+                <li><a href="#notice" class="text-gray-700 hover:text-blue-600 font-medium text-lg transition-colors duration-200">공지사항</a></li>
             </ul>
         </nav>
     </header>
@@ -49,6 +49,19 @@
             </div>
         </aside>
     </div>
+
+    <div id="blog-detail-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden p-4">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-8 relative">
+            <button id="close-blog-detail" class="absolute top-4 right-4 text-gray-600 hover:text-gray-900 text-3xl font-bold">&times;</button>
+            <h2 id="modal-blog-title" class="text-3xl font-bold text-gray-900 mb-4"></h2>
+            <div class="meta-info text-gray-600 text-sm mb-6 flex justify-between items-center">
+                <span id="modal-blog-author" class="font-medium text-gray-700"></span>
+                <span id="modal-blog-date"></span>
+            </div>
+            <div id="modal-blog-content" class="prose prose-blue max-w-none text-gray-800 leading-relaxed"></div>
+        </div>
+    </div>
+
 
     <div class="scroll-buttons fixed bottom-12 right-6 flex flex-col z-50">
         <button id="scrollUp" class="bg-blue-500 text-white p-3 mb-2 rounded-full shadow-lg hover:bg-blue-600 transition-colors text-xl">▲</button>
