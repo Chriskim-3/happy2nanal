@@ -4,6 +4,10 @@ import { ref, push, onValue, remove, update, get } from 'https://www.gstatic.com
 let currentViewMode = 'list'; // 'list' 또는 'tile'
 let currentPage = ''; // 현재 로드된 페이지 (blog, qa, notice)
 
+// OpenWeatherMap API 키 (실제 서비스에서는 서버 사이드에서 관리하는 것이 더 안전합니다)
+const WEATHER_API_KEY = 'YOUR_OPENWEATHERMAP_API_KEY'; // 여기에 실제 API 키를 넣어주세요
+const WEATHER_API_URL = 'https://api.openweathermap.org/data/2.5/weather';
+
 document.addEventListener('DOMContentLoaded', function() {
     const scrollUpButton = document.getElementById('scrollUp');
     const scrollDownButton = document.getElementById('scrollDown');
@@ -12,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeBlogDetailButton = document.getElementById('close-blog-detail');
     const navListViewBtn = document.getElementById('nav-list-view-btn');
     const navTileViewBtn = document.getElementById('nav-tile-view-btn');
+    const globalSearchInput = document.getElementById('global-search-input');
 
     // 스크롤 버튼 이벤트
     scrollUpButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
@@ -61,6 +66,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (navTileViewBtn) {
         navTileViewBtn.addEventListener('click', () => setViewMode('tile'));
     }
+
+    // 통합 검색 입력 이벤트
+    globalSearchInput.addEventListener('input', (e) => {
+        searchPosts(e.target.value, currentPage); // 현재 활성화된 페이지에 따라 검색
+    });
+
+    // 날씨 정보 로드
+    fetchWeather();
 });
 
 // --- 공통 유틸리티 함수 ---
@@ -171,11 +184,19 @@ function updateNavActiveState(pageId) {
         activeNavItem.classList.add('active');
     }
 
-    const blogViewToggleNavItem = document.getElementById('blog-view-toggle-nav-item');
+    const blogViewToggleGroup = document.getElementById('blog-view-toggle-group');
     if (pageId === 'blog') {
-        blogViewToggleNavItem.classList.remove('hidden');
+        blogViewToggleGroup.classList.remove('hidden');
     } else {
-        blogViewToggleNavItem.classList.add('hidden');
+        blogViewToggleGroup.classList.add('hidden');
+    }
+
+    // 날씨 정보 섹션 가시성 (공지사항 페이지에서만 표시)
+    const weatherInfoSection = document.getElementById('weather-info-section');
+    if (pageId === 'notice') {
+        weatherInfoSection.classList.remove('hidden');
+    } else {
+        weatherInfoSection.classList.add('hidden');
     }
 }
 
@@ -185,6 +206,8 @@ function loadPage(page) {
     currentPage = page; // 현재 페이지 상태 업데이트
     const mainContent = document.getElementById('main-content');
     updateNavActiveState(page); // 네비게이션 활성화 상태 업데이트
+    // 통합 검색창 비우기
+    document.getElementById('global-search-input').value = '';
 
     switch(page) {
         case 'blog':
@@ -210,11 +233,7 @@ function loadBlog() {
     mainContent.innerHTML = `
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6 blog-header">
             <h1 class="text-3xl font-bold text-gray-800">BLOG</h1>
-            <div class="flex items-center space-x-3 mt-4 sm:mt-0 w-full sm:w-auto">
-                <div class="search-input-wrapper w-full sm:w-64">
-                    <input type="text" id="blog-search-input" placeholder="글 검색..." class="w-full p-2 pr-4 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-base">
-                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                </div>
+            <div class="flex items-center space-x-3 mt-4 sm:mt-0">
                 <button onclick="checkPasswordForBlogPost()" class="btn btn-primary whitespace-nowrap text-sm">새 글 작성</button>
             </div>
         </div>
@@ -226,7 +245,9 @@ function loadBlog() {
     // 보기 방식 버튼 활성화 상태 동기화
     updateViewModeButtons();
 
-    document.getElementById('blog-search-input').addEventListener('input', (e) => searchPosts(e.target.value, 'blog'));
+    // 블로그 페이지 로드 시, 검색창 이벤트 리스너를 다시 연결 (페이지 새로고침 시 필요)
+    document.getElementById('global-search-input').removeEventListener('input', (e) => searchPosts(e.target.value, 'blog'));
+    document.getElementById('global-search-input').addEventListener('input', (e) => searchPosts(e.target.value, 'blog'));
 }
 
 function updateViewModeButtons() {
@@ -256,7 +277,7 @@ function setViewMode(mode) {
     }
     updateViewModeButtons(); // 메뉴바의 버튼 상태 업데이트
     // 현재 검색어 유지하면서 다시 로드
-    const currentSearchInput = document.getElementById('blog-search-input');
+    const currentSearchInput = document.getElementById('global-search-input');
     const currentSearchTerm = currentSearchInput ? currentSearchInput.value : '';
     loadBlogPosts(document.getElementById('blog-posts-container'), currentSearchTerm);
 }
@@ -302,8 +323,9 @@ function displayBlogPosts(posts, container) {
                 </div>
                 <div class="post-summary text-gray-700 leading-relaxed mb-4">${summary}</div>
                 <div class="flex justify-end actions space-x-2">
-                    <button onclick="showBlogPostDetail('${post.id}')" class="btn btn-outline-primary text-sm">더 보기</button>
-                    <button onclick="editBlogPost('${post.id}')" class="btn btn-primary text-sm">수정</button>
+                    <button onclick="showBlogPostDetail('${post.id}')" class="icon-btn text-lg" title="더 보기"><i class="fas fa-eye"></i></button>
+                    <button onclick="editBlogPost('${post.id}')" class="icon-btn primary text-lg" title="수정"><i class="fas fa-edit"></i></button>
+                    <button onclick="deleteBlogPost('${post.id}')" class="icon-btn danger text-lg" title="삭제"><i class="fas fa-trash-alt"></i></button>
                 </div>
             </div>
         `;
@@ -476,11 +498,7 @@ function loadQA() {
     mainContent.innerHTML = `
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6 qa-header">
             <h1 class="text-3xl font-bold text-gray-800">Q&A</h1>
-            <div class="flex items-center space-x-3 mt-4 sm:mt-0 w-full sm:w-auto">
-                 <div class="search-input-wrapper w-full sm:w-64">
-                    <input type="text" id="qa-search-input" placeholder="질문 검색..." class="w-full p-2 pr-4 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-base">
-                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                </div>
+            <div class="flex items-center space-x-3 mt-4 sm:mt-0">
                 <button onclick="openQAForm()" class="btn btn-primary whitespace-nowrap text-sm">새 질문</button>
                 <button onclick="checkPasswordForQAManagement()" class="btn btn-secondary whitespace-nowrap text-sm">관리</button>
             </div>
@@ -489,7 +507,9 @@ function loadQA() {
         <div id="qa-list" class="space-y-8"></div>
     `;
     loadQAPosts();
-    document.getElementById('qa-search-input').addEventListener('input', (e) => searchPosts(e.target.value, 'qa'));
+    // Q&A 페이지 로드 시, 검색창 이벤트 리스너를 다시 연결
+    document.getElementById('global-search-input').removeEventListener('input', (e) => searchPosts(e.target.value, 'qa'));
+    document.getElementById('global-search-input').addEventListener('input', (e) => searchPosts(e.target.value, 'qa'));
 }
 
 function loadQAPosts(searchTerm = '') {
@@ -531,8 +551,8 @@ function displayQAPosts(qaPosts, container) {
                 </div>
                 <p class="post-summary text-gray-700 leading-relaxed mb-4">${summary}</p>
                 <div class="flex justify-end space-x-2 actions">
-                    <button onclick="editQAPost('${qaPost.id}')" class="btn btn-primary text-sm">수정</button>
-                    <button onclick="deleteQAPost('${qaPost.id}')" class="btn btn-danger text-sm">삭제</button>
+                    <button onclick="editQAPost('${qaPost.id}')" class="icon-btn primary text-lg" title="수정"><i class="fas fa-edit"></i></button>
+                    <button onclick="deleteQAPost('${qaPost.id}')" class="icon-btn danger text-lg" title="삭제"><i class="fas fa-trash-alt"></i></button>
                 </div>
             </div>
         `;
@@ -575,8 +595,8 @@ function manageQA() {
                     <p class="text-gray-700 leading-relaxed mb-6">비밀번호: <span class="password hidden font-mono text-gray-900">${qaPost.password}</span></p>
                     <div class="flex justify-end space-x-2 actions">
                         <button onclick="togglePassword(this)" class="btn btn-secondary btn-toggle-password text-sm">비밀번호 보기</button>
-                        <button onclick="editQAPost('${childSnapshot.key}')" class="btn btn-primary text-sm">수정</button>
-                        <button onclick="deleteQAPost('${childSnapshot.key}')" class="btn btn-danger text-sm">삭제</button>
+                        <button onclick="editQAPost('${childSnapshot.key}')" class="icon-btn primary text-lg" title="수정"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteQAPost('${childSnapshot.key}')" class="icon-btn danger text-lg" title="삭제"><i class="fas fa-trash-alt"></i></button>
                     </div>
                 </div>
             `;
@@ -722,11 +742,7 @@ function loadNotice() {
     mainContent.innerHTML = `
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6 notice-header">
             <h1 class="text-3xl font-bold text-gray-800">공지사항</h1>
-            <div class="flex items-center space-x-3 mt-4 sm:mt-0 w-full sm:w-auto">
-                <div class="search-input-wrapper w-full sm:w-64">
-                    <input type="text" id="notice-search-input" placeholder="공지 검색..." class="w-full p-2 pr-4 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-base">
-                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                </div>
+            <div class="flex items-center space-x-3 mt-4 sm:mt-0">
                 <button onclick="checkPasswordForNotice()" class="btn btn-primary whitespace-nowrap text-sm">새 공지 작성</button>
             </div>
         </div>
@@ -734,7 +750,9 @@ function loadNotice() {
         <div id="notice-list" class="space-y-8"></div>
     `;
     loadNoticePosts();
-    document.getElementById('notice-search-input').addEventListener('input', (e) => searchPosts(e.target.value, 'notice'));
+    // 공지사항 페이지 로드 시, 검색창 이벤트 리스너를 다시 연결
+    document.getElementById('global-search-input').removeEventListener('input', (e) => searchPosts(e.target.value, 'notice'));
+    document.getElementById('global-search-input').addEventListener('input', (e) => searchPosts(e.target.value, 'notice'));
 }
 
 function loadNoticePosts(searchTerm = '') {
@@ -776,8 +794,8 @@ function displayNoticePosts(noticePosts, container) {
                 </div>
                 <p class="post-summary text-gray-700 leading-relaxed mb-4">${summary}</p>
                 <div class="flex justify-end actions space-x-2">
-                    <button onclick="showNoticeDetail('${post.id}')" class="btn btn-outline-primary text-sm">더 보기</button>
-                    <button onclick="editNoticePost('${post.id}')" class="btn btn-primary text-sm">수정</button>
+                    <button onclick="showNoticeDetail('${post.id}')" class="icon-btn text-lg" title="더 보기"><i class="fas fa-eye"></i></button>
+                    <button onclick="editNoticePost('${post.id}')" class="icon-btn primary text-lg" title="수정"><i class="fas fa-edit"></i></button>
                 </div>
             </div>
         `;
@@ -1026,6 +1044,47 @@ function searchPosts(searchTerm, type) {
     } else if (type === 'notice') {
         const container = document.getElementById('notice-list');
         loadNoticePosts(searchTerm);
+    }
+}
+
+// --- 날씨 정보 가져오기 ---
+async function fetchWeather() {
+    const weatherDataElement = document.getElementById('weather-data');
+    if (!WEATHER_API_KEY || WEATHER_API_KEY === 'YOUR_OPENWEATHERMAP_API_KEY') {
+        weatherDataElement.innerHTML = '<p class="text-red-500">날씨 API 키를 설정해주세요.</p>';
+        return;
+    }
+
+    // 서울의 위도, 경도
+    const lat = 37.5665;
+    const lon = 126.9780;
+    const url = `${WEATHER_API_URL}?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric&lang=kr`; // 섭씨, 한국어
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`날씨 정보를 가져오는데 실패했습니다: ${response.statusText}`);
+        }
+        const data = await response.json();
+        console.log("Weather Data:", data); // 데이터 확인
+
+        const weatherDescription = data.weather[0].description;
+        const temp = data.main.temp;
+        const feelsLike = data.main.feels_like;
+        const iconCode = data.weather[0].icon;
+        const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+        const cityName = data.name;
+
+        weatherDataElement.innerHTML = `
+            <h4 class="text-xl font-semibold mb-2">${cityName}</h4>
+            <img src="${iconUrl}" alt="${weatherDescription}" class="mx-auto w-20 h-20">
+            <p class="text-3xl font-bold">${temp}°C</p>
+            <p class="text-lg">체감온도: ${feelsLike}°C</p>
+            <p class="text-base mt-2">${weatherDescription}</p>
+        `;
+    } catch (error) {
+        console.error("날씨 정보를 가져오는 중 오류 발생:", error);
+        weatherDataElement.innerHTML = '<p class="text-red-500">날씨 정보를 가져올 수 없습니다.</p>';
     }
 }
 
