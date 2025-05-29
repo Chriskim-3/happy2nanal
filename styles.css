@@ -12,12 +12,16 @@
     --text-color-dark: #1F2937; /* Gray-900 for headings/main text */
     --text-color-medium: #4B5563; /* Gray-700 for paragraphs */
     --text-color-light: #6B7280; /* Gray-500 for meta info/subtitles */
-    --accent-color: #5A67D8; /* Deeper Indigo/Blue for primary actions/links */
-    --accent-hover-color: #434190; /* Darker Indigo/Blue for hover states */
-    --danger-color: #EF4444; /* Red-500 for delete actions */
-    --danger-hover-color: #DC2626; /* Red-600 for danger hover */
+    --accent-color: #5A67D8; /* Deeper Indigo/Blue for primary actions/links (기존 유지) */
+    --accent-hover-color: #434190; /* Darker Indigo/Blue for hover states (기존 유지) */
+    --danger-color: #EF4444; /* Red-500 for delete actions (기존 유지) */
+    --danger-hover-color: #DC2626; /* Red-600 for danger hover (기존 유지) */
     --header-bg: #FFFFFF; /* White for header background */
     --header-border: #E0E0E0; /* Lighter gray for header border */
+
+    /* 새로운 무채색 계열 강조색 */
+    --neutral-accent: #6B7280; /* Gray-500 */
+    --neutral-accent-hover: #4B5563; /* Gray-700 */
 }
 
 body {
@@ -34,7 +38,7 @@ header {
 }
 
 .logo {
-    font-family: 'Playfair Display', serif; /* MyHappyWay 폰트 변경 */
+    font-family: 'Playfair Display', serif; /* Happy2Nanal 폰트 변경 */
     font-size: 3.2rem; /* 더 크게 강조 */
     font-weight: 900; /* 더 굵게 */
     color: var(--text-color-dark);
@@ -47,7 +51,6 @@ header {
 }
 
 nav ul {
-    /* border-color: var(--border-color); */
     border-bottom: none !important; /* 메뉴바 하단 보더 제거 (부모 div에 border-bottom이 적용됨) */
     border-top: none !important; /* 메뉴바 상단 보더 제거 */
 }
@@ -85,9 +88,9 @@ nav ul {
 }
 
 .nav-view-btn.active {
-    background-color: var(--accent-color);
+    background-color: var(--neutral-accent); /* 무채색 강조색으로 변경 */
     color: white;
-    border-color: var(--accent-color);
+    border-color: var(--neutral-accent);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -126,6 +129,49 @@ aside ul li span {
     color: var(--text-color-light);
 }
 
+/* 사이드바 최신글/인기글/공지사항 구분 디자인 */
+.sidebar-section {
+    position: relative;
+    overflow: hidden;
+    padding-top: 1.5rem; /* 제목과 아이콘 공간 확보 */
+}
+
+.sidebar-section h3 {
+    position: relative;
+    z-index: 10;
+    background-color: var(--secondary-bg); /* 배경색으로 덮어씌움 */
+    display: inline-block;
+    padding-right: 1rem; /* 제목과 보더 사이 간격 */
+}
+
+/* 공지사항 섹션 */
+.notice-section::before {
+    content: "\f0a1"; /* Bell icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 2.5rem; /* 아이콘 크기 */
+    color: var(--neutral-accent); /* 무채색 계열 */
+    opacity: 0.15;
+    z-index: 5;
+}
+
+/* 블로그 섹션 (최신글, 인기글) */
+.blog-section::before {
+    content: "\f1da"; /* Book open icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 2.5rem;
+    color: var(--neutral-accent);
+    opacity: 0.15;
+    z-index: 5;
+}
+
 /* 블로그/Q&A/공지사항 공통 카드 스타일 */
 .blog-post, .qa-post, .notice-post {
     background-color: var(--secondary-bg);
@@ -152,7 +198,7 @@ aside ul li span {
 }
 .blog-post h2 a:hover {
     text-decoration: underline;
-    color: var(--accent-color); /* 호버 시에만 포인트 색상 */
+    color: var(--neutral-accent); /* 호버 시에만 포인트 색상 (무채색 계열) */
 }
 
 
@@ -209,11 +255,11 @@ aside ul li span {
 }
 
 .btn-primary {
-    background-color: var(--accent-color);
+    background-color: var(--neutral-accent); /* 무채색 강조색으로 변경 */
     color: white;
 }
 .btn-primary:hover {
-    background-color: var(--accent-hover-color);
+    background-color: var(--neutral-accent-hover);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
@@ -247,11 +293,12 @@ aside ul li span {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
-/* 아이콘 버튼 스타일 */
-.icon-btn {
-    width: 36px; /* 버튼 크기 */
-    height: 36px;
-    border-radius: 50%; /* 원형 버튼 */
+/* 아이콘 버튼 스타일 (수정 및 텍스트 추가) */
+.icon-btn-text {
+    width: auto; /* 내용에 맞춰 너비 조정 */
+    min-width: 40px; /* 최소 너비 */
+    height: 40px; /* 높이 고정 */
+    border-radius: 20px; /* 타원형 또는 둥근 모서리 */
     background-color: var(--primary-bg);
     border: 1px solid var(--border-color);
     display: inline-flex;
@@ -260,36 +307,41 @@ aside ul li span {
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     color: var(--text-color-medium);
-    font-size: 1.2rem; /* 아이콘 크기 */
+    font-size: 0.85rem; /* 텍스트 크기 */
+    font-weight: 500;
+    padding: 0 1rem; /* 좌우 패딩 */
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
 }
 
-.icon-btn:hover {
+.icon-btn-text .icon {
+    margin-right: 0.4rem; /* 아이콘과 텍스트 사이 간격 */
+    font-size: 1.1rem; /* 아이콘 크기 */
+    color: var(--text-color-light); /* 아이콘 색상 */
+}
+
+.icon-btn-text:hover {
     background-color: var(--border-color);
     color: var(--text-color-dark);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
-.icon-btn.primary {
-    background-color: var(--accent-color);
-    color: white;
-    border-color: var(--accent-color);
-}
-.icon-btn.primary:hover {
-    background-color: var(--accent-hover-color);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+.icon-btn-text:hover .icon {
+    color: var(--text-color-medium);
 }
 
-.icon-btn.danger {
+.icon-btn-text.danger {
     background-color: var(--danger-color);
     color: white;
     border-color: var(--danger-color);
 }
-.icon-btn.danger:hover {
+.icon-btn-text.danger:hover {
     background-color: var(--danger-hover-color);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
-
+.icon-btn-text.danger .icon {
+    color: white; /* 삭제 아이콘은 항상 흰색 */
+}
 
 /* 폼 요소 스타일 */
 input[type="text"], input[type="password"], textarea, #blog-editor, #notice-editor {
@@ -303,8 +355,8 @@ input[type="text"], input[type="password"], textarea, #blog-editor, #notice-edit
 }
 input[type="text"]:focus, input[type="password"]:focus, textarea:focus, #blog-editor:focus, #notice-editor:focus {
     outline: none;
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.2); /* Focus ring */
+    border-color: var(--neutral-accent); /* 포커스 시 무채색 강조색 */
+    box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.2); /* Focus ring */
     background-color: white; /* 포커스 시 배경 흰색 */
 }
 
@@ -399,6 +451,79 @@ footer {
 .scroll-buttons button:hover {
     background-color: #333; /* Darker Gray */
 }
+
+/* 달력 위젯 스타일 */
+#calendar-widget .calendar-grid {
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    background-color: var(--primary-bg);
+}
+
+#calendar-widget .day-label {
+    padding: 0.5rem 0.2rem;
+    font-weight: 500;
+    text-align: center;
+    color: var(--text-color-medium);
+}
+
+#calendar-days .day {
+    padding: 0.6rem 0.2rem;
+    border-radius: 0.3rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+    text-align: center;
+    color: var(--text-color-dark);
+}
+
+#calendar-days .day:hover {
+    background-color: var(--border-color);
+}
+
+#calendar-days .day.current-month {
+    color: var(--text-color-dark);
+}
+
+#calendar-days .day.prev-month,
+#calendar-days .day.next-month {
+    color: var(--text-color-light);
+    opacity: 0.6;
+}
+
+#calendar-days .day.today {
+    background-color: var(--neutral-accent); /* 오늘 날짜 강조 */
+    color: white;
+    font-weight: 700;
+}
+
+#calendar-days .day.has-post {
+    background-color: #A7F3D0; /* Green-200 (글 있는 날짜) */
+    color: #065F46; /* Green-900 */
+    font-weight: 600;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+#calendar-days .day.has-post.today {
+    background-color: #34D399; /* Green-500 */
+    color: white;
+}
+
+#calendar-days .day.has-post::after {
+    content: '';
+    position: absolute;
+    bottom: 0.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    background-color: var(--text-color-medium); /* 점 표시 */
+    border-radius: 50%;
+}
+#calendar-days .day.has-post.today::after {
+    background-color: white;
+}
+
 
 /* 모바일 반응형 조정 */
 @media (max-width: 1024px) { /* lg 이하 */
