@@ -4,53 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Happy2Nanal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Tailwind CSS 기본 설정 및 커스텀 폰트 */
+        @layer base {
+            body {
+                font-family: 'Noto Sans KR', sans-serif;
+            }
+        }
+    </style>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <header>
-        <nav>
-            <div class="left-section">
-                <a href="#home" class="logo-text">Happy2Nanal</a>
-                <p class="subtitle">당신의 칼퇴를 응원합니다</p>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <header class="bg-white shadow-sm py-4 sticky top-0 z-40">
+        <div class="container mx-auto px-4 flex flex-col items-center">
+            <div class="flex flex-col items-center mb-4">
+                <a href="#blog" class="text-4xl font-extrabold text-gray-800 logo">Happy2Nanal</a>
+                <p class="text-gray-600 text-sm mt-1 subtitle">당신의 칼퇴를 응원합니다</p>
             </div>
-            <ul>
-                <li><a href="#home" class="nav-item">HOME</a></li>
-                <li><a href="#blog" class="nav-item">BLOG</a></li>
-                <li><a href="#qa" class="nav-item">Q&A</a></li>
-                <li><a href="#notice" class="nav-item">공지사항</a></li>
-            </ul>
-        </nav>
+            <nav class="w-full">
+                <ul class="flex justify-center space-x-10 border-t border-b border-gray-200 py-3">
+                    <li><a href="#blog" class="nav-item">BLOG</a></li>
+                    <li><a href="#qa" class="nav-item">Q&A</a></li>
+                    <li><a href="#notice" class="nav-item">공지사항</a></li>
+                    <li id="blog-view-toggle-nav-item" class="hidden">
+                        <div class="flex space-x-1">
+                            <button id="nav-list-view-btn" class="nav-view-btn active">목록형</button>
+                            <button id="nav-tile-view-btn" class="nav-view-btn">타일형</button>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </header>
 
-    <div id="main-content" role="main"></div>
+    <div class="flex-1 container mx-auto px-4 py-10 flex flex-col lg:flex-row gap-10">
+        <main id="main-content" role="main" class="flex-1 bg-white p-8 rounded-xl shadow-lg"></main>
 
-    <div id="blog-detail-modal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-button" id="close-blog-detail">&times;</span>
-            <h3 id="modal-blog-title"></h3>
-            <div class="text-gray-600 text-sm mb-4">
-                <span id="modal-blog-author"></span> | <span id="modal-blog-date"></span>
+        <aside class="w-full lg:w-80 space-y-8">
+             <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                <h3 class="text-2xl font-bold text-gray-800 mb-5 border-b pb-3 border-gray-200">최신 공지</h3>
+                <ul id="latest-notices-sidebar" class="space-y-4">
+                    <li class="text-gray-700">최신 공지가 없습니다.</li>
+                </ul>
             </div>
-            <div id="modal-blog-content" class="modal-post-content"></div>
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                <h3 class="text-2xl font-bold text-gray-800 mb-5 border-b pb-3 border-gray-200">인기글</h3>
+                <ul id="popular-posts-sidebar" class="space-y-4">
+                    <li class="text-gray-700">인기글이 없습니다.</li>
+                </ul>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                <h3 class="text-2xl font-bold text-gray-800 mb-5 border-b pb-3 border-gray-200">최신 글</h3>
+                <ul id="latest-posts-sidebar" class="space-y-4">
+                    <li class="text-gray-700">최신 글이 없습니다.</li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+
+    <div id="blog-detail-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden p-4">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-8 relative">
+            <button id="close-blog-detail" class="absolute top-4 right-4 text-gray-600 hover:text-gray-900 text-3xl font-bold">&times;</button>
+            <h2 id="modal-blog-title" class="text-3xl font-bold text-gray-900 mb-4"></h2>
+            <div class="meta-info text-gray-600 text-sm mb-6 flex justify-between items-center">
+                <span id="modal-blog-author" class="font-medium text-gray-700"></span>
+                <span id="modal-blog-date"></span>
+            </div>
+            <div id="modal-blog-content" class="prose prose-lg max-w-none text-gray-800 leading-relaxed"></div>
         </div>
     </div>
 
-    <div id="custom-modal-container" class="custom-modal-overlay hidden"></div>
+    <div id="custom-modal-container"></div>
 
-    <div class="scroll-buttons">
-        <button id="scrollUp">▲</button>
-        <button id="scrollDown">▼</button>
+
+    <div class="scroll-buttons fixed bottom-12 right-6 flex flex-col z-50">
+        <button id="scrollUp" class="bg-gray-700 text-white p-3 mb-2 rounded-full shadow-lg hover:bg-gray-800 transition-colors text-xl">▲</button>
+        <button id="scrollDown" class="bg-gray-700 text-white p-3 rounded-full shadow-lg hover:bg-gray-800 transition-colors text-xl">▼</button>
     </div>
 
-    <footer id="footer" style="display: none;">
-        <p>copyright ⓒ 2024 <strong>Happy2Nanal</strong> All Rights Reserved. | 
+    <footer id="footer" class="bg-gray-800 text-white text-center p-6 text-sm mt-auto shadow-inner" style="display: none;">
+        <p>copyright ⓒ 2024 <strong>Happy2Nanal</strong> All Rights Reserved. |
         개인정보 처리방침 | 출판 및 사이트와 관련된 기타 문의는 게시판을 이용해주세요.</p>
     </footer>
 
-    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script type="module" src="app.js"></script>
 </body>
 </html>
