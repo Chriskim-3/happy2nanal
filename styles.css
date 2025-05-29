@@ -1,1204 +1,368 @@
-import { database } from './firebaseConfig.js';
-import { ref, push, onValue, remove, update, get, set } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
-
-let quillBlog, quillQA, quillNotice; // Quill 인스턴스 전역 변수로 선언
-let currentBlogViewMode = 'list'; // 블로그 초기 보기 모드
-
-document.addEventListener('DOMContentLoaded', function() {
-    const scrollUpButton = document.getElementById('scrollUp');
-    const scrollDownButton = document.getElementById('scrollDown');
-    const footer = document.getElementById('footer');
-    const navItems = document.querySelectorAll('.nav-item');
-
-    // 스크롤 버튼 이벤트 리스너
-    scrollUpButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-    scrollDownButton.addEventListener('click', () => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }));
-
-    // 초기 페이지 로드 (blog)
-    // URL 해시값에 따라 초기 페이지 로드
-    const initialPage = window.location.hash ? window.location.hash.slice(1) : 'blog';
-    loadPage(initialPage);
-    loadSidebarPosts(); // 사이드바 포스트 로드
-
-    // 네비게이션 클릭 이벤트
-    document.querySelector('nav').addEventListener('click', function(e) {
-        if (e.target.tagName === 'A' && e.target.classList.contains('nav-item')) { // 클래스 확인 추가
-            e.preventDefault();
-            navItems.forEach(item => item.classList.remove('active'));
-            e.target.classList.add('active');
-            const page = e.target.getAttribute('href').slice(1);
-            loadPage(page);
-        }
-    });
-
-    // 푸터 가시성
-    window.addEventListener('scroll', function() {
-        // 뷰포트 높이 + 스크롤된 높이가 문서 전체 높이 - 푸터 높이보다 크거나 같을 때 푸터 표시
-        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - footer.offsetHeight) {
-            footer.style.display = 'block';
-        } else {
-            footer.style.display = 'none';
-        }
-    });
-
-    // 뒤로가기/앞으로가기 버튼 처리
-    window.addEventListener('popstate', function(event) {
-        const page = event.state ? event.state.page : 'blog';
-        navItems.forEach(item => item.classList.remove('active'));
-        const activeNavItem = document.querySelector(`.nav-item[href="#${page}"]`);
-        if (activeNavItem) {
-            activeNavItem.classList.add('active');
-        }
-        loadPage(page);
-    });
-
-    // 초기 로드 시 active 클래스 추가
-    const initialNavItem = document.querySelector(`.nav-item[href="#${initialPage}"]`);
-    if (initialNavItem) {
-        initialNavItem.classList.add('active');
-    } else {
-        // 기본값 'blog'를 active로 설정 (만약 초기 해시가 없거나 유효하지 않을 경우)
-        document.querySelector('.nav-item[href="#blog"]').classList.add('active');
+/* Custom Fonts and Base Styles - Tailwind CSS @layer base ensures these are applied correctly */
+@layer base {
+    body {
+        font-family: 'Noto Sans KR', sans-serif;
     }
-
-
-    // 보기 방식 토글 버튼 이벤트 리스너
-    document.getElementById('nav-list-view-btn').addEventListener('click', () => {
-        currentBlogViewMode = 'list';
-        document.getElementById('nav-list-view-btn').classList.add('active');
-        document.getElementById('nav-tile-view-btn').classList.remove('active');
-        loadBlogPosts(); // 현재 보기 모드로 다시 로드
-    });
-
-    document.getElementById('nav-tile-view-btn').addEventListener('click', () => {
-        currentBlogViewMode = 'tile';
-        document.getElementById('nav-tile-view-btn').classList.add('active');
-        document.getElementById('nav-list-view-btn').classList.remove('active');
-        loadBlogPosts(); // 현재 보기 모드로 다시 로드
-    });
-});
-
-function loadPage(page) {
-    const mainContent = document.getElementById('main-content');
-    mainContent.innerHTML = ''; // 기존 내용 지우기
-
-    // 모든 사이드바 섹션을 숨김
-    document.querySelectorAll('.sidebar-section').forEach(section => section.classList.add('hidden'));
-    document.getElementById('calendar-info-section').classList.add('hidden'); // 달력 숨김
-
-    // 보기 방식 토글 그룹 숨김 (블로그 페이지가 아니면)
-    document.getElementById('blog-view-toggle-group').classList.add('hidden');
-
-    switch (page) {
-        case 'blog':
-            mainContent.innerHTML = `
-                <div class="blog-header flex justify-between items-center mb-6">
-                    <h2 class="text-4xl font-bold text-gray-800">BLOG</h2>
-                    <button id="create-blog-post-btn" class="create-post-button">글 작성</button>
-                </div>
-                <div id="blog-posts-container" class="py-4"></div>
-            `;
-            document.getElementById('create-blog-post-btn').addEventListener('click', openBlogPostForm);
-            loadBlogPosts(); // 게시글 로드
-            document.querySelectorAll('.blog-section').forEach(section => section.classList.remove('hidden'));
-            document.getElementById('blog-view-toggle-group').classList.remove('hidden'); // 블로그 페이지에서만 보기 방식 토글 표시
-            // 초기 보기 모드에 따라 버튼 활성화
-            if (currentBlogViewMode === 'list') {
-                document.getElementById('nav-list-view-btn').classList.add('active');
-                document.getElementById('nav-tile-view-btn').classList.remove('active');
-            } else { // tile view
-                document.getElementById('nav-tile-view-btn').classList.add('active');
-                document.getElementById('nav-list-view-btn').classList.remove('active');
-            }
-            break;
-        case 'qa':
-            mainContent.innerHTML = `
-                <div class="qa-header flex justify-between items-center mb-6">
-                    <h2 class="text-4xl font-bold text-gray-800">Q&A</h2>
-                    <button id="create-qa-post-btn" class="create-post-button">질문 작성</button>
-                </div>
-                <div id="qa-posts-container" class="py-4"></div>
-            `;
-            document.getElementById('create-qa-post-btn').addEventListener('click', openQAPostForm);
-            loadQA(); // Q&A 로드
-            document.getElementById('calendar-info-section').classList.remove('hidden'); // Q&A 페이지에서 달력 표시
-            break;
-        case 'notice':
-            mainContent.innerHTML = `
-                <div class="notice-header flex justify-between items-center mb-6">
-                    <h2 class="text-4xl font-bold text-gray-800">공지사항</h2>
-                    <button id="create-notice-post-btn" class="create-post-button">공지 작성</button>
-                </div>
-                <div id="notice-posts-container" class="py-4"></div>
-            `;
-            document.getElementById('create-notice-post-btn').addEventListener('click', openNoticePostForm);
-            loadNotice(); // 공지사항 로드
-            document.querySelector('.sidebar-section.notice-section').classList.remove('hidden'); // 공지사항 섹션 표시
-            break;
-        default:
-            // 존재하지 않는 페이지는 블로그로 리다이렉트
-            loadPage('blog');
-            history.replaceState({ page: 'blog' }, '', '#blog');
-            break;
-    }
-    // 페이지 로드 시에만 history pushState 호출
-    if (window.location.hash !== `#${page}`) {
-        history.pushState({ page: page }, '', `#${page}`);
+    .ql-editor { /* Quill 에디터 내 폰트 */
+        font-family: 'Noto Sans KR', sans-serif;
     }
 }
 
-// =====================================
-// Custom Modal / Prompt Functions (Async/Await)
-// =====================================
+/* Tailwind CSS를 사용하므로, 여기에 복잡한 레이아웃/색상/폰트 스타일은 최소화합니다. */
 
-function showCustomModal({ title, content, buttons = [{ text: '확인', value: 'confirm', className: 'confirm-button' }] }) {
-    return new Promise(resolve => {
-        const modalContainer = document.getElementById('custom-modal-container');
-        modalContainer.innerHTML = ''; // Clear previous modals
-
-        const modal = document.createElement('div');
-        modal.classList.add('custom-modal', 'bg-white', 'p-8', 'rounded-xl', 'shadow-2xl', 'relative', 'max-w-md', 'mx-auto');
-        modal.innerHTML = `
-            <h3 class="text-2xl font-bold text-gray-900 mb-4">${title}</h3>
-            <p class="text-gray-700 mb-6">${content}</p>
-            <div class="custom-modal-buttons flex justify-end space-x-3">
-                ${buttons.map(btn => `<button class="${btn.className || 'btn-secondary'} px-4 py-2 rounded-md font-medium text-sm hover:opacity-80 transition-opacity" data-value="${btn.value}">${btn.text}</button>`).join('')}
-            </div>
-            <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-xl" data-value="cancel">&times;</button>
-        `;
-
-        modalContainer.appendChild(modal);
-        modalContainer.classList.remove('hidden'); // Show container
-
-        modal.querySelectorAll('button').forEach(button => {
-            button.addEventListener('click', () => {
-                modalContainer.classList.add('hidden'); // Hide container
-                modalContainer.innerHTML = ''; // Clean up
-                resolve(button.dataset.value);
-            });
-        });
-    });
+body, html {
+    margin: 0;
+    padding: 0;
 }
 
-function showCustomPrompt({ title, content, inputType = 'text', placeholder = '', confirmText = '확인', cancelText = '취소' }) {
-    return new Promise(resolve => {
-        const modalContainer = document.getElementById('custom-modal-container');
-        modalContainer.innerHTML = '';
-
-        const prompt = document.createElement('div');
-        prompt.classList.add('custom-prompt', 'bg-white', 'p-8', 'rounded-xl', 'shadow-2xl', 'relative', 'max-w-md', 'mx-auto');
-        prompt.innerHTML = `
-            <h3 class="text-2xl font-bold text-gray-900 mb-4">${title}</h3>
-            <p class="text-gray-700 mb-4">${content}</p>
-            <input type="${inputType}" class="w-full p-3 border border-gray-300 rounded-md mb-6 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="${placeholder}" id="custom-prompt-input">
-            <div class="custom-prompt-buttons flex justify-end space-x-3">
-                <button class="cancel-button bg-gray-300 text-gray-800 px-4 py-2 rounded-md font-medium text-sm hover:bg-gray-400 transition-colors duration-200">${cancelText}</button>
-                <button class="confirm-button bg-blue-600 text-white px-4 py-2 rounded-md font-medium text-sm hover:bg-blue-700 transition-colors duration-200">${confirmText}</button>
-            </div>
-            <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-xl" data-value="cancel">&times;</button>
-        `;
-
-        modalContainer.appendChild(prompt);
-        modalContainer.classList.remove('hidden');
-
-        const input = document.getElementById('custom-prompt-input');
-        const confirmBtn = prompt.querySelector('.confirm-button');
-        const cancelBtn = prompt.querySelector('.cancel-button');
-        const closeBtn = prompt.querySelector('[data-value="cancel"]');
-
-        const cleanup = (value) => {
-            modalContainer.classList.add('hidden');
-            modalContainer.innerHTML = '';
-            resolve(value);
-        };
-
-        confirmBtn.addEventListener('click', () => cleanup(input.value));
-        cancelBtn.addEventListener('click', () => cleanup(null));
-        closeBtn.addEventListener('click', () => cleanup(null));
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                confirmBtn.click();
-            }
-        });
-
-        input.focus();
-    });
+body {
+    min-height: 100vh;
+    flex-direction: column;
 }
 
-// =====================================
-// Blog Functions
-// =====================================
-
-function loadBlogPosts() {
-    const postsRef = ref(database, 'posts');
-    onValue(postsRef, (snapshot) => {
-        const posts = snapshot.val() || {};
-        displayBlogPosts(posts, currentBlogViewMode); // 현재 보기 모드를 전달
-    }, {
-        onlyOnce: false // 실시간 업데이트를 위해 false
-    });
+/* 블로그 목록 스타일 (list-view) */
+.blog-list-view .blog-post-item {
+    display: flex;
+    flex-direction: column; /* 제목, 요약, 메타, 버튼이 세로로 정렬되도록 변경 */
+    align-items: flex-start; /* 왼쪽 정렬 */
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0; /* gray-200 */
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
 }
 
-function displayBlogPosts(posts, viewMode) {
-    const postsContainer = document.getElementById('blog-posts-container');
-    postsContainer.innerHTML = '';
-
-    if (Object.keys(posts).length === 0) {
-        postsContainer.innerHTML = '<p class="text-gray-600 text-center py-8">아직 블로그 게시글이 없습니다.</p>';
-        return;
-    }
-
-    postsContainer.className = '';
-    postsContainer.classList.add('py-4');
-    if (viewMode === 'list') {
-        postsContainer.classList.add('blog-list-view');
-    } else { // tile view
-        postsContainer.classList.add('blog-tile-view');
-    }
-
-    Object.keys(posts).reverse().forEach(postId => {
-        const post = posts[postId];
-        const postElement = document.createElement('div');
-        postElement.classList.add('blog-post-item');
-
-        let contentHTML;
-        if (viewMode === 'list') {
-            contentHTML = `
-                <div class="post-text-content" data-post-id="${postId}" data-post-type="blog">
-                    <h3 class="post-title cursor-pointer">${post.title}</h3>
-                    <div class="post-summary">${post.content.replace(/<[^>]*>/g, '').substring(0, 150)}${post.content.replace(/<[^>]*>/g, '').length > 150 ? '...' : ''}</div>
-                    <div class="post-meta">
-                        <span>${post.author}</span>
-                        <span>${post.date}</span>
-                    </div>
-                </div>
-                <div class="post-management-buttons flex items-center mt-4">
-                    <button class="edit-button" onclick="window.showCustomPrompt({
-                        title: '비밀번호 확인',
-                        content: '게시글을 수정하려면 비밀번호를 입력하세요.',
-                        inputType: 'password',
-                        placeholder: '비밀번호'
-                    }).then(password => window.checkPasswordForBlogPost('${postId}', password, 'edit'))">✏️ 수정</button>
-                    <button class="delete-button" onclick="window.showCustomPrompt({
-                        title: '비밀번호 확인',
-                        content: '게시글을 삭제하려면 비밀번호를 입력하세요.',
-                        inputType: 'password',
-                        placeholder: '비밀번호'
-                    }).then(password => window.checkPasswordForBlogPost('${postId}', password, 'delete'))">🗑️ 삭제</button>
-                </div>
-            `;
-        } else { // tile view
-            const imageUrlMatch = post.content.match(/<img[^>]+src="([^">]+)"/);
-            const thumbnailUrl = imageUrlMatch ? imageUrlMatch[1] : '';
-            const summaryText = post.content.replace(/<[^>]*>/g, '');
-
-            contentHTML = `
-                <div class="post-thumbnail">
-                    ${thumbnailUrl ? `<img src="${thumbnailUrl}" alt="Thumbnail">` : '<span>No Image</span>'}
-                </div>
-                <div class="post-text-content" data-post-id="${postId}" data-post-type="blog">
-                    <h3 class="post-title cursor-pointer">${post.title}</h3>
-                    <div class="post-summary">${summaryText.substring(0, 100)}${summaryText.length > 100 ? '...' : ''}</div>
-                    <div class="post-meta">
-                        <span>${post.author}</span>
-                        <span>${post.date}</span>
-                    </div>
-                </div>
-                <div class="post-management-buttons flex items-center justify-end p-4">
-                    <button class="edit-button" onclick="window.showCustomPrompt({
-                        title: '비밀번호 확인',
-                        content: '게시글을 수정하려면 비밀번호를 입력하세요.',
-                        inputType: 'password',
-                        placeholder: '비밀번호'
-                    }).then(password => window.checkPasswordForBlogPost('${postId}', password, 'edit'))">✏️ 수정</button>
-                    <button class="delete-button" onclick="window.showCustomPrompt({
-                        title: '비밀번호 확인',
-                        content: '게시글을 삭제하려면 비밀번호를 입력하세요.',
-                        inputType: 'password',
-                        placeholder: '비밀번호'
-                    }).then(password => window.checkPasswordForBlogPost('${postId}', password, 'delete'))">🗑️ 삭제</button>
-                </div>
-            `;
-        }
-
-        postElement.innerHTML = contentHTML;
-        postsContainer.appendChild(postElement);
-
-        // 제목 클릭 이벤트 리스너 추가
-        postElement.querySelector('.post-title').addEventListener('click', () => {
-            openBlogPostDetail(postId);
-        });
-    });
+.blog-list-view .blog-post-item:hover {
+    background-color: #f8f8f8; /* gray-50 */
 }
 
-async function openBlogPostForm(postId = null) {
-    const mainContent = document.getElementById('main-content');
-    mainContent.innerHTML = `
-        <h2 class="text-3xl font-bold text-gray-800 mb-6">${postId ? '블로그 게시글 수정' : '블로그 게시글 작성'}</h2>
-        <div class="bg-white p-8 rounded-xl shadow-lg">
-            <div class="mb-4">
-                <label for="blog-title" class="block text-gray-700 text-sm font-bold mb-2">제목:</label>
-                <input type="text" id="blog-title" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            </div>
-            <div class="mb-4">
-                <label for="blog-author" class="block text-gray-700 text-sm font-bold mb-2">작성자:</label>
-                <input type="text" id="blog-author" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            </div>
-            <div class="mb-4">
-                <label for="blog-password" class="block text-gray-700 text-sm font-bold mb-2">비밀번호:</label>
-                <input type="password" id="blog-password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline">
-            </div>
-            <div class="mb-6">
-                <label for="blog-editor" class="block text-gray-700 text-sm font-bold mb-2">내용:</label>
-                <div id="blog-editor"></div>
-            </div>
-            <div class="flex items-center justify-between">
-                <button id="save-blog-post-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">저장</button>
-                <button id="cancel-blog-post-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">취소</button>
-            </div>
-        </div>
-    `;
-
-    quillBlog = new Quill('#blog-editor', {
-        theme: 'snow',
-        modules: {
-            toolbar: [
-                [{ 'header': [1, 2, 3, false] }],
-                ['bold', 'italic', 'underline', 'strike'],
-                ['blockquote', 'code-block'],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                [{ 'indent': '-1'}, { 'indent': '+1' }],
-                ['link', 'image'],
-                [{ 'align': [] }],
-                ['clean']
-            ]
-        }
-    });
-
-    if (postId) {
-        const postRef = ref(database, `posts/${postId}`);
-        const snapshot = await get(postRef);
-        const post = snapshot.val();
-        if (post) {
-            document.getElementById('blog-title').value = post.title;
-            document.getElementById('blog-author').value = post.author;
-            quillBlog.setContents(quillBlog.clipboard.convert(post.content)); // HTML을 Quill content로 변환
-            document.getElementById('save-blog-post-btn').onclick = () => updateBlogPost(postId);
-        }
-    } else {
-        document.getElementById('save-blog-post-btn').onclick = saveBlogPost;
-    }
-
-    document.getElementById('cancel-blog-post-btn').onclick = () => loadPage('blog');
+.blog-list-view .blog-post-item:last-child {
+    border-bottom: none;
 }
 
-function saveBlogPost() {
-    const title = document.getElementById('blog-title').value;
-    const author = document.getElementById('blog-author').value;
-    const password = document.getElementById('blog-password').value;
-    const content = quillBlog.root.innerHTML; // Quill 에디터의 HTML 내용 가져오기
-
-    if (!title || !author || !password || !content || content === '<p><br></p>') { // 내용이 비어있는 경우도 체크
-        showCustomModal({ title: '오류', content: '모든 필드를 채워주세요.' });
-        return;
-    }
-
-    const newPostRef = push(ref(database, 'posts'));
-    set(newPostRef, {
-        title,
-        author,
-        password, // 비밀번호 저장 (실제 서비스에서는 해싱 필요)
-        content,
-        date: new Date().toISOString().slice(0, 10), //YYYY-MM-DD
-        views: 0 // 초기 조회수
-    })
-    .then(() => {
-        showCustomModal({ title: '성공', content: '블로그 게시글이 성공적으로 저장되었습니다!' });
-        loadPage('blog');
-    })
-    .catch((error) => {
-        console.error("블로그 게시글 저장 중 오류 발생: ", error);
-        showCustomModal({ title: '오류', content: '블로그 게시글 저장에 실패했습니다.' });
-    });
+.blog-list-view .blog-post-item .post-text-content {
+    width: 100%; /* 너비를 100%로 설정하여 텍스트가 전체 너비를 차지하도록 */
+    margin-bottom: 1rem; /* 텍스트와 버튼 사이 간격 */
 }
 
-async function updateBlogPost(postId) {
-    const title = document.getElementById('blog-title').value;
-    const author = document.getElementById('blog-author').value;
-    const passwordInput = document.getElementById('blog-password').value;
-    const content = quillBlog.root.innerHTML;
-
-    if (!title || !author || !passwordInput || !content || content === '<p><br></p>') {
-        showCustomModal({ title: '오류', content: '모든 필드를 채워주세요.' });
-        return;
-    }
-
-    const postRef = ref(database, `posts/${postId}`);
-    const snapshot = await get(postRef);
-    const post = snapshot.val();
-
-    if (!post || post.password !== passwordInput) {
-        showCustomModal({ title: '오류', content: '비밀번호가 올바르지 않습니다.' });
-        return;
-    }
-
-    update(postRef, { title, author, content })
-        .then(() => {
-            showCustomModal({ title: '성공', content: '블로그 게시글이 성공적으로 수정되었습니다!' });
-            loadPage('blog');
-        })
-        .catch((error) => {
-            console.error("블로그 게시글 수정 중 오류 발생: ", error);
-            showCustomModal({ title: '오류', content: '블로그 게시글 수정에 실패했습니다.' });
-        });
+.blog-list-view .blog-post-item .post-title {
+    font-size: 1.25rem; /* text-xl */
+    font-weight: 700; /* font-bold */
+    color: #1a202c; /* gray-900 */
+    margin-bottom: 0.5rem;
 }
 
-async function deleteBlogPost(postId) {
-    const confirmDelete = await showCustomModal({
-        title: '삭제 확인',
-        content: '정말로 이 블로그 게시글을 삭제하시겠습니까?',
-        buttons: [
-            { text: '삭제', value: 'delete', className: 'btn-danger' },
-            { text: '취소', value: 'cancel', className: 'btn-secondary' }
-        ]
-    });
-
-    if (confirmDelete === 'delete') {
-        const postRef = ref(database, `posts/${postId}`);
-        remove(postRef)
-            .then(() => {
-                showCustomModal({ title: '성공', content: '블로그 게시글이 성공적으로 삭제되었습니다!' });
-                loadPage('blog');
-            })
-            .catch((error) => {
-                console.error("블로그 게시글 삭제 중 오류 발생: ", error);
-                showCustomModal({ title: '오류', content: '블로그 게시글 삭제에 실패했습니다.' });
-            });
-    }
+.blog-list-view .blog-post-item .post-summary {
+    color: #4a5568; /* gray-700 */
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+    /* 2줄로 제한하고 ... 처리 */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-async function checkPasswordForBlogPost(postId, password, action) {
-    // 하드코딩된 비밀번호 111로 변경
-    const correctPassword = '111';
-
-    if (password === null) { // '취소'를 눌렀을 때
-        return;
-    }
-    if (!password) {
-        showCustomModal({ title: '오류', content: '비밀번호를 입력하세요.' });
-        return;
-    }
-
-    if (password === correctPassword) { // 입력된 비밀번호가 111이면
-        if (action === 'edit') {
-            openBlogPostForm(postId);
-        } else if (action === 'delete') {
-            deleteBlogPost(postId);
-        }
-    } else {
-        showCustomModal({ title: '오류', content: '비밀번호가 올바르지 않습니다.' });
-    }
+.blog-list-view .blog-post-item .post-meta {
+    font-size: 0.875rem; /* text-sm */
+    color: #718096; /* gray-500 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* 너비를 100%로 설정하여 justify-between이 잘 작동하도록 */
 }
 
-async function openBlogPostDetail(postId) {
-    const postRef = ref(database, `posts/${postId}`);
-    const snapshot = await get(postRef);
-    const post = snapshot.val();
-
-    if (post) {
-        document.getElementById('modal-blog-title').innerText = post.title;
-        document.getElementById('modal-blog-author').innerText = `작성자: ${post.author}`;
-        document.getElementById('modal-blog-date').innerText = post.date;
-        document.getElementById('modal-blog-content').innerHTML = post.content; // HTML 그대로 렌더링
-
-        // 조회수 증가
-        const currentViews = post.views ? post.views + 1 : 1;
-        update(postRef, { views: currentViews });
-
-        document.getElementById('blog-detail-modal').classList.remove('hidden');
-
-        document.getElementById('close-blog-detail').onclick = () => {
-            document.getElementById('blog-detail-modal').classList.add('hidden');
-        };
-    } else {
-        showCustomModal({ title: '오류', content: '게시글을 찾을 수 없습니다.' });
-    }
+/* 블로그 목록 스타일 (tile-view) */
+.blog-tile-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* 반응형 그리드 */
+    gap: 1.5rem; /* gap-6 */
 }
 
-// =====================================
-// Q&A Functions
-// =====================================
-
-function loadQA() {
-    const qaRef = ref(database, 'qa');
-    onValue(qaRef, (snapshot) => {
-        const qaPosts = snapshot.val() || {};
-        displayQAPosts(qaPosts);
-    }, {
-        onlyOnce: false
-    });
+.blog-tile-view .blog-post-item {
+    background-color: #ffffff; /* bg-white */
+    border: 1px solid #e2e8f0; /* border-gray-200 */
+    border-radius: 0.75rem; /* rounded-xl */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    display: flex; /* 내부 콘텐츠를 flex로 하여 레이아웃 조정 */
+    flex-direction: column; /* 세로 정렬 */
 }
 
-function displayQAPosts(qaPosts) {
-    const qaPostsContainer = document.getElementById('qa-posts-container');
-    if (!qaPostsContainer) return;
-
-    qaPostsContainer.innerHTML = '';
-
-    if (Object.keys(qaPosts).length === 0) {
-        qaPostsContainer.innerHTML = '<p class="text-gray-600 text-center py-8">아직 Q&A 게시글이 없습니다.</p>';
-        return;
-    }
-
-    Object.keys(qaPosts).reverse().forEach(postId => {
-        const post = qaPosts[postId];
-        const postElement = document.createElement('div');
-        postElement.classList.add('qa-list-item');
-
-        postElement.innerHTML = `
-            <div class="post-text-content" data-post-id="${postId}" data-post-type="qa">
-                <h3 class="post-title cursor-pointer">${post.title}</h3>
-                <div class="post-meta">
-                    <span>작성자: ${post.nickname}</span>
-                    <span>${post.date}</span>
-                </div>
-            </div>
-            <div class="post-management-buttons flex items-center justify-end p-4">
-                <button class="edit-button" onclick="window.showCustomPrompt({
-                    title: '비밀번호 확인',
-                    content: '게시글을 수정하려면 비밀번호를 입력하세요.',
-                    inputType: 'password',
-                    placeholder: '비밀번호'
-                }).then(password => window.checkPasswordForQAManagement('${postId}', password, 'edit'))">✏️ 수정</button>
-                <button class="delete-button" onclick="window.showCustomPrompt({
-                    title: '비밀번호 확인',
-                    content: '게시글을 삭제하려면 비밀번호를 입력하세요.',
-                    inputType: 'password',
-                    placeholder: '비밀번호'
-                }).then(password => window.checkPasswordForQAManagement('${postId}', password, 'delete'))">🗑️ 삭제</button>
-            </div>
-        `;
-        qaPostsContainer.appendChild(postElement);
-
-        // 제목 클릭 이벤트 리스너 추가
-        postElement.querySelector('.post-title').addEventListener('click', () => {
-            openQADetail(postId);
-        });
-    });
+.blog-tile-view .blog-post-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15); /* shadow-lg */
 }
 
-async function openQAPostForm(postId = null) {
-    const mainContent = document.getElementById('main-content');
-    mainContent.innerHTML = `
-        <h2 class="text-3xl font-bold text-gray-800 mb-6">${postId ? 'Q&A 수정' : 'Q&A 작성'}</h2>
-        <div class="bg-white p-8 rounded-xl shadow-lg">
-            <div class="mb-4">
-                <label for="qa-title" class="block text-gray-700 text-sm font-bold mb-2">제목:</label>
-                <input type="text" id="qa-title" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            </div>
-            <div class="mb-4">
-                <label for="qa-nickname" class="block text-gray-700 text-sm font-bold mb-2">닉네임:</label>
-                <input type="text" id="qa-nickname" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            </div>
-            <div class="mb-4">
-                <label for="qa-password" class="block text-gray-700 text-sm font-bold mb-2">비밀번호:</label>
-                <input type="password" id="qa-password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline">
-            </div>
-            <div class="mb-6">
-                <label for="qa-editor" class="block text-gray-700 text-sm font-bold mb-2">내용:</label>
-                <div id="qa-editor"></div>
-            </div>
-            <div class="flex items-center justify-between">
-                <button id="save-qa-post-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">저장</button>
-                <button id="cancel-qa-post-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">취소</button>
-            </div>
-        </div>
-    `;
-
-    quillQA = new Quill('#qa-editor', {
-        theme: 'snow',
-        modules: {
-            toolbar: [
-                [{ 'header': [1, 2, 3, false] }],
-                ['bold', 'italic', 'underline', 'strike'],
-                ['blockquote', 'code-block'],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                [{ 'indent': '-1'}, { 'indent': '+1' }],
-                ['link', 'image'],
-                [{ 'align': [] }],
-                ['clean']
-            ]
-        }
-    });
-
-    if (postId) {
-        const postRef = ref(database, `qa/${postId}`);
-        const snapshot = await get(postRef);
-        const post = snapshot.val();
-        if (post) {
-            document.getElementById('qa-title').value = post.title;
-            document.getElementById('qa-nickname').value = post.nickname;
-            quillQA.setContents(quillQA.clipboard.convert(post.content));
-            document.getElementById('save-qa-post-btn').onclick = () => updateQAPost(postId);
-        }
-    } else {
-        document.getElementById('save-qa-post-btn').onclick = saveQAPost;
-    }
-
-    document.getElementById('cancel-qa-post-btn').onclick = () => loadPage('qa');
+.blog-tile-view .blog-post-item .post-thumbnail {
+    width: 100%;
+    height: 180px; /* 고정 높이 */
+    background-color: #e2e8f0; /* gray-200, placeholder */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #718096; /* gray-500 */
+    font-size: 0.9rem;
+    overflow: hidden; /* 이미지가 넘치면 잘라내기 */
+}
+.blog-tile-view .blog-post-item .post-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 이미지가 썸네일 박스에 꽉 차도록 */
 }
 
-function saveQAPost() {
-    const title = document.getElementById('qa-title').value;
-    const nickname = document.getElementById('qa-nickname').value;
-    const password = document.getElementById('qa-password').value;
-    const content = quillQA.root.innerHTML;
-
-    if (!title || !nickname || !password || !content || content === '<p><br></p>') {
-        showCustomModal({ title: '오류', content: '모든 필드를 채워주세요.' });
-        return;
-    }
-
-    const newPostRef = push(ref(database, 'qa'));
-    set(newPostRef, {
-        title,
-        nickname,
-        password,
-        content,
-        date: new Date().toISOString().slice(0, 10)
-    })
-    .then(() => {
-        showCustomModal({ title: '성공', content: 'Q&A 게시글이 성공적으로 저장되었습니다!' });
-        loadPage('qa');
-    })
-    .catch((error) => {
-        console.error("Q&A 게시글 저장 중 오류 발생: ", error);
-        showCustomModal({ title: '오류', content: 'Q&A 게시글 저장에 실패했습니다.' });
-    });
+.blog-tile-view .blog-post-item .post-text-content {
+    padding: 1.25rem; /* p-5 */
+    flex-grow: 1; /* 콘텐츠 영역이 남은 공간을 차지하도록 */
+    display: flex;
+    flex-direction: column;
 }
 
-async function updateQAPost(postId) {
-    const title = document.getElementById('qa-title').value;
-    const nickname = document.getElementById('qa-nickname').value;
-    const passwordInput = document.getElementById('qa-password').value;
-    const content = quillQA.root.innerHTML;
-
-    if (!title || !nickname || !passwordInput || !content || content === '<p><br></p>') {
-        showCustomModal({ title: '오류', content: '모든 필드를 채워주세요.' });
-        return;
-    }
-
-    const postRef = ref(database, `qa/${postId}`);
-    const snapshot = await get(postRef);
-    const post = snapshot.val();
-
-    if (!post || post.password !== passwordInput) {
-        showCustomModal({ title: '오류', content: '비밀번호가 올바르지 않습니다.' });
-        return;
-    }
-
-    update(postRef, { title, nickname, content })
-        .then(() => {
-            showCustomModal({ title: '성공', content: 'Q&A 게시글이 성공적으로 수정되었습니다!' });
-            loadPage('qa');
-        })
-        .catch((error) => {
-            console.error("Q&A 게시글 수정 중 오류 발생: ", error);
-            showCustomModal({ title: '오류', content: 'Q&A 게시글 수정에 실패했습니다.' });
-        });
+.blog-tile-view .blog-post-item .post-title {
+    font-size: 1.125rem; /* text-lg */
+    font-weight: 700; /* font-bold */
+    color: #1a202c; /* gray-900 */
+    margin-bottom: 0.5rem; /* mb-2 */
+    /* 2줄로 제한하고 ... 처리 */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-async function deleteQAPost(postId) {
-    const confirmDelete = await showCustomModal({
-        title: '삭제 확인',
-        content: '정말로 이 Q&A 게시글을 삭제하시겠습니까?',
-        buttons: [
-            { text: '삭제', value: 'delete', className: 'btn-danger' },
-            { text: '취소', value: 'cancel', className: 'btn-secondary' }
-        ]
-    });
-
-    if (confirmDelete === 'delete') {
-        const postRef = ref(database, `qa/${postId}`);
-        remove(postRef)
-            .then(() => {
-                showCustomModal({ title: '성공', content: 'Q&A 게시글이 성공적으로 삭제되었습니다!' });
-                loadPage('qa');
-            })
-            .catch((error) => {
-                console.error("Q&A 게시글 삭제 중 오류 발생: ", error);
-                showCustomModal({ title: '오류', content: 'Q&A 게시글 삭제에 실패했습니다.' });
-            });
-    }
+.blog-tile-view .blog-post-item .post-summary {
+    color: #4a5568; /* gray-700 */
+    font-size: 0.95rem;
+    margin-bottom: 1rem; /* mb-4 */
+    line-height: 1.5;
+    /* 3줄로 제한하고 ... 처리 */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-async function checkPasswordForQAManagement(postId, password, action) {
-    // 하드코딩된 비밀번호 111로 변경
-    const correctPassword = '111';
-
-    if (password === null) {
-        return;
-    }
-    if (!password) {
-        showCustomModal({ title: '오류', content: '비밀번호를 입력하세요.' });
-        return;
-    }
-
-    if (password === correctPassword) { // 입력된 비밀번호가 111이면
-        if (action === 'edit') {
-            openQAPostForm(postId);
-        } else if (action === 'delete') {
-            deleteQAPost(postId);
-        }
-    } else {
-        showCustomModal({ title: '오류', content: '비밀번호가 올바르지 않습니다.' });
-    }
-}
-
-async function openQADetail(postId) {
-    const postRef = ref(database, `qa/${postId}`);
-    const snapshot = await get(postRef);
-    const post = snapshot.val();
-
-    if (post) {
-        document.getElementById('modal-blog-title').innerText = post.title;
-        document.getElementById('modal-blog-author').innerText = `작성자: ${post.nickname}`;
-        document.getElementById('modal-blog-date').innerText = post.date;
-        document.getElementById('modal-blog-content').innerHTML = post.content;
-
-        document.getElementById('blog-detail-modal').classList.remove('hidden');
-
-        document.getElementById('close-blog-detail').onclick = () => {
-            document.getElementById('blog-detail-modal').classList.add('hidden');
-        };
-    } else {
-        showCustomModal({ title: '오류', content: 'Q&A 게시글을 찾을 수 없습니다.' });
-    }
-}
-
-// =====================================
-// Notice Functions
-// =====================================
-
-function loadNotice() {
-    const noticeRef = ref(database, 'notice');
-    onValue(noticeRef, (snapshot) => {
-        const noticePosts = snapshot.val() || {};
-        displayNoticePosts(noticePosts);
-    }, {
-        onlyOnce: false
-    });
-}
-
-function displayNoticePosts(noticePosts) {
-    const noticePostsContainer = document.getElementById('notice-posts-container');
-    if (!noticePostsContainer) return;
-
-    noticePostsContainer.innerHTML = '';
-
-    if (Object.keys(noticePosts).length === 0) {
-        noticePostsContainer.innerHTML = '<p class="text-gray-600 text-center py-8">아직 공지사항 게시글이 없습니다.</p>';
-        return;
-    }
-
-    Object.keys(noticePosts).reverse().forEach(postId => {
-        const post = noticePosts[postId];
-        const postElement = document.createElement('div');
-        postElement.classList.add('notice-list-item');
-
-        postElement.innerHTML = `
-            <div class="post-text-content" data-post-id="${postId}" data-post-type="notice">
-                <h3 class="post-title cursor-pointer">${post.title}</h3>
-                <div class="post-meta">
-                    <span>작성자: ${post.author}</span>
-                    <span>${post.date}</span>
-                </div>
-            </div>
-            <div class="post-management-buttons flex items-center justify-end p-4">
-                <button class="edit-button" onclick="window.showCustomPrompt({
-                    title: '비밀번호 확인',
-                    content: '게시글을 수정하려면 비밀번호를 입력하세요.',
-                    inputType: 'password',
-                    placeholder: '비밀번호'
-                }).then(password => window.checkPasswordForNoticeManagement('${postId}', password, 'edit'))">✏️ 수정</button>
-                <button class="delete-button" onclick="window.showCustomPrompt({
-                    title: '비밀번호 확인',
-                    content: '게시글을 삭제하려면 비밀번호를 입력하세요.',
-                    inputType: 'password',
-                    placeholder: '비밀번호'
-                }).then(password => window.checkPasswordForNoticeManagement('${postId}', password, 'delete'))">🗑️ 삭제</button>
-            </div>
-        `;
-        noticePostsContainer.appendChild(postElement);
-
-        // 제목 클릭 이벤트 리스너 추가
-        postElement.querySelector('.post-title').addEventListener('click', () => {
-            openNoticeDetail(postId);
-        });
-    });
-}
-
-async function openNoticePostForm(postId = null) {
-    const mainContent = document.getElementById('main-content');
-    mainContent.innerHTML = `
-        <h2 class="text-3xl font-bold text-gray-800 mb-6">${postId ? '공지사항 수정' : '공지사항 작성'}</h2>
-        <div class="bg-white p-8 rounded-xl shadow-lg">
-            <div class="mb-4">
-                <label for="notice-title" class="block text-gray-700 text-sm font-bold mb-2">제목:</label>
-                <input type="text" id="notice-title" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            </div>
-            <div class="mb-4">
-                <label for="notice-author" class="block text-gray-700 text-sm font-bold mb-2">작성자:</label>
-                <input type="text" id="notice-author" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            </div>
-            <div class="mb-4">
-                <label for="notice-password" class="block text-gray-700 text-sm font-bold mb-2">비밀번호:</label>
-                <input type="password" id="notice-password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline">
-            </div>
-            <div class="mb-6">
-                <label for="notice-editor" class="block text-gray-700 text-sm font-bold mb-2">내용:</label>
-                <div id="notice-editor"></div>
-            </div>
-            <div class="flex items-center justify-between">
-                <button id="save-notice-post-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">저장</button>
-                <button id="cancel-notice-post-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">취소</button>
-            </div>
-        </div>
-    `;
-
-    quillNotice = new Quill('#notice-editor', {
-        theme: 'snow',
-        modules: {
-            toolbar: [
-                [{ 'header': [1, 2, 3, false] }],
-                ['bold', 'italic', 'underline', 'strike'],
-                ['blockquote', 'code-block'],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                [{ 'indent': '-1'}, { 'indent': '+1' }],
-                ['link', 'image'],
-                [{ 'align': [] }],
-                ['clean']
-            ]
-        }
-    });
-
-    if (postId) {
-        const postRef = ref(database, `notice/${postId}`);
-        const snapshot = await get(postRef);
-        const post = snapshot.val();
-        if (post) {
-            document.getElementById('notice-title').value = post.title;
-            document.getElementById('notice-author').value = post.author;
-            quillNotice.setContents(quillNotice.clipboard.convert(post.content));
-            document.getElementById('save-notice-post-btn').onclick = () => updateNoticePost(postId);
-        }
-    } else {
-        document.getElementById('save-notice-post-btn').onclick = saveNoticePost;
-    }
-
-    document.getElementById('cancel-notice-post-btn').onclick = () => loadPage('notice');
-}
-
-function saveNoticePost() {
-    const title = document.getElementById('notice-title').value;
-    const author = document.getElementById('notice-author').value;
-    const password = document.getElementById('notice-password').value;
-    const content = quillNotice.root.innerHTML;
-
-    if (!title || !author || !password || !content || content === '<p><br></p>') {
-        showCustomModal({ title: '오류', content: '모든 필드를 채워주세요.' });
-        return;
-    }
-
-    const newPostRef = push(ref(database, 'notice'));
-    set(newPostRef, {
-        title,
-        author,
-        password,
-        content,
-        date: new Date().toISOString().slice(0, 10)
-    })
-    .then(() => {
-        showCustomModal({ title: '성공', content: '공지사항 게시글이 성공적으로 저장되었습니다!' });
-        loadPage('notice');
-    })
-    .catch((error) => {
-        console.error("공지사항 게시글 저장 중 오류 발생: ", error);
-        showCustomModal({ title: '오류', content: '공지사항 게시글 저장에 실패했습니다.' });
-    });
-}
-
-async function updateNoticePost(postId) {
-    const title = document.getElementById('notice-title').value;
-    const author = document.getElementById('notice-author').value;
-    const passwordInput = document.getElementById('notice-password').value;
-    const content = quillNotice.root.innerHTML;
-
-    if (!title || !author || !passwordInput || !content || content === '<p><br></p>') {
-        showCustomModal({ title: '오류', content: '모든 필드를 채워주세요.' });
-        return;
-    }
-
-    const postRef = ref(database, `notice/${postId}`);
-    const snapshot = await get(postRef);
-    const post = snapshot.val();
-
-    if (!post || post.password !== passwordInput) {
-        showCustomModal({ title: '오류', content: '비밀번호가 올바르지 않습니다.' });
-        return;
-    }
-
-    update(postRef, { title, author, content })
-        .then(() => {
-            showCustomModal({ title: '성공', content: '공지사항 게시글이 성공적으로 수정되었습니다!' });
-            loadPage('notice');
-        })
-        .catch((error) => {
-            console.error("공지사항 게시글 수정 중 오류 발생: ", error);
-            showCustomModal({ title: '오류', content: '공지사항 게시글 수정에 실패했습니다.' });
-        });
-}
-
-async function deleteNoticePost(postId) {
-    const confirmDelete = await showCustomModal({
-        title: '삭제 확인',
-        content: '정말로 이 공지사항 게시글을 삭제하시겠습니까?',
-        buttons: [
-            { text: '삭제', value: 'delete', className: 'btn-danger' },
-            { text: '취소', value: 'cancel', className: 'btn-secondary' }
-        ]
-    });
-
-    if (confirmDelete === 'delete') {
-        const postRef = ref(database, `notice/${postId}`);
-        remove(postRef)
-            .then(() => {
-                showCustomModal({ title: '성공', content: '공지사항 게시글이 성공적으로 삭제되었습니다!' });
-                loadPage('notice');
-            })
-            .catch((error) => {
-                console.error("공지사항 게시글 삭제 중 오류 발생: ", error);
-                showCustomModal({ title: '오류', content: '공지사항 게시글 삭제에 실패했습니다.' });
-            });
-    }
-}
-
-async function checkPasswordForNoticeManagement(postId, password, action) {
-    // 하드코딩된 비밀번호 111로 변경
-    const correctPassword = '111';
-
-    if (password === null) {
-        return;
-    }
-    if (!password) {
-        showCustomModal({ title: '오류', content: '비밀번호를 입력하세요.' });
-        return;
-    }
-
-    if (password === correctPassword) { // 입력된 비밀번호가 111이면
-        if (action === 'edit') {
-            openNoticePostForm(postId);
-        } else if (action === 'delete') {
-            deleteNoticePost(postId);
-        }
-    } else {
-        showCustomModal({ title: '오류', content: '비밀번호가 올바르지 않습니다.' });
-    }
-}
-
-async function openNoticeDetail(postId) {
-    const postRef = ref(database, `notice/${postId}`);
-    const snapshot = await get(postRef);
-    const post = snapshot.val();
-
-    if (post) {
-        document.getElementById('modal-blog-title').innerText = post.title;
-        document.getElementById('modal-blog-author').innerText = `작성자: ${post.author}`;
-        document.getElementById('modal-blog-date').innerText = post.date;
-        document.getElementById('modal-blog-content').innerHTML = post.content;
-
-        document.getElementById('blog-detail-modal').classList.remove('hidden');
-
-        document.getElementById('close-blog-detail').onclick = () => {
-            document.getElementById('blog-detail-modal').classList.add('hidden');
-        };
-    } else {
-        showCustomModal({ title: '오류', content: '공지사항 게시글을 찾을 수 없습니다.' });
-    }
-}
-
-// =====================================
-// Sidebar Functions
-// =====================================
-
-function loadSidebarPosts() {
-    // 최신 공지 로드
-    const noticeRef = ref(database, 'notice');
-    onValue(noticeRef, (snapshot) => {
-        const notices = snapshot.val() || {};
-        const latestNoticesContainer = document.getElementById('latest-notices-sidebar');
-        if (!latestNoticesContainer) return; // 요소가 없는 경우 함수 종료
-        latestNoticesContainer.innerHTML = '';
-        if (Object.keys(notices).length === 0) {
-            latestNoticesContainer.innerHTML = '<li class="text-gray-700">최신 공지가 없습니다.</li>';
-        } else {
-            const sortedNotices = Object.keys(notices).sort((a, b) => new Date(notices[b].date) - new Date(notices[a].date)).slice(0, 5); // 최신 5개
-            sortedNotices.forEach(postId => {
-                latestNoticesContainer.appendChild(createSidebarPostElement(notices[postId], postId, 'notice'));
-            });
-        }
-    }, {
-        onlyOnce: false
-    });
-
-    // 인기글 (블로그) 로드 (조회수 기준)
-    const blogPostsRef = ref(database, 'posts');
-    onValue(blogPostsRef, (snapshot) => {
-        const posts = snapshot.val() || {};
-        const popularPostsContainer = document.getElementById('popular-posts-sidebar');
-        if (!popularPostsContainer) return; // 요소가 없는 경우 함수 종료
-        popularPostsContainer.innerHTML = '';
-        if (Object.keys(posts).length === 0) {
-            popularPostsContainer.innerHTML = '<li class="text-gray-700">인기글이 없습니다.</li>';
-        } else {
-            const sortedPosts = Object.keys(posts).sort((a, b) => (posts[b].views || 0) - (posts[a].views || 0)).slice(0, 5); // 조회수 높은 5개
-            sortedPosts.forEach(postId => {
-                popularPostsContainer.appendChild(createSidebarPostElement(posts[postId], postId, 'blog'));
-            });
-        }
-    }, {
-        onlyOnce: false
-    });
-
-    // 최신 글 (블로그) 로드 (날짜 기준)
-    onValue(blogPostsRef, (snapshot) => {
-        const posts = snapshot.val() || {};
-        const latestPostsContainer = document.getElementById('latest-posts-sidebar');
-        if (!latestPostsContainer) return; // 요소가 없는 경우 함수 종료
-        latestPostsContainer.innerHTML = '';
-        if (Object.keys(posts).length === 0) {
-            latestPostsContainer.innerHTML = '<li class="text-gray-700">최신 글이 없습니다.</li>';
-        } else {
-            const sortedPosts = Object.keys(posts).sort((a, b) => new Date(posts[b].date) - new Date(posts[a].date)).slice(0, 5); // 최신 5개
-            sortedPosts.forEach(postId => {
-                latestPostsContainer.appendChild(createSidebarPostElement(posts[postId], postId, 'blog'));
-            });
-        }
-    }, {
-        onlyOnce: false
-    });
-}
-
-function createSidebarPostElement(post, postId, type) {
-    const li = document.createElement('li');
-    li.innerHTML = `
-        <a href="#${type}-detail/${postId}">${post.title}</a>
-        <span class="post-date">${post.date}</span>
-    `;
-    li.addEventListener('click', (e) => {
-        e.preventDefault();
-        // 사이드바에서는 바로 상세 보기 모달을 띄우도록 비밀번호 확인 없이 변경
-        // (요청에 따라 사이드바 클릭 시에는 비밀번호 확인 없이 상세 보기)
-        if (type === 'blog') {
-            openBlogPostDetail(postId);
-        } else if (type === 'qa') {
-            openQADetail(postId);
-        } else if (type === 'notice') {
-            openNoticeDetail(postId);
-        }
-    });
-    return li;
-}
-
-// =====================================
-// Calendar Functions (Q&A 페이지에서만 보임)
-// =====================================
-let currentMonth, currentYear;
-
-function generateCalendar(month, year) {
-    const calendarDays = document.getElementById('calendar-days');
-    const currentMonthYearSpan = document.getElementById('currentMonthYear');
-    if (!calendarDays || !currentMonthYearSpan) return; // 요소가 없는 경우 함수 종료
-
-    calendarDays.innerHTML = '';
-
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startDay = firstDay.getDay(); // 0: Sunday, 1: Monday, ...
-
-    currentMonthYearSpan.textContent = `${year}.${(month + 1).toString().padStart(2, '0')}`;
-
-    // 이전 달의 빈 칸 채우기
-    for (let i = 0; i < startDay; i++) {
-        const emptyDiv = document.createElement('div');
-        emptyDiv.classList.add('p-2', 'text-center', 'text-gray-400');
-        calendarDays.appendChild(emptyDiv);
-    }
-
-    // 현재 달의 날짜 채우기
-    for (let i = 1; i <= daysInMonth; i++) {
-        const dayDiv = document.createElement('div');
-        dayDiv.classList.add('p-2', 'text-center', 'rounded-md', 'cursor-pointer', 'hover:bg-blue-200', 'transition-colors');
-
-        const today = new Date();
-        if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-            dayDiv.classList.add('bg-blue-500', 'text-white', 'font-bold');
-        }
-        dayDiv.textContent = i;
-        dayDiv.addEventListener('click', () => {
-            // 날짜 클릭 시 이벤트 (예: 해당 날짜의 게시물 필터링)
-            showCustomModal({ title: '달력 날짜', content: `${year}.${month + 1}.${i} 날짜를 클릭했습니다.` });
-        });
-        calendarDays.appendChild(dayDiv);
-    }
-}
-
-// 초기 달력 생성 (현재 날짜 기준)
-// DOMContentLoaded에서 호출되므로, 해당 요소들이 존재하는지 체크
-if (document.getElementById('calendar-days')) {
-    const initialToday = new Date();
-    currentMonth = initialToday.getMonth();
-    currentYear = initialToday.getFullYear();
-    generateCalendar(currentMonth, currentYear);
-
-    // 달력 이전/다음 달 버튼 이벤트 리스너
-    document.getElementById('prevMonth').addEventListener('click', () => {
-        currentMonth--;
-        if (currentMonth < 0) {
-            currentMonth = 11;
-            currentYear--;
-        }
-        generateCalendar(currentMonth, currentYear);
-    });
-
-    document.getElementById('nextMonth').addEventListener('click', () => {
-        currentMonth++;
-        if (currentMonth > 11) {
-            currentMonth = 0;
-            currentYear++;
-        }
-        generateCalendar(currentMonth, currentYear);
-    });
+.blog-tile-view .blog-post-item .post-meta {
+    font-size: 0.875rem; /* text-sm */
+    color: #718096; /* gray-500 */
+    margin-top: auto; /* 메타 정보를 항상 하단에 위치시킴 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 }
 
 
-// 전역 스코프에 함수들을 노출 (HTML에서 직접 호출할 수 있도록)
-window.showCustomModal = showCustomModal;
-window.showCustomPrompt = showCustomPrompt;
-window.checkPasswordForBlogPost = checkPasswordForBlogPost;
-window.openBlogPostForm = openBlogPostForm;
-window.deleteBlogPost = deleteBlogPost;
-window.openBlogPostDetail = openBlogPostDetail;
+/* Q&A 및 공지사항 목록 스타일 (list-view와 유사) */
+.qa-list-item, .notice-list-item {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0; /* gray-200 */
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
 
-window.checkPasswordForQAManagement = checkPasswordForQAManagement;
-window.openQAPostForm = openQAPostForm;
-window.deleteQAPost = deleteQAPost;
-window.openQADetail = openQADetail;
+.qa-list-item:hover, .notice-list-item:hover {
+    background-color: #f8f8f8; /* gray-50 */
+}
 
-window.checkPasswordForNoticeManagement = checkPasswordForNoticeManagement;
-window.openNoticePostForm = openNoticePostForm;
-window.deleteNoticePost = deleteNoticePost;
-window.openNoticeDetail = openNoticeDetail;
+.qa-list-item:last-child, .notice-list-item:last-child {
+    border-bottom: none;
+}
 
-window.loadPage = loadPage; // 네비게이션에서 호출을 위해 노출
+.qa-list-item .post-title, .notice-list-item .post-title {
+    font-size: 1.125rem; /* text-lg */
+    font-weight: 700; /* font-bold */
+    color: #1a202c; /* gray-900 */
+    margin-bottom: 0.5rem;
+}
+
+.qa-list-item .post-meta, .notice-list-item .post-meta {
+    font-size: 0.875rem; /* text-sm */
+    color: #718096; /* gray-500 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* 글 상세 모달 내부 콘텐츠 스타일 */
+#modal-blog-content img {
+    max-width: 100%; /* 이미지가 모달 너비를 넘지 않도록 */
+    height: auto;
+    display: block; /* 이미지 하단 여백 제거 */
+    margin-top: 1rem; /* 이미지 위쪽 여백 */
+    margin-bottom: 1rem; /* 이미지 아래쪽 여백 */
+    border-radius: 0.5rem; /* rounded-lg */
+}
+
+/* 사이드바 글 목록 */
+.sidebar-section ul li {
+    font-size: 0.95rem;
+    color: #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dotted #e2e8f0; /* gray-200 */
+}
+
+.sidebar-section ul li:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.sidebar-section ul li a {
+    color: #4a5568; /* gray-700 */
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease-in-out;
+    flex-grow: 1; /* 제목이 공간을 최대한 차지하도록 */
+    white-space: nowrap; /* 제목이 한 줄로 유지되도록 */
+    overflow: hidden; /* 넘치는 부분 숨김 */
+    text-overflow: ellipsis; /* 넘치는 부분 ... 처리 */
+}
+
+.sidebar-section ul li a:hover {
+    color: #2b6cb0; /* blue-700 */
+}
+
+.sidebar-section ul li .post-date {
+    font-size: 0.85rem;
+    color: #718096; /* gray-500 */
+    flex-shrink: 0; /* 날짜가 줄어들지 않도록 */
+    margin-left: 10px; /* 제목과 날짜 사이 간격 */
+}
+
+/* --- 새로 추가되거나 수정된 스타일 --- */
+
+/* 네비게이션 아이템 활성화 시 스타일 */
+.nav-item.active {
+    color: #2563eb; /* blue-600 */
+    font-weight: 700; /* font-bold */
+    border-bottom: 2px solid #2563eb; /* blue-600 */
+    padding-bottom: 0.5rem; /* 링크 텍스트 아래 여백 */
+}
+
+/* 보기 방식 버튼 활성화 시 */
+.nav-view-btn.active {
+    background-color: #2563eb; /* blue-600 */
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 블로그/Q&A/공지사항 관리 버튼 */
+.post-management-buttons button {
+    @apply px-3 py-1 rounded-md font-medium text-xs transition-colors duration-200 flex items-center justify-center space-x-1; /* 폰트 크기 및 아이콘 정렬 */
+}
+.post-management-buttons .view-button {
+    @apply bg-blue-500 text-white hover:bg-blue-600;
+}
+.post-management-buttons .edit-button {
+    @apply bg-green-500 text-white hover:bg-green-600;
+    margin-left: 0.5rem;
+}
+.post-management-buttons .delete-button {
+    @apply bg-red-500 text-white hover:bg-red-600;
+    margin-left: 0.5rem;
+}
+
+/* 글 작성 버튼 */
+.create-post-button {
+    @apply bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition-colors duration-200;
+}
+
+
+/* 커스텀 모달/프롬프트 관련 스타일 (app.js에서 동적으로 생성될 때 Tailwind 클래스 적용) */
+/* #custom-modal-container 안에 들어가는 요소들에 대한 기본적인 z-index 및 위치 */
+#custom-modal-container {
+    /* hidden 클래스는 app.js에서 토글 */
+    /* position: fixed; */ /* Tailwind 'fixed' 사용 */
+    /* top: 0; left: 0; width: 100%; height: 100%; */ /* Tailwind 'inset-0' 사용 */
+    /* display: flex; justify-content: center; align-items: center; */ /* Tailwind 'flex items-center justify-center' 사용 */
+    /* background-color: rgba(0, 0, 0, 0.5); */ /* Tailwind 'bg-gray-900 bg-opacity-75' 사용 */
+    /* z-index: 1000; */ /* Tailwind 'z-[9999]' 사용 */
+}
+
+.custom-modal, .custom-prompt {
+    /* background-color: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); */ /* Tailwind 클래스 사용 */
+    /* max-width: 90%; max-height: 90%; overflow-y: auto; position: relative; */ /* Tailwind 클래스 사용 */
+}
+
+.custom-modal h3, .custom-prompt h3 {
+    /* font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: #1a202c; */ /* Tailwind 클래스 사용 */
+}
+
+.custom-modal p, .custom-prompt p {
+    /* margin-bottom: 1rem; color: #4a5568; */ /* Tailwind 클래스 사용 */
+}
+
+.custom-prompt input[type="password"] {
+    /* width: 100%; padding: 0.75rem; border: 1px solid #cbd5e0; border-radius: 0.375rem; margin-bottom: 1rem; font-size: 1rem; */ /* Tailwind 클래스 사용 */
+}
+
+.custom-modal-buttons, .custom-prompt-buttons {
+    /* display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem; */ /* Tailwind 클래스 사용 */
+}
+
+.custom-modal-buttons button, .custom-prompt-buttons button {
+    /* padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; transition: background-color 0.2s ease-in-out; */ /* Tailwind 클래스 사용 */
+}
+
+.custom-modal-buttons .confirm-button, .custom-prompt-buttons .confirm-button {
+    @apply bg-blue-600 text-white hover:bg-blue-700;
+}
+
+.custom-modal-buttons .cancel-button, .custom-prompt-buttons .cancel-button {
+    @apply bg-gray-300 text-gray-800 hover:bg-gray-400;
+}
+
+/* Rich Text Editor (Quill) 기본 스타일 */
+#blog-editor, #qa-editor, #notice-editor {
+    width: 100%;
+    min-height: 300px;
+    /* border: 1px solid #ddd; */ /* Quill 자체 스타일이 적용되므로 제거 */
+    /* padding: 10px; */ /* Quill 자체 스타일이 적용되므로 제거 */
+    margin-bottom: 10px;
+    /* background-color: #fff; */ /* Quill 자체 스타일이 적용되므로 제거 */
+    /* font-size: 1rem; line-height: 1.5; */ /* Quill 자체 스타일이 적용되므로 제거 */
+}
+
+.ql-editor {
+    min-height: 300px; /* 에디터 본문 영역 높이 */
+}
+
+/* Quill toolbar container */
+.ql-toolbar {
+    border: 1px solid #ddd;
+    border-bottom: none;
+    background-color: #f5f5f5;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+}
+
+/* Quill editor content container */
+.ql-container {
+    border: 1px solid #ddd;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    font-family: 'Noto Sans KR', sans-serif; /* 에디터 내 폰트 설정 */
+    font-size: 1rem;
+}
+
+/* 공통 버튼 스타일 (전체적으로 Tailwind 클래스를 선호) */
+.btn-primary {
+    @apply bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200;
+}
+.btn-secondary {
+    @apply bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200;
+}
+.btn-danger {
+    @apply bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors duration-200;
+}
