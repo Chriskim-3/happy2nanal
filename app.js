@@ -4,9 +4,10 @@ import { ref, push, onValue, remove, update, get } from 'https://www.gstatic.com
 let currentViewMode = 'list'; // 'list' 또는 'tile'
 let currentPage = ''; // 현재 로드된 페이지 (blog, qa, notice)
 
-// OpenWeatherMap API 키 (실제 서비스에서는 서버 사이드에서 관리하는 것이 더 안전합니다)
-const WEATHER_API_KEY = 'YOUR_OPENWEATHERMAP_API_KEY'; // 여기에 실제 API 키를 넣어주세요
-const WEATHER_API_URL = 'https://api.openweathermap.org/data/2.5/weather';
+// 달력 관련 변수
+let currentMonth = new Date().getMonth();
+let currentYear = new Date().getFullYear();
+let blogPostDates = new Set(); // 블로그 글이 있는 날짜를 저장할 Set
 
 document.addEventListener('DOMContentLoaded', function() {
     const scrollUpButton = document.getElementById('scrollUp');
@@ -40,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('nav').addEventListener('click', function(e) {
         if (e.target.tagName === 'A' && e.target.classList.contains('nav-item')) {
             e.preventDefault();
-            const page = e.target.getAttribute('href').slice(1);
+            const page = e.target.getAttribute('href').slice(1); // #blog -> blog
             loadPage(page);
         }
     });
@@ -72,8 +73,8 @@ document.addEventListener('DOMContentLoaded', function() {
         searchPosts(e.target.value, currentPage); // 현재 활성화된 페이지에 따라 검색
     });
 
-    // 날씨 정보 로드
-    fetchWeather();
+    // 달력 초기화 및 이벤트 리스너
+    initCalendar();
 });
 
 // --- 공통 유틸리티 함수 ---
@@ -191,12 +192,13 @@ function updateNavActiveState(pageId) {
         blogViewToggleGroup.classList.add('hidden');
     }
 
-    // 날씨 정보 섹션 가시성 (공지사항 페이지에서만 표시)
-    const weatherInfoSection = document.getElementById('weather-info-section');
+    // 달력 정보 섹션 가시성 (공지사항 페이지에서만 표시)
+    const calendarInfoSection = document.getElementById('calendar-info-section');
     if (pageId === 'notice') {
-        weatherInfoSection.classList.remove('hidden');
+        calendarInfoSection.classList.remove('hidden');
+        renderCalendar(); // 공지사항 페이지 진입 시 달력 다시 그림
     } else {
-        weatherInfoSection.classList.add('hidden');
+        calendarInfoSection.classList.add('hidden');
     }
 }
 
@@ -232,7 +234,7 @@ function loadBlog() {
     const mainContent = document.getElementById('main-content');
     mainContent.innerHTML = `
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6 blog-header">
-            <h1 class="text-3xl font-bold text-gray-800">BLOG</h1>
+            <h1 class="text-3xl font-bold text-gray-800">MyHappyWay</h1>
             <div class="flex items-center space-x-3 mt-4 sm:mt-0">
                 <button onclick="checkPasswordForBlogPost()" class="btn btn-primary whitespace-nowrap text-sm">새 글 작성</button>
             </div>
@@ -291,6 +293,13 @@ function loadBlogPosts(container, searchTerm = '') {
         });
         posts.sort((a, b) => new Date(b.date) - new Date(a.date)); // 최신순 정렬
 
+        // 블로그 포스트 날짜 저장 (달력 하이라이팅용)
+        blogPostDates.clear(); // 기존 날짜 초기화
+        posts.forEach(post => {
+            blogPostDates.add(post.date); // 'YYYY-MM-DD' 형식으로 저장됨
+        });
+        renderCalendar(); // 포스트 로드 후 달력 업데이트
+
         // 검색 필터링
         if (searchTerm) {
             const lowerCaseSearchTerm = searchTerm.toLowerCase();
@@ -323,9 +332,9 @@ function displayBlogPosts(posts, container) {
                 </div>
                 <div class="post-summary text-gray-700 leading-relaxed mb-4">${summary}</div>
                 <div class="flex justify-end actions space-x-2">
-                    <button onclick="showBlogPostDetail('${post.id}')" class="icon-btn text-lg" title="더 보기"><i class="fas fa-eye"></i></button>
-                    <button onclick="editBlogPost('${post.id}')" class="icon-btn primary text-lg" title="수정"><i class="fas fa-edit"></i></button>
-                    <button onclick="deleteBlogPost('${post.id}')" class="icon-btn danger text-lg" title="삭제"><i class="fas fa-trash-alt"></i></button>
+                    <button onclick="showBlogPostDetail('${post.id}')" class="icon-btn-text" title="더 보기"><i class="fas fa-eye icon"></i>더보기</button>
+                    <button onclick="editBlogPost('${post.id}')" class="icon-btn-text" title="수정"><i class="fas fa-edit icon"></i>수정</button>
+                    <button onclick="deleteBlogPost('${post.id}')" class="icon-btn-text danger" title="삭제"><i class="fas fa-trash-alt icon"></i>삭제</button>
                 </div>
             </div>
         `;
@@ -416,7 +425,7 @@ async function submitBlogPost(e) {
     const title = document.getElementById('blog-title').value;
     const author = document.getElementById('blog-author').value;
     const content = document.getElementById('blog-editor').innerHTML;
-    const date = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '').replace(/ /g, '-').slice(0, -1);
+    const date = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '-').replace(/ /g, '').slice(0, -1); // YYYY-MM-DD 형식
 
     if (!title || !author || !content) {
         await showCustomModal('모든 필드를 채워주세요.');
@@ -432,7 +441,7 @@ async function saveBlogPost(post) {
     try {
         await push(postsRef, post);
         await showCustomModal('블로그 글이 등록되었습니다.');
-        loadBlog();
+        loadBlog(); // 재로드를 통해 달력 및 목록 업데이트
     } catch (error) {
         console.error("Error adding post: ", error);
         await showCustomModal('글 등록 중 오류가 발생했습니다.');
@@ -464,7 +473,7 @@ async function updateBlogPost(e, postId) {
     try {
         await update(postRef, post);
         await showCustomModal('블로그 글이 수정되었습니다.');
-        loadBlog();
+        loadBlog(); // 재로드를 통해 달력 및 목록 업데이트
     } catch (error) {
         console.error("Error updating post: ", error);
         await showCustomModal('글 수정 중 오류가 발생했습니다.');
@@ -480,7 +489,7 @@ async function deleteBlogPost(postId) {
             try {
                 await remove(postRef);
                 await showCustomModal('블로그 글이 삭제되었습니다.');
-                loadBlog();
+                loadBlog(); // 재로드를 통해 달력 및 목록 업데이트
             } catch (error) {
                 console.error("Error removing post: ", error);
                 await showCustomModal('글 삭제 중 오류가 발생했습니다.');
@@ -551,8 +560,8 @@ function displayQAPosts(qaPosts, container) {
                 </div>
                 <p class="post-summary text-gray-700 leading-relaxed mb-4">${summary}</p>
                 <div class="flex justify-end space-x-2 actions">
-                    <button onclick="editQAPost('${qaPost.id}')" class="icon-btn primary text-lg" title="수정"><i class="fas fa-edit"></i></button>
-                    <button onclick="deleteQAPost('${qaPost.id}')" class="icon-btn danger text-lg" title="삭제"><i class="fas fa-trash-alt"></i></button>
+                    <button onclick="editQAPost('${qaPost.id}')" class="icon-btn-text" title="수정"><i class="fas fa-edit icon"></i>수정</button>
+                    <button onclick="deleteQAPost('${qaPost.id}')" class="icon-btn-text danger" title="삭제"><i class="fas fa-trash-alt icon"></i>삭제</button>
                 </div>
             </div>
         `;
@@ -595,8 +604,8 @@ function manageQA() {
                     <p class="text-gray-700 leading-relaxed mb-6">비밀번호: <span class="password hidden font-mono text-gray-900">${qaPost.password}</span></p>
                     <div class="flex justify-end space-x-2 actions">
                         <button onclick="togglePassword(this)" class="btn btn-secondary btn-toggle-password text-sm">비밀번호 보기</button>
-                        <button onclick="editQAPost('${childSnapshot.key}')" class="icon-btn primary text-lg" title="수정"><i class="fas fa-edit"></i></button>
-                        <button onclick="deleteQAPost('${childSnapshot.key}')" class="icon-btn danger text-lg" title="삭제"><i class="fas fa-trash-alt"></i></button>
+                        <button onclick="editQAPost('${childSnapshot.key}')" class="icon-btn-text" title="수정"><i class="fas fa-edit icon"></i>수정</button>
+                        <button onclick="deleteQAPost('${childSnapshot.key}')" class="icon-btn-text danger" title="삭제"><i class="fas fa-trash-alt icon"></i>삭제</button>
                     </div>
                 </div>
             `;
@@ -652,7 +661,7 @@ async function submitQAPost(e) {
     const content = document.getElementById('qa-content').value;
     const nickname = document.getElementById('qa-nickname').value;
     const password = document.getElementById('qa-password').value;
-    const date = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '').replace(/ /g, '-').slice(0, -1);
+    const date = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '-').replace(/ /g, '').slice(0, -1);
 
     if (!title || !content || !nickname || !password) {
         await showCustomModal('모든 필드를 채워주세요.');
@@ -794,8 +803,8 @@ function displayNoticePosts(noticePosts, container) {
                 </div>
                 <p class="post-summary text-gray-700 leading-relaxed mb-4">${summary}</p>
                 <div class="flex justify-end actions space-x-2">
-                    <button onclick="showNoticeDetail('${post.id}')" class="icon-btn text-lg" title="더 보기"><i class="fas fa-eye"></i></button>
-                    <button onclick="editNoticePost('${post.id}')" class="icon-btn primary text-lg" title="수정"><i class="fas fa-edit"></i></button>
+                    <button onclick="showNoticeDetail('${post.id}')" class="icon-btn-text" title="더 보기"><i class="fas fa-eye icon"></i>더보기</button>
+                    <button onclick="editNoticePost('${post.id}')" class="icon-btn-text" title="수정"><i class="fas fa-edit icon"></i>수정</button>
                 </div>
             </div>
         `;
@@ -888,7 +897,7 @@ async function submitNoticePost(e) {
     const title = document.getElementById('notice-title').value;
     const author = document.getElementById('notice-author').value;
     const content = document.getElementById('notice-editor').innerHTML;
-    const date = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '').replace(/ /g, '-').slice(0, -1);
+    const date = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '-').replace(/ /g, '').slice(0, -1);
 
     if (!title || !author || !content) {
         await showCustomModal('모든 필드를 채워주세요.');
@@ -965,14 +974,14 @@ async function deleteNoticePost(noticeId) {
 // --- 사이드바 관련 함수 ---
 
 function loadSidebarPosts() {
-    // 최신 블로그 글 (가장 최근 5개)
+    // 최신 블로그 글 (가장 최근 3개)
     const postsRef = ref(database, 'posts');
     onValue(postsRef, (snapshot) => {
         const posts = [];
         snapshot.forEach((childSnapshot) => {
             posts.push({ id: childSnapshot.key, ...childSnapshot.val() });
         });
-        const latestPosts = posts.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+        const latestPosts = posts.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3); // 3줄로 변경
         displaySidebarPosts(latestPosts, 'latest-posts-sidebar', 'blog');
     });
 
@@ -983,7 +992,7 @@ function loadSidebarPosts() {
         snapshot.forEach((childSnapshot) => {
             posts.push({ id: childSnapshot.key, ...childSnapshot.val() });
         });
-        const popularPosts = posts.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5); // 임시
+        const popularPosts = posts.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3); // 3줄로 변경
         displaySidebarPosts(popularPosts, 'popular-posts-sidebar', 'blog');
     });
 
@@ -1047,44 +1056,104 @@ function searchPosts(searchTerm, type) {
     }
 }
 
-// --- 날씨 정보 가져오기 ---
-async function fetchWeather() {
-    const weatherDataElement = document.getElementById('weather-data');
-    if (!WEATHER_API_KEY || WEATHER_API_KEY === 'YOUR_OPENWEATHERMAP_API_KEY') {
-        weatherDataElement.innerHTML = '<p class="text-red-500">날씨 API 키를 설정해주세요.</p>';
-        return;
+// --- 달력 관련 함수 ---
+
+function initCalendar() {
+    const prevMonthBtn = document.getElementById('prevMonth');
+    const nextMonthBtn = document.getElementById('nextMonth');
+
+    if (prevMonthBtn && nextMonthBtn) {
+        prevMonthBtn.addEventListener('click', () => {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        });
+
+        nextMonthBtn.addEventListener('click', () => {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        });
     }
 
-    // 서울의 위도, 경도
-    const lat = 37.5665;
-    const lon = 126.9780;
-    const url = `${WEATHER_API_URL}?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric&lang=kr`; // 섭씨, 한국어
+    // 초기 로드 시 블로그 글 날짜를 가져와 달력에 표시
+    const postsRef = ref(database, 'posts');
+    onValue(postsRef, (snapshot) => {
+        blogPostDates.clear();
+        snapshot.forEach((childSnapshot) => {
+            const postDate = childSnapshot.val().date;
+            if (postDate) {
+                blogPostDates.add(postDate);
+            }
+        });
+        renderCalendar(); // 데이터 로드 후 달력 다시 그리기
+    });
+}
 
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`날씨 정보를 가져오는데 실패했습니다: ${response.statusText}`);
+function renderCalendar() {
+    const monthYearSpan = document.getElementById('currentMonthYear');
+    const daysContainer = document.getElementById('calendar-days');
+    if (!monthYearSpan || !daysContainer) return; // 요소가 없으면 함수 종료
+
+    const date = new Date(currentYear, currentMonth);
+    monthYearSpan.textContent = `${date.getFullYear()}년 ${date.getMonth() + 1}월`;
+
+    daysContainer.innerHTML = '';
+
+    // 이번 달 첫째 날과 마지막 날
+    const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+    const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+
+    // 이전 달의 마지막 날짜
+    const prevMonthLastDay = new Date(currentYear, currentMonth, 0);
+
+    // 이번 달 1일이 무슨 요일인지 (0:일, 1:월, ...)
+    const startDayIndex = firstDayOfMonth.getDay();
+
+    // 날짜 채우기 (이전 달 날짜)
+    for (let i = startDayIndex; i > 0; i--) {
+        const day = prevMonthLastDay.getDate() - i + 1;
+        const dayElement = document.createElement('div');
+        dayElement.classList.add('day', 'prev-month');
+        dayElement.textContent = day;
+        daysContainer.appendChild(dayElement);
+    }
+
+    // 이번 달 날짜
+    for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
+        const dayElement = document.createElement('div');
+        dayElement.classList.add('day', 'current-month');
+        dayElement.textContent = i;
+
+        const currentDayFormatted = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        if (blogPostDates.has(currentDayFormatted)) {
+            dayElement.classList.add('has-post');
         }
-        const data = await response.json();
-        console.log("Weather Data:", data); // 데이터 확인
 
-        const weatherDescription = data.weather[0].description;
-        const temp = data.main.temp;
-        const feelsLike = data.main.feels_like;
-        const iconCode = data.weather[0].icon;
-        const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
-        const cityName = data.name;
+        // 오늘 날짜 표시
+        const today = new Date();
+        if (i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
+            dayElement.classList.add('today');
+        }
 
-        weatherDataElement.innerHTML = `
-            <h4 class="text-xl font-semibold mb-2">${cityName}</h4>
-            <img src="${iconUrl}" alt="${weatherDescription}" class="mx-auto w-20 h-20">
-            <p class="text-3xl font-bold">${temp}°C</p>
-            <p class="text-lg">체감온도: ${feelsLike}°C</p>
-            <p class="text-base mt-2">${weatherDescription}</p>
-        `;
-    } catch (error) {
-        console.error("날씨 정보를 가져오는 중 오류 발생:", error);
-        weatherDataElement.innerHTML = '<p class="text-red-500">날씨 정보를 가져올 수 없습니다.</p>';
+        daysContainer.appendChild(dayElement);
+    }
+
+    // 다음 달 날짜 (달력 꽉 채우기)
+    const totalDays = startDayIndex + lastDayOfMonth.getDate();
+    const remainingDays = 42 - totalDays; // 6주(6*7=42칸) 기준
+
+    for (let i = 1; i <= remainingDays; i++) {
+        const dayElement = document.createElement('div');
+        dayElement.classList.add('day', 'next-month');
+        dayElement.textContent = i;
+        daysContainer.appendChild(dayElement);
     }
 }
 
