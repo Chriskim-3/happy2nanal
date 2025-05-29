@@ -1,603 +1,419 @@
-/*
-  이 파일은 Tailwind CSS로 처리하기 어려운 미세 조정이나
-  특정 요소의 오버라이딩을 위해 사용됩니다.
-  대부분의 스타일링은 index.html 및 app.js의 Tailwind 클래스로 처리됩니다.
-*/
+/* Custom Fonts and Base Styles - Tailwind CSS @layer base ensures these are applied correctly */
+@layer base {
+    body {
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+}
 
-/* 무채색 테마 및 기본 폰트 적용 */
-:root {
-    --primary-bg: #F9FAFB; /* Light Gray for body background */
-    --secondary-bg: #FFFFFF; /* White for cards and main content */
-    --border-color: #E5E7EB; /* Gray-200 for borders */
-    --text-color-dark: #1F2937; /* Gray-900 for headings/main text */
-    --text-color-medium: #4B5563; /* Gray-700 for paragraphs */
-    --text-color-light: #6B7280; /* Gray-500 for meta info/subtitles */
-    --accent-color: #5A67D8; /* Deeper Indigo/Blue for primary actions/links (기존 유지) */
-    --accent-hover-color: #434190; /* Darker Indigo/Blue for hover states (기존 유지) */
-    --danger-color: #EF4444; /* Red-500 for delete actions (기존 유지) */
-    --danger-hover-color: #DC2626; /* Red-600 for danger hover (기존 유지) */
-    --header-bg: #FFFFFF; /* White for header background */
-    --header-border: #E0E0E0; /* Lighter gray for header border */
+/* styles.css에서 Tailwind CSS와 충돌할 수 있는 대부분의 스타일은 제거 */
+/* Tailwind CSS를 사용하므로, 여기에 복잡한 레이아웃/색상/폰트 스타일은 최소화합니다. */
 
-    /* 새로운 무채색 계열 강조색 */
-    --neutral-accent: #6B7280; /* Gray-500 */
-    --neutral-accent-hover: #4B5563; /* Gray-700 */
+body, html {
+    margin: 0;
+    padding: 0;
+    /* font-family와 background-color는 Tailwind에서 처리 */
+    /* font-family: 'Noto Sans KR', sans-serif; */
+    /* background-color: white; */
 }
 
 body {
-    background-color: var(--primary-bg);
-    font-family: 'Noto Sans KR', sans-serif;
-    color: var(--text-color-medium);
+    min-height: 100vh;
+    /* display: flex; */
+    flex-direction: column;
 }
 
-/* 헤더 및 내비게이션 */
-header {
-    background-color: var(--header-bg); /* 메뉴바 배경색 */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* 더 고급스러운 그림자 */
-    border-bottom: 1px solid var(--header-border);
+/* 헤더, 내비게이션, 로고, 서브타이틀 등은 index.html의 Tailwind 클래스로 대체됨 */
+/* .header, .nav, .logo, .subtitle 등의 기존 CSS 규칙들은 삭제하거나 비활성화 */
+
+/* 메인 콘텐츠와 사이드바 간의 간격은 index.html의 flexbox gap으로 처리 */
+/* .container 등도 Tailwind의 mx-auto, px-4 등으로 처리 */
+
+/* 블로그 목록 스타일 (list-view) */
+.blog-list-view .blog-post-item {
+    display: flex;
+    align-items: center; /* 세로 중앙 정렬 */
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0; /* gray-200 */
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
 }
 
-.logo {
-    font-family: 'Playfair Display', serif; /* Happy2Nanal 폰트 변경 */
-    font-size: 3.2rem; /* 더 크게 강조 */
-    font-weight: 900; /* 더 굵게 */
-    color: var(--text-color-dark);
-    letter-spacing: -0.05em; /* 자간 조정 */
+.blog-list-view .blog-post-item:hover {
+    background-color: #f8f8f8; /* gray-50 */
 }
 
-.subtitle {
-    font-size: 1rem; /* 부제목 글꼴 크기 키움 */
-    color: var(--text-color-light);
+.blog-list-view .blog-post-item:last-child {
+    border-bottom: none;
 }
 
-nav ul {
-    border-bottom: none !important; /* 메뉴바 하단 보더 제거 (부모 div에 border-bottom이 적용됨) */
-    border-top: none !important; /* 메뉴바 상단 보더 제거 */
+.blog-list-view .blog-post-item .post-text-content {
+    flex-grow: 1;
+    margin-right: 1rem; /* 텍스트와 메타 정보 사이 간격 */
 }
 
-.nav-item {
-    color: var(--text-color-medium);
-    font-weight: 500;
-    font-size: 1.15rem; /* 메뉴 아이템 글꼴 크기 */
-    padding: 0.7rem 1.2rem;
-    border-radius: 0.5rem;
-    transition: all 0.2s ease-in-out;
+.blog-list-view .blog-post-item .post-title {
+    font-size: 1.25rem; /* text-xl */
+    font-weight: 700; /* font-bold */
+    color: #1a202c; /* gray-900 */
+    margin-bottom: 0.5rem;
 }
 
-.nav-item:hover, .nav-item.active {
-    color: var(--text-color-dark);
-    background-color: var(--primary-bg);
-    transform: translateY(-2px); /* 살짝 올라오는 효과 */
-}
-
-/* 보기 방식 그룹박스 (메뉴바 내) */
-#blog-view-toggle-group {
-    border-color: var(--border-color);
-    background-color: var(--primary-bg);
-}
-
-.nav-view-btn {
-    padding: 0.3rem 0.7rem; /* 패딩 조정 */
-    border-radius: 0.3rem; /* 덜 둥글게 */
-    font-weight: 500;
-    font-size: 0.8rem; /* 글꼴 크기 더 줄임 */
-    transition: all 0.2s ease-in-out;
-    background-color: var(--secondary-bg); /* 버튼 배경 흰색 */
-    color: var(--text-color-medium);
-    border: 1px solid var(--border-color);
-}
-
-.nav-view-btn.active {
-    background-color: var(--neutral-accent); /* 무채색 강조색으로 변경 */
-    color: white;
-    border-color: var(--neutral-accent);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.nav-view-btn:hover:not(.active) {
-    background-color: var(--border-color);
-    color: var(--text-color-dark);
-}
-
-
-/* 메인 콘텐츠 및 사이드바 */
-main {
-    background-color: var(--secondary-bg);
-    border: 1px solid var(--border-color);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-}
-
-aside div {
-    background-color: var(--secondary-bg);
-    border: 1px solid var(--border-color);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-aside h3 {
-    color: var(--text-color-dark);
-    border-bottom-color: var(--border-color);
-}
-
-aside ul li a {
-    color: var(--text-color-medium); /* 링크 색상 조정 */
-}
-aside ul li a:hover {
-    text-decoration: underline;
-    color: var(--text-color-dark);
-}
-aside ul li span {
-    color: var(--text-color-light);
-}
-
-/* 사이드바 최신글/인기글/공지사항 구분 디자인 */
-.sidebar-section {
-    position: relative;
+.blog-list-view .blog-post-item .post-summary {
+    color: #4a5568; /* gray-700 */
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+    /* 2줄로 제한하고 ... 처리 */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    padding-top: 1.5rem; /* 제목과 아이콘 공간 확보 */
+    text-overflow: ellipsis;
 }
 
-.sidebar-section h3 {
-    position: relative;
-    z-index: 10;
-    background-color: var(--secondary-bg); /* 배경색으로 덮어씌움 */
-    display: inline-block;
-    padding-right: 1rem; /* 제목과 보더 사이 간격 */
-}
-
-/* 공지사항 섹션 */
-.notice-section::before {
-    content: "\f0a1"; /* Bell icon */
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    font-size: 2.5rem; /* 아이콘 크기 */
-    color: var(--neutral-accent); /* 무채색 계열 */
-    opacity: 0.15;
-    z-index: 5;
-}
-
-/* 블로그 섹션 (최신글, 인기글) */
-.blog-section::before {
-    content: "\f1da"; /* Book open icon */
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    font-size: 2.5rem;
-    color: var(--neutral-accent);
-    opacity: 0.15;
-    z-index: 5;
-}
-
-/* 블로그/Q&A/공지사항 공통 카드 스타일 */
-.blog-post, .qa-post, .notice-post {
-    background-color: var(--secondary-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 0.75rem; /* rounded-xl */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* shadow-md */
-    transition: all 0.2s ease-in-out;
-}
-
-.blog-post:hover, .qa-post:hover, .notice-post:hover {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12); /* hover:shadow-lg */
-    transform: translateY(-3px); /* 살짝 올라오는 효과 강화 */
-}
-
-.blog-post h2, .qa-post h3, .notice-post h3 {
-    color: var(--text-color-dark);
-    font-weight: 700; /* 더 굵게 */
-    line-height: 1.4;
-    font-size: 1.75rem; /* 제목 글꼴 크기 키움 */
-}
-
-.blog-post h2 a {
-    color: var(--text-color-dark); /* 링크 색상 기본 글자색으로 변경 */
-}
-.blog-post h2 a:hover {
-    text-decoration: underline;
-    color: var(--neutral-accent); /* 호버 시에만 포인트 색상 (무채색 계열) */
-}
-
-
-.meta-info {
-    font-size: 0.9rem; /* text-sm 보다 살짝 키움 */
-    color: var(--text-color-light);
-    margin-top: 0.6rem;
-    margin-bottom: 1.2rem;
-    padding-bottom: 0.6rem;
-    border-bottom: 1px dashed var(--border-color); /* 점선 구분선 */
-}
-
-.meta-info .author {
-    font-weight: 500;
-    color: var(--text-color-medium);
-}
-
-.post-summary {
-    color: var(--text-color-medium);
-    line-height: 1.7;
-    margin-bottom: 1.2rem;
-    font-size: 1rem; /* 글꼴 크기 살짝 키움 */
-}
-
-.post-full-content {
-    color: var(--text-color-dark);
-    line-height: 1.8;
-    font-size: 1.1rem; /* 글꼴 크기 살짝 키움 */
-}
-
-/* 블로그 에디터 내부 이미지 스타일 (Q&A/공지사항에도 적용될 수 있음) */
-#blog-editor img, .post-full-content img, #notice-editor img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 0.6rem; /* rounded-md */
-    margin: 1.2rem 0; /* my-4 */
-    display: block; /* 이미지 하단 여백 제거 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* subtle shadow */
-}
-
-/* 버튼 공통 스타일 (모던하고 아이콘 기반) */
-.btn {
-    padding: 0.6rem 1.1rem; /* 글꼴 크기 줄임에 맞춰 패딩 조정 */
-    border-radius: 0.4rem; /* rounded-md 보다 조금 덜 둥글게 */
-    font-weight: 500;
-    font-size: 0.9rem; /* 글꼴 크기 줄임 */
-    transition: all 0.2s ease-in-out;
-    cursor: pointer;
-    display: inline-flex; /* 텍스트 및 아이콘 정렬 */
+.blog-list-view .blog-post-item .post-meta {
+    font-size: 0.875rem; /* text-sm */
+    color: #718096; /* gray-500 */
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    gap: 0.5rem; /* 아이콘과 텍스트 사이 간격 */
-    border: 1px solid transparent; /* 기본 테두리 */
+    width: 100%; /* 너비를 100%로 설정하여 justify-between이 잘 작동하도록 */
 }
 
-.btn-primary {
-    background-color: var(--neutral-accent); /* 무채색 강조색으로 변경 */
-    color: white;
-}
-.btn-primary:hover {
-    background-color: var(--neutral-accent-hover);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.btn-secondary {
-    background-color: var(--primary-bg);
-    color: var(--text-color-dark);
-    border-color: var(--border-color);
-}
-.btn-secondary:hover {
-    background-color: var(--border-color);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-}
-
-.btn-danger {
-    background-color: var(--danger-color);
-    color: white;
-}
-.btn-danger:hover {
-    background-color: var(--danger-hover-color);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.btn-outline-primary {
-    background-color: transparent;
-    color: var(--text-color-medium);
-    border-color: var(--border-color);
-}
-.btn-outline-primary:hover {
-    background-color: var(--primary-bg);
-    color: var(--text-color-dark);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-}
-
-/* 아이콘 버튼 스타일 (수정 및 텍스트 추가) */
-.icon-btn-text {
-    width: auto; /* 내용에 맞춰 너비 조정 */
-    min-width: 40px; /* 최소 너비 */
-    height: 40px; /* 높이 고정 */
-    border-radius: 20px; /* 타원형 또는 둥근 모서리 */
-    background-color: var(--primary-bg);
-    border: 1px solid var(--border-color);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    color: var(--text-color-medium);
-    font-size: 0.85rem; /* 텍스트 크기 */
-    font-weight: 500;
-    padding: 0 1rem; /* 좌우 패딩 */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
-}
-
-.icon-btn-text .icon {
-    margin-right: 0.4rem; /* 아이콘과 텍스트 사이 간격 */
-    font-size: 1.1rem; /* 아이콘 크기 */
-    color: var(--text-color-light); /* 아이콘 색상 */
-}
-
-.icon-btn-text:hover {
-    background-color: var(--border-color);
-    color: var(--text-color-dark);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-}
-
-.icon-btn-text:hover .icon {
-    color: var(--text-color-medium);
-}
-
-.icon-btn-text.danger {
-    background-color: var(--danger-color);
-    color: white;
-    border-color: var(--danger-color);
-}
-.icon-btn-text.danger:hover {
-    background-color: var(--danger-hover-color);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-.icon-btn-text.danger .icon {
-    color: white; /* 삭제 아이콘은 항상 흰색 */
-}
-
-/* 폼 요소 스타일 */
-input[type="text"], input[type="password"], textarea, #blog-editor, #notice-editor {
-    border: 1px solid var(--border-color);
-    border-radius: 0.5rem; /* rounded-md */
-    padding: 0.9rem;
-    font-size: 1rem;
-    color: var(--text-color-dark);
-    background-color: var(--primary-bg); /* Input background */
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05); /* 미세한 내부 그림자 */
-}
-input[type="text"]:focus, input[type="password"]:focus, textarea:focus, #blog-editor:focus, #notice-editor:focus {
-    outline: none;
-    border-color: var(--neutral-accent); /* 포커스 시 무채색 강조색 */
-    box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.2); /* Focus ring */
-    background-color: white; /* 포커스 시 배경 흰색 */
-}
-
-/* 검색 입력 필드 (아이콘 겹침 방지) */
-.search-input-wrapper {
-    position: relative;
-    /* width: 100%; / 너비 조정 가능 / */
-}
-
-.search-input-wrapper input {
-    padding-left: 2.2rem; /* 아이콘 공간 확보 */
-}
-
-.search-input-wrapper svg {
-    position: absolute;
-    left: 0.6rem; /* 아이콘 왼쪽 여백 */
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-color-light);
-    pointer-events: none; /* 아이콘 클릭 방지 */
-}
-
-
-/* 블로그 타일형 레이아웃 */
-#blog-posts-container.tile-view {
+/* 블로그 목록 스타일 (tile-view) */
+.blog-tile-view {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* 320px 최소 너비 */
-    gap: 1.75rem; /* grid-gap-7 */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* 반응형 그리드 */
+    gap: 1.5rem; /* gap-6 */
 }
 
-#blog-posts-container.tile-view .blog-post {
+.blog-tile-view .blog-post-item {
+    background-color: #ffffff; /* bg-white */
+    border: 1px solid #e2e8f0; /* border-gray-200 */
+    border-radius: 0.75rem; /* rounded-xl */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    display: flex; /* 내부 콘텐츠를 flex로 하여 레이아웃 조정 */
+    flex-direction: column; /* 세로 정렬 */
+}
+
+.blog-tile-view .blog-post-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15); /* shadow-lg */
+}
+
+.blog-tile-view .blog-post-item .post-thumbnail {
+    width: 100%;
+    height: 180px; /* 고정 높이 */
+    background-color: #e2e8f0; /* gray-200, placeholder */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #718096; /* gray-500 */
+    font-size: 0.9rem;
+    overflow: hidden; /* 이미지가 넘치면 잘라내기 */
+}
+.blog-tile-view .blog-post-item .post-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 이미지가 썸네일 박스에 꽉 차도록 */
+}
+
+.blog-tile-view .blog-post-item .post-text-content {
+    padding: 1.25rem; /* p-5 */
+    flex-grow: 1; /* 콘텐츠 영역이 남은 공간을 차지하도록 */
     display: flex;
     flex-direction: column;
-    height: 100%; /* 카드 높이 맞춤 */
 }
 
-/* 블로그 상세 모달 */
-#blog-detail-modal > div { /* 모달 콘텐츠 박스 */
-    max-width: 960px; /* 더 넓게 */
-    width: 95%;
-    max-height: 90vh;
-    overflow-y: auto;
-    padding: 3.5rem;
+.blog-tile-view .blog-post-item .post-title {
+    font-size: 1.125rem; /* text-lg */
+    font-weight: 700; /* font-bold */
+    color: #1a202c; /* gray-900 */
+    margin-bottom: 0.5rem; /* mb-2 */
+    /* 2줄로 제한하고 ... 처리 */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-#blog-detail-modal #close-blog-detail {
-    color: var(--text-color-light);
-    font-size: 2.8rem;
-    line-height: 1;
-    padding: 0.6rem;
-    border-radius: 50%;
-    background-color: var(--primary-bg);
-    transition: all 0.2s;
-}
-#blog-detail-modal #close-blog-detail:hover {
-    color: var(--text-color-dark);
-    background-color: var(--border-color);
-    transform: rotate(90deg); /* 닫기 버튼 회전 효과 */
+.blog-tile-view .blog-post-item .post-summary {
+    color: #4a5568; /* gray-700 */
+    font-size: 0.95rem;
+    margin-bottom: 1rem; /* mb-4 */
+    line-height: 1.5;
+    /* 3줄로 제한하고 ... 처리 */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* Q&A 관리 비밀번호 보기 버튼 */
-.qa-post .actions .btn-toggle-password {
-    background-color: #6B7280; /* Gray-500 */
-    color: white;
-}
-.qa-post .actions .btn-toggle-password:hover {
-    background-color: #4B5563; /* Gray-700 */
-}
-
-/* 수평선 스타일 */
-hr {
-    border-color: var(--border-color);
+.blog-tile-view .blog-post-item .post-meta {
+    font-size: 0.875rem; /* text-sm */
+    color: #718096; /* gray-500 */
+    margin-top: auto; /* 메타 정보를 항상 하단에 위치시킴 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 }
 
-/* 푸터 */
-footer {
-    background-color: var(--text-color-dark);
-    color: #ccc;
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-}
 
-/* 스크롤 버튼 */
-.scroll-buttons button {
-    background-color: var(--text-color-dark); /* Dark Gray */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 32px; /* 버튼 크기 더 작게 */
-    height: 32px;
-    font-size: 1.2rem; /* 아이콘 크기 조정 */
-    line-height: 1; /* 중앙 정렬 */
-    padding: 0; /* 패딩 제거 */
-}
-.scroll-buttons button:hover {
-    background-color: #333; /* Darker Gray */
-}
-
-/* 달력 위젯 스타일 */
-#calendar-widget .calendar-grid {
-    border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
-    padding: 0.5rem;
-    background-color: var(--primary-bg);
-}
-
-#calendar-widget .day-label {
-    padding: 0.5rem 0.2rem;
-    font-weight: 500;
-    text-align: center;
-    color: var(--text-color-medium);
-}
-
-#calendar-days .day {
-    padding: 0.6rem 0.2rem;
-    border-radius: 0.3rem;
+/* Q&A 및 공지사항 목록 스타일 (list-view와 유사) */
+.qa-list-item, .notice-list-item {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0; /* gray-200 */
     cursor: pointer;
-    transition: background-color 0.15s ease-in-out;
-    text-align: center;
-    color: var(--text-color-dark);
+    transition: background-color 0.2s ease-in-out;
 }
 
-#calendar-days .day:hover {
-    background-color: var(--border-color);
+.qa-list-item:hover, .notice-list-item:hover {
+    background-color: #f8f8f8; /* gray-50 */
 }
 
-#calendar-days .day.current-month {
-    color: var(--text-color-dark);
+.qa-list-item:last-child, .notice-list-item:last-child {
+    border-bottom: none;
 }
 
-#calendar-days .day.prev-month,
-#calendar-days .day.next-month {
-    color: var(--text-color-light);
-    opacity: 0.6;
+.qa-list-item .post-title, .notice-list-item .post-title {
+    font-size: 1.125rem; /* text-lg */
+    font-weight: 700; /* font-bold */
+    color: #1a202c; /* gray-900 */
+    margin-bottom: 0.5rem;
 }
 
-#calendar-days .day.today {
-    background-color: var(--neutral-accent); /* 오늘 날짜 강조 */
+.qa-list-item .post-meta, .notice-list-item .post-meta {
+    font-size: 0.875rem; /* text-sm */
+    color: #718096; /* gray-500 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* 글 상세 모달 내부 콘텐츠 스타일 */
+#modal-blog-content img {
+    max-width: 100%; /* 이미지가 모달 너비를 넘지 않도록 */
+    height: auto;
+    display: block; /* 이미지 하단 여백 제거 */
+    margin-top: 1rem; /* 이미지 위쪽 여백 */
+    margin-bottom: 1rem; /* 이미지 아래쪽 여백 */
+    border-radius: 0.5rem; /* rounded-lg */
+}
+
+/* 사이드바 글 목록 */
+.sidebar-section ul li {
+    font-size: 0.95rem;
+    color: #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dotted #e2e8f0; /* gray-200 */
+}
+
+.sidebar-section ul li:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.sidebar-section ul li a {
+    color: #4a5568; /* gray-700 */
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease-in-out;
+    flex-grow: 1; /* 제목이 공간을 최대한 차지하도록 */
+    white-space: nowrap; /* 제목이 한 줄로 유지되도록 */
+    overflow: hidden; /* 넘치는 부분 숨김 */
+    text-overflow: ellipsis; /* 넘치는 부분 ... 처리 */
+}
+
+.sidebar-section ul li a:hover {
+    color: #2b6cb0; /* blue-700 */
+}
+
+.sidebar-section ul li .post-date {
+    font-size: 0.85rem;
+    color: #718096; /* gray-500 */
+    flex-shrink: 0; /* 날짜가 줄어들지 않도록 */
+    margin-left: 10px; /* 제목과 날짜 사이 간격 */
+}
+
+/* 스크롤 버튼 스타일 */
+/* index.html에서 Tailwind 클래스로 직접 적용됨 */
+/* .scroll-buttons, #scrollUp, #scrollDown 등은 삭제하거나 간소화 */
+
+/* 푸터는 index.html에서 Tailwind 클래스로 직접 적용됨 */
+/* #footer 등은 삭제하거나 간소화 */
+
+/* --- 새로 추가되거나 수정된 스타일 --- */
+
+/* 네비게이션 아이템 활성화 시 스타일 */
+.nav-item.active {
+    color: #2563eb; /* blue-600 */
+    font-weight: 700; /* font-bold */
+    border-bottom: 2px solid #2563eb; /* blue-600 */
+    padding-bottom: 0.5rem; /* 링크 텍스트 아래 여백 */
+}
+
+/* 보기 방식 버튼 활성화 시 */
+.nav-view-btn.active {
+    background-color: #2563eb; /* blue-600 */
     color: white;
-    font-weight: 700;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-#calendar-days .day.has-post {
-    background-color: #A7F3D0; /* Green-200 (글 있는 날짜) */
-    color: #065F46; /* Green-900 */
-    font-weight: 600;
-    position: relative;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+/* 블로그/Q&A/공지사항 관리 버튼 */
+.post-management-buttons button {
+    @apply px-4 py-2 rounded-md font-medium text-sm transition-colors duration-200;
+}
+.post-management-buttons .view-button {
+    @apply bg-blue-500 text-white hover:bg-blue-600;
+}
+.post-management-buttons .edit-button {
+    @apply bg-green-500 text-white hover:bg-green-600;
+    margin-left: 0.5rem;
+}
+.post-management-buttons .delete-button {
+    @apply bg-red-500 text-white hover:bg-red-600;
+    margin-left: 0.5rem;
 }
 
-#calendar-days .day.has-post.today {
-    background-color: #34D399; /* Green-500 */
-    color: white;
+/* 글 작성 버튼 */
+.create-post-button {
+    @apply bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition-colors duration-200;
 }
 
-#calendar-days .day.has-post::after {
-    content: '';
-    position: absolute;
-    bottom: 0.2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 6px;
-    height: 6px;
-    background-color: var(--text-color-medium); /* 점 표시 */
-    border-radius: 50%;
+
+/* Q&A 관리 비밀번호 입력 모달 스타일 (예시, Tailwind로 직접 적용 권장) */
+/* .password-modal 등은 app.js에서 동적으로 생성될 때 Tailwind 클래스를 부여 */
+
+/* 커스텀 모달/프롬프트 관련 스타일 (app.js에서 동적으로 생성될 때 Tailwind 클래스 적용) */
+/* #custom-modal-container 안에 들어가는 요소들에 대한 기본적인 z-index 및 위치 */
+#custom-modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+    z-index: 1000; /* Ensure it's above other content */
 }
-#calendar-days .day.has-post.today::after {
+
+.custom-modal, .custom-prompt {
     background-color: white;
+    padding: 2rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    max-width: 90%;
+    max-height: 90%;
+    overflow-y: auto;
+    position: relative;
 }
 
+.custom-modal h3, .custom-prompt h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1a202c;
+}
 
-/* 모바일 반응형 조정 */
-@media (max-width: 1024px) { /* lg 이하 */
-    header .container {
-        flex-direction: column;
-    }
-    header .flex.justify-center.lg\:justify-between {
-        flex-direction: column;
-        align-items: center;
-    }
-    nav ul {
-        justify-content: center;
-        margin-bottom: 1rem;
-    }
-    #blog-view-toggle-group, .search-input-wrapper {
-        width: 100%;
-        justify-content: center;
-    }
-    #blog-view-toggle-group {
-        margin-top: 1rem;
+.custom-modal p, .custom-prompt p {
+    margin-bottom: 1rem;
+    color: #4a5568;
+}
+
+.custom-prompt input[type="password"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #cbd5e0;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.custom-modal-buttons, .custom-prompt-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.custom-modal-buttons button, .custom-prompt-buttons button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.custom-modal-buttons .confirm-button, .custom-prompt-buttons .confirm-button {
+    background-color: #2563eb;
+    color: white;
+    &:hover {
+        background-color: #1d4ed8;
     }
 }
 
-@media (max-width: 768px) { /* sm 이하 */
-    .container {
-        padding: 0 1rem;
+.custom-modal-buttons .cancel-button, .custom-prompt-buttons .cancel-button {
+    background-color: #e2e8f0;
+    color: #4a5568;
+    &:hover {
+        background-color: #cbd5e0;
     }
+}
 
-    .logo {
-        font-size: 2.5rem;
-    }
+/* Rich Text Editor (Quill) 기본 스타일 */
+#blog-editor, #qa-editor, #notice-editor {
+    width: 100%;
+    min-height: 300px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    font-size: 1rem;
+    line-height: 1.5;
+}
 
-    .subtitle {
-        font-size: 0.9rem;
-    }
+.ql-editor {
+    min-height: 300px; /* 에디터 본문 영역 높이 */
+}
 
-    nav ul {
-        flex-wrap: wrap;
-        gap: 0.75rem;
-        justify-content: center;
-    }
+/* Quill toolbar container */
+.ql-toolbar {
+    border: 1px solid #ddd;
+    border-bottom: none;
+    background-color: #f5f5f5;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+}
 
-    nav ul li {
-        margin-left: 0;
-    }
+/* Quill editor content container */
+.ql-container {
+    border: 1px solid #ddd;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    font-family: 'Noto Sans KR', sans-serif; /* 에디터 내 폰트 설정 */
+    font-size: 1rem;
+}
 
-    .blog-header, .qa-header, .notice-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .blog-header .flex, .qa-header .flex, .notice-header .flex {
-        width: 100%;
-        flex-direction: column;
-        gap: 0.75rem;
-        margin-top: 1rem;
-    }
-
-    .search-input-wrapper {
-        width: 100%;
-    }
-
-    .form-buttons {
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-
-    .blog-post .meta-info, .qa-post .meta-info, .notice-post .meta-info {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-    }
-
-    #blog-detail-modal > div {
-        padding: 2rem;
-    }
+/* 공통 버튼 스타일 (전체적으로 Tailwind 클래스를 선호) */
+.btn-primary {
+    @apply bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200;
+}
+.btn-secondary {
+    @apply bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200;
+}
+.btn-danger {
+    @apply bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors duration-200;
 }
