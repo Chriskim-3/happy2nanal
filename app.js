@@ -4,10 +4,14 @@ import { ref, push, onValue, remove, update, get } from 'https://www.gstatic.com
 let currentViewMode = 'list'; // 'list' 또는 'tile'
 let currentPage = ''; // 현재 로드된 페이지 (blog, qa, notice)
 
-// 달력 관련 변수
-let currentMonth = new Date().getMonth();
-let currentYear = new Date().getFullYear();
-let blogPostDates = new Set(); // 블로그 글이 있는 날짜를 저장할 Set
+// 달력 관련 변수 제거됨
+// let currentMonth = new Date().getMonth();
+// let currentYear = new Date().getFullYear();
+// let blogPostDates = new Set(); // 블로그 글이 있는 날짜를 저장할 Set
+
+// Quill 에디터 인스턴스를 저장할 변수
+let blogQuill = null;
+let noticeQuill = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     const scrollUpButton = document.getElementById('scrollUp');
@@ -73,8 +77,8 @@ document.addEventListener('DOMContentLoaded', function() {
         searchPosts(e.target.value, currentPage); // 현재 활성화된 페이지에 따라 검색
     });
 
-    // 달력 초기화 및 이벤트 리스너
-    initCalendar();
+    // 달력 초기화 및 이벤트 리스너 (삭제됨)
+    // initCalendar();
 });
 
 // --- 공통 유틸리티 함수 ---
@@ -192,13 +196,15 @@ function updateNavActiveState(pageId) {
         blogViewToggleGroup.classList.add('hidden');
     }
 
-    // 달력 정보 섹션 가시성 (공지사항 페이지에서만 표시)
+    // 달력 정보 섹션 가시성 (공지사항 페이지에서만 표시) - 달력 삭제로 인해 관련 로직 제거
     const calendarInfoSection = document.getElementById('calendar-info-section');
-    if (pageId === 'notice') {
-        calendarInfoSection.classList.remove('hidden');
-        renderCalendar(); // 공지사항 페이지 진입 시 달력 다시 그림
-    } else {
-        calendarInfoSection.classList.add('hidden');
+    if (calendarInfoSection) { // calendarInfoSection이 존재하면 (혹시 몰라서)
+        if (pageId === 'notice') {
+            calendarInfoSection.classList.remove('hidden');
+            // renderCalendar(); // 공지사항 페이지 진입 시 달력 다시 그림 - 달력 삭제로 제거됨
+        } else {
+            calendarInfoSection.classList.add('hidden');
+        }
     }
 }
 
@@ -293,12 +299,12 @@ function loadBlogPosts(container, searchTerm = '') {
         });
         posts.sort((a, b) => new Date(b.date) - new Date(a.date)); // 최신순 정렬
 
-        // 블로그 포스트 날짜 저장 (달력 하이라이팅용)
-        blogPostDates.clear(); // 기존 날짜 초기화
-        posts.forEach(post => {
-            blogPostDates.add(post.date); // 'YYYY-MM-DD' 형식으로 저장됨
-        });
-        renderCalendar(); // 포스트 로드 후 달력 업데이트
+        // 블로그 포스트 날짜 저장 (달력 하이라이팅용) - 달력 삭제로 인해 관련 로직 제거
+        // blogPostDates.clear(); // 기존 날짜 초기화
+        // posts.forEach(post => {
+        //     blogPostDates.add(post.date); // 'YYYY-MM-DD' 형식으로 저장됨
+        // });
+        // renderCalendar(); // 포스트 로드 후 달력 업데이트 - 달력 삭제로 제거됨
 
         // 검색 필터링
         if (searchTerm) {
@@ -332,7 +338,6 @@ function displayBlogPosts(posts, container) {
                 </div>
                 <div class="post-summary text-gray-700 leading-relaxed mb-4">${summary}</div>
                 <div class="flex justify-end actions space-x-2">
-                    <button onclick="showBlogPostDetail('${post.id}')" class="icon-btn-text" title="더 보기"><i class="fas fa-eye icon"></i>더보기</button>
                     <button onclick="editBlogPost('${post.id}')" class="icon-btn-text" title="수정"><i class="fas fa-edit icon"></i>수정</button>
                     <button onclick="deleteBlogPost('${post.id}')" class="icon-btn-text danger" title="삭제"><i class="fas fa-trash-alt icon"></i>삭제</button>
                 </div>
@@ -378,8 +383,7 @@ function openBlogPostForm(postId = null) {
         <form id="blog-form" class="bg-white p-8 rounded-xl shadow-md border border-gray-200">
             <input type="text" id="blog-title" placeholder="제목" required class="w-full p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base">
             <input type="text" id="blog-author" placeholder="작성자 닉네임" required class="w-full p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base">
-            <div id="blog-editor" contenteditable="true" class="w-full min-h-[300px] p-3 border border-gray-300 rounded-md mb-4 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"></div>
-            <input type="file" id="blog-image" accept="image/*" multiple class="w-full p-3 border border-gray-300 rounded-md mb-6 bg-gray-50 text-sm">
+            <div id="blog-editor-container" style="height: 300px; margin-bottom: 1.5rem;"></div> <input type="file" id="blog-image" accept="image/*" multiple class="w-full p-3 border border-gray-300 rounded-md mb-6 bg-gray-50 text-sm">
             <div class="flex justify-end space-x-3 form-buttons">
                 <button type="submit" class="btn btn-primary text-sm">${postId ? '수정' : '등록'}</button>
                 ${postId ? '<button type="button" onclick="deleteBlogPost(\'' + postId + '\')" class="btn btn-danger text-sm">삭제</button>' : ''}
@@ -387,9 +391,25 @@ function openBlogPostForm(postId = null) {
         </form>
     `;
     const form = document.getElementById('blog-form');
-    const editor = document.getElementById('blog-editor');
+    // const editor = document.getElementById('blog-editor'); // 기존 editor 삭제
     const imageInput = document.getElementById('blog-image');
     const authorInput = document.getElementById('blog-author');
+
+    // Quill 에디터 초기화
+    blogQuill = new Quill('#blog-editor-container', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                [{ 'align': [] }],
+                ['link', 'image'],
+                [{ 'color': [] }, { 'background': [] }],
+                ['clean']
+            ]
+        }
+    });
 
     imageInput.addEventListener('change', function(e) {
         const files = e.target.files;
@@ -397,10 +417,9 @@ function openBlogPostForm(postId = null) {
             const file = files[i];
             const reader = new FileReader();
             reader.onload = function(event) {
-                const img = document.createElement('img');
-                img.src = event.target.result;
-                img.classList.add('max-w-full', 'h-auto', 'rounded-md', 'my-2'); // Tailwind classes for images
-                editor.appendChild(img);
+                const range = blogQuill.getSelection(true);
+                blogQuill.insertEmbed(range.index, 'image', event.target.result);
+                blogQuill.setSelection(range.index + 1);
             };
             reader.readAsDataURL(file);
         }
@@ -412,7 +431,7 @@ function openBlogPostForm(postId = null) {
             const post = snapshot.val();
             document.getElementById('blog-title').value = post.title;
             authorInput.value = post.author || '';
-            editor.innerHTML = post.content;
+            blogQuill.root.innerHTML = post.content; // Quill 에디터에 내용 로드
         });
         form.onsubmit = (e) => updateBlogPost(e, postId);
     } else {
@@ -424,8 +443,8 @@ async function submitBlogPost(e) {
     e.preventDefault();
     const title = document.getElementById('blog-title').value;
     const author = document.getElementById('blog-author').value;
-    const content = document.getElementById('blog-editor').innerHTML;
-    const date = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '-').replace(/ /g, '').slice(0, -1); // YYYY-MM-DD 형식
+    const content = blogQuill.root.innerHTML; // Quill 에디터의 HTML 내용 가져오기
+    const date = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '-').replace(/ /g, '').slice(0, -1); //YYYY-MM-DD 형식
 
     if (!title || !author || !content) {
         await showCustomModal('모든 필드를 채워주세요.');
@@ -461,7 +480,7 @@ async function updateBlogPost(e, postId) {
     e.preventDefault();
     const title = document.getElementById('blog-title').value;
     const author = document.getElementById('blog-author').value;
-    const content = document.getElementById('blog-editor').innerHTML;
+    const content = blogQuill.root.innerHTML; // Quill 에디터의 HTML 내용 가져오기
 
     if (!title || !author || !content) {
         await showCustomModal('모든 필드를 채워주세요.');
@@ -796,14 +815,15 @@ function displayNoticePosts(noticePosts, container) {
         const summary = getPlainTextSummary(post.content, 150);
         container.innerHTML += `
             <div class="notice-post p-6">
-                <h3 class="text-2xl font-semibold text-gray-800 mb-2">${post.title}</h3>
+                <h3 class="text-2xl font-semibold text-gray-800 mb-2">
+                    <a href="#" onclick="showNoticeDetail('${post.id}')" class="text-gray-800 hover:text-blue-600">${post.title}</a>
+                </h3>
                 <div class="meta-info flex justify-between items-center text-gray-500 text-sm mb-4">
                     <span class="author font-medium text-gray-700">작성자: ${post.author || '관리자'}</span>
                     <span class="date">${post.date}</span>
                 </div>
                 <p class="post-summary text-gray-700 leading-relaxed mb-4">${summary}</p>
                 <div class="flex justify-end actions space-x-2">
-                    <button onclick="showNoticeDetail('${post.id}')" class="icon-btn-text" title="더 보기"><i class="fas fa-eye icon"></i>더보기</button>
                     <button onclick="editNoticePost('${post.id}')" class="icon-btn-text" title="수정"><i class="fas fa-edit icon"></i>수정</button>
                 </div>
             </div>
@@ -850,8 +870,7 @@ function openNoticeForm(noticeId = null) {
         <form id="notice-form" class="bg-white p-8 rounded-xl shadow-md border border-gray-200">
             <input type="text" id="notice-title" placeholder="제목" required class="w-full p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base">
             <input type="text" id="notice-author" placeholder="작성자 닉네임" value="관리자" required class="w-full p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base" readonly>
-            <div id="notice-editor" contenteditable="true" class="w-full min-h-[300px] p-3 border border-gray-300 rounded-md mb-4 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"></div>
-            <input type="file" id="notice-image" accept="image/*" multiple class="w-full p-3 border border-gray-300 rounded-md mb-6 bg-gray-50 text-sm">
+            <div id="notice-editor-container" style="height: 300px; margin-bottom: 1.5rem;"></div> <input type="file" id="notice-image" accept="image/*" multiple class="w-full p-3 border border-gray-300 rounded-md mb-6 bg-gray-50 text-sm">
             <div class="flex justify-end space-x-3 form-buttons">
                 <button type="submit" class="btn btn-primary text-sm">${noticeId ? '수정' : '등록'}</button>
                 ${noticeId ? '<button type="button" onclick="deleteNoticePost(\'' + noticeId + '\')" class="btn btn-danger text-sm">삭제</button>' : ''}
@@ -859,9 +878,25 @@ function openNoticeForm(noticeId = null) {
         </form>
     `;
     const form = document.getElementById('notice-form');
-    const editor = document.getElementById('notice-editor');
+    // const editor = document.getElementById('notice-editor'); // 기존 editor 삭제
     const imageInput = document.getElementById('notice-image');
     const authorInput = document.getElementById('notice-author');
+
+    // Quill 에디터 초기화
+    noticeQuill = new Quill('#notice-editor-container', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                [{ 'align': [] }],
+                ['link', 'image'],
+                [{ 'color': [] }, { 'background': [] }],
+                ['clean']
+            ]
+        }
+    });
 
     imageInput.addEventListener('change', function(e) {
         const files = e.target.files;
@@ -869,10 +904,9 @@ function openNoticeForm(noticeId = null) {
             const file = files[i];
             const reader = new FileReader();
             reader.onload = function(event) {
-                const img = document.createElement('img');
-                img.src = event.target.result;
-                img.classList.add('max-w-full', 'h-auto', 'rounded-md', 'my-2');
-                editor.appendChild(img);
+                const range = noticeQuill.getSelection(true);
+                noticeQuill.insertEmbed(range.index, 'image', event.target.result);
+                noticeQuill.setSelection(range.index + 1);
             };
             reader.readAsDataURL(file);
         }
@@ -884,7 +918,7 @@ function openNoticeForm(noticeId = null) {
             const post = snapshot.val();
             document.getElementById('notice-title').value = post.title;
             authorInput.value = post.author || '관리자';
-            editor.innerHTML = post.content;
+            noticeQuill.root.innerHTML = post.content; // Quill 에디터에 내용 로드
         });
         form.onsubmit = (e) => updateNoticePost(e, noticeId);
     } else {
@@ -896,7 +930,7 @@ async function submitNoticePost(e) {
     e.preventDefault();
     const title = document.getElementById('notice-title').value;
     const author = document.getElementById('notice-author').value;
-    const content = document.getElementById('notice-editor').innerHTML;
+    const content = noticeQuill.root.innerHTML; // Quill 에디터의 HTML 내용 가져오기
     const date = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '-').replace(/ /g, '').slice(0, -1);
 
     if (!title || !author || !content) {
@@ -930,7 +964,7 @@ async function updateNoticePost(e, noticeId) {
     e.preventDefault();
     const title = document.getElementById('notice-title').value;
     const author = document.getElementById('notice-author').value;
-    const content = document.getElementById('notice-editor').innerHTML;
+    const content = noticeQuill.root.innerHTML; // Quill 에디터의 HTML 내용 가져오기
 
     if (!title || !author || !content) {
         await showCustomModal('모든 필드를 채워주세요.');
@@ -953,7 +987,7 @@ async function updateNoticePost(e, noticeId) {
 async function deleteNoticePost(noticeId) {
     const confirmed = await showCustomModal('정말로 이 공지사항을 삭제하시겠습니까?', 'confirm');
     if (confirmed) {
-        const password = await showCustomPrompt("관리자 비밀번호를 입력하세요:");
+        const password = await showCustomPrompt("비밀번호를 입력하세요:");
         if (password === "1234") { // 관리자 비밀번호 확인
             const noticeRef = ref(database, `notice/${noticeId}`);
             try {
@@ -1017,7 +1051,7 @@ function displaySidebarPosts(posts, elementId, type) {
         if (elementId === 'popular-posts-sidebar') message = '인기글';
         else if (elementId === 'latest-posts-sidebar') message = '최신 글';
         else if (elementId === 'latest-notices-sidebar') message = '최신 공지';
-        sidebarElement.innerHTML = `<li class="text-gray-700">아직 ${message}이 없습니다.</li>`;
+        sidebarElement.innerHTML = `<li class="text-gray-700 text-xs">아직 ${message}이 없습니다.</li>`; // 글자 크기 축소
     } else {
         posts.forEach(post => {
             const listItem = document.createElement('li');
@@ -1031,11 +1065,9 @@ function displaySidebarPosts(posts, elementId, type) {
             }
 
             listItem.innerHTML = `
-                <a href="#" onclick="${clickHandler}" class="text-gray-700 hover:underline text-base font-medium block">
-                    ${post.title}
+                <a href="#" onclick="${clickHandler}" class="text-gray-700 hover:underline text-sm font-medium block"> ${post.title}
                 </a>
-                <span class="block text-gray-500 text-sm mt-1">${post.date}</span>
-            `;
+                <span class="block text-gray-500 text-xs mt-1">${post.date}</span> `;
             sidebarElement.appendChild(listItem);
         });
     }
@@ -1056,106 +1088,106 @@ function searchPosts(searchTerm, type) {
     }
 }
 
-// --- 달력 관련 함수 ---
+// --- 달력 관련 함수 (전체 제거됨) ---
 
-function initCalendar() {
-    const prevMonthBtn = document.getElementById('prevMonth');
-    const nextMonthBtn = document.getElementById('nextMonth');
+// function initCalendar() {
+//     const prevMonthBtn = document.getElementById('prevMonth');
+//     const nextMonthBtn = document.getElementById('nextMonth');
 
-    if (prevMonthBtn && nextMonthBtn) {
-        prevMonthBtn.addEventListener('click', () => {
-            currentMonth--;
-            if (currentMonth < 0) {
-                currentMonth = 11;
-                currentYear--;
-            }
-            renderCalendar();
-        });
+//     if (prevMonthBtn && nextMonthBtn) {
+//         prevMonthBtn.addEventListener('click', () => {
+//             currentMonth--;
+//             if (currentMonth < 0) {
+//                 currentMonth = 11;
+//                 currentYear--;
+//             }
+//             renderCalendar();
+//         });
 
-        nextMonthBtn.addEventListener('click', () => {
-            currentMonth++;
-            if (currentMonth > 11) {
-                currentMonth = 0;
-                currentYear++;
-            }
-            renderCalendar();
-        });
-    }
+//         nextMonthBtn.addEventListener('click', () => {
+//             currentMonth++;
+//             if (currentMonth > 11) {
+//                 currentMonth = 0;
+//                 currentYear++;
+//             }
+//             renderCalendar();
+//         });
+//     }
 
-    // 초기 로드 시 블로그 글 날짜를 가져와 달력에 표시
-    const postsRef = ref(database, 'posts');
-    onValue(postsRef, (snapshot) => {
-        blogPostDates.clear();
-        snapshot.forEach((childSnapshot) => {
-            const postDate = childSnapshot.val().date;
-            if (postDate) {
-                blogPostDates.add(postDate);
-            }
-        });
-        renderCalendar(); // 데이터 로드 후 달력 다시 그리기
-    });
-}
+//     // 초기 로드 시 블로그 글 날짜를 가져와 달력에 표시
+//     const postsRef = ref(database, 'posts');
+//     onValue(postsRef, (snapshot) => {
+//         blogPostDates.clear();
+//         snapshot.forEach((childSnapshot) => {
+//             const postDate = childSnapshot.val().date;
+//             if (postDate) {
+//                 blogPostDates.add(postDate);
+//             }
+//         });
+//         renderCalendar(); // 데이터 로드 후 달력 다시 그리기
+//     });
+// }
 
-function renderCalendar() {
-    const monthYearSpan = document.getElementById('currentMonthYear');
-    const daysContainer = document.getElementById('calendar-days');
-    if (!monthYearSpan || !daysContainer) return; // 요소가 없으면 함수 종료
+// function renderCalendar() {
+//     const monthYearSpan = document.getElementById('currentMonthYear');
+//     const daysContainer = document.getElementById('calendar-days');
+//     if (!monthYearSpan || !daysContainer) return; // 요소가 없으면 함수 종료
 
-    const date = new Date(currentYear, currentMonth);
-    monthYearSpan.textContent = `${date.getFullYear()}년 ${date.getMonth() + 1}월`;
+//     const date = new Date(currentYear, currentMonth);
+//     monthYearSpan.textContent = `${date.getFullYear()}년 ${date.getMonth() + 1}월`;
 
-    daysContainer.innerHTML = '';
+//     daysContainer.innerHTML = '';
 
-    // 이번 달 첫째 날과 마지막 날
-    const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
-    const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+//     // 이번 달 첫째 날과 마지막 날
+//     const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+//     const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
 
-    // 이전 달의 마지막 날짜
-    const prevMonthLastDay = new Date(currentYear, currentMonth, 0);
+//     // 이전 달의 마지막 날짜
+//     const prevMonthLastDay = new Date(currentYear, currentMonth, 0);
 
-    // 이번 달 1일이 무슨 요일인지 (0:일, 1:월, ...)
-    const startDayIndex = firstDayOfMonth.getDay();
+//     // 이번 달 1일이 무슨 요일인지 (0:일, 1:월, ...)
+//     const startDayIndex = firstDayOfMonth.getDay();
 
-    // 날짜 채우기 (이전 달 날짜)
-    for (let i = startDayIndex; i > 0; i--) {
-        const day = prevMonthLastDay.getDate() - i + 1;
-        const dayElement = document.createElement('div');
-        dayElement.classList.add('day', 'prev-month');
-        dayElement.textContent = day;
-        daysContainer.appendChild(dayElement);
-    }
+//     // 날짜 채우기 (이전 달 날짜)
+//     for (let i = startDayIndex; i > 0; i--) {
+//         const day = prevMonthLastDay.getDate() - i + 1;
+//         const dayElement = document.createElement('div');
+//         dayElement.classList.add('day', 'prev-month');
+//         dayElement.textContent = day;
+//         daysContainer.appendChild(dayElement);
+//     }
 
-    // 이번 달 날짜
-    for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
-        const dayElement = document.createElement('div');
-        dayElement.classList.add('day', 'current-month');
-        dayElement.textContent = i;
+//     // 이번 달 날짜
+//     for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
+//         const dayElement = document.createElement('div');
+//         dayElement.classList.add('day', 'current-month');
+//         dayElement.textContent = i;
 
-        const currentDayFormatted = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-        if (blogPostDates.has(currentDayFormatted)) {
-            dayElement.classList.add('has-post');
-        }
+//         const currentDayFormatted = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+//         if (blogPostDates.has(currentDayFormatted)) {
+//             dayElement.classList.add('has-post');
+//         }
 
-        // 오늘 날짜 표시
-        const today = new Date();
-        if (i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
-            dayElement.classList.add('today');
-        }
+//         // 오늘 날짜 표시
+//         const today = new Date();
+//         if (i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
+//             dayElement.classList.add('today');
+//         }
 
-        daysContainer.appendChild(dayElement);
-    }
+//         daysContainer.appendChild(dayElement);
+//     }
 
-    // 다음 달 날짜 (달력 꽉 채우기)
-    const totalDays = startDayIndex + lastDayOfMonth.getDate();
-    const remainingDays = 42 - totalDays; // 6주(6*7=42칸) 기준
+//     // 다음 달 날짜 (달력 꽉 채우기)
+//     const totalDays = startDayIndex + lastDayOfMonth.getDate();
+//     const remainingDays = 42 - totalDays; // 6주(6*7=42칸) 기준
 
-    for (let i = 1; i <= remainingDays; i++) {
-        const dayElement = document.createElement('div');
-        dayElement.classList.add('day', 'next-month');
-        dayElement.textContent = i;
-        daysContainer.appendChild(dayElement);
-    }
-}
+//     for (let i = 1; i <= remainingDays; i++) {
+//         const dayElement = document.createElement('div');
+//         dayElement.classList.add('day', 'next-month');
+//         dayElement.textContent = i;
+//         daysContainer.appendChild(dayElement);
+//     }
+// }
 
 
 // --- 전역 스코프에 함수 노출 (직접 호출하는 경우) ---
