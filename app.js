@@ -12,6 +12,27 @@ let currentBlogViewMode = 'list'; // 블로그 초기 보기 모드
 // 비밀번호 변수 (실제 서비스에서는 보안 강화 필요)
 const ADMIN_PASSWORD = '111'; // 예시 비밀번호
 
+// 캐러셀 이미지 및 텍스트 데이터
+const carouselData = [
+    {
+        image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        title: 'Happy2Nanal',
+        subtitle: '당신의 칼퇴를 응원합니다'
+    },
+    {
+        image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        title: '생산성 향상을 위한 최고의 팁',
+        subtitle: '똑똑하게 일하고 현명하게 퇴근하세요'
+    },
+    {
+        image: 'https://images.unsplash.com/photo-1519389950473-47ba0c766d10?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        title: '커뮤니티와 함께 성장하기',
+        subtitle: '질문하고, 답변하고, 지식을 공유하세요'
+    }
+];
+let currentSlideIndex = 0;
+let carouselInterval;
+
 document.addEventListener('DOMContentLoaded', function() {
     const scrollUpButton = document.getElementById('scrollUp');
     const scrollDownButton = document.getElementById('scrollDown');
@@ -70,9 +91,6 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         document.querySelector('.nav-item[href="#home"]').classList.add('active');
     }
-
-    // 보기 방식 토글 버튼 이벤트 리스너 (블로그 페이지에서만 활성화)
-    // 이 부분은 loadPage에서 처리하도록 변경
 });
 
 function loadPage(page) {
@@ -88,23 +106,34 @@ function loadPage(page) {
         blogViewToggleGroup.classList.add('hidden');
     }
 
+    // 캐러셀 자동 재생 정지 (홈 페이지가 아닐 때)
+    if (carouselInterval) {
+        clearInterval(carouselInterval);
+        carouselInterval = null;
+    }
+
 
     switch (page) {
         case 'home':
             mainContent.innerHTML = `
                 <section class="home-section">
-                    <h2 class="text-4xl font-bold text-gray-800 mb-6">Happy2Nanal에 오신 것을 환영합니다!</h2>
-                    <p class="text-lg text-gray-700 leading-relaxed mb-8">
-                        이곳은 당신의 효율적인 업무 환경과 '칼퇴'를 응원하는 공간입니다.
-                        다양한 정보와 팁을 공유하며, 함께 성장해나가는 커뮤니티가 되겠습니다.
-                    </p>
-                    <img src="https://via.placeholder.com/600x350/F8F8F8/333333?text=Welcome+to+Happy2Nanal" alt="Welcome Image" class="home-image">
-                    <p class="text-md text-gray-600 mt-8">
-                        궁금한 점이 있다면 Q&A 게시판을, 최신 소식은 공지사항 게시판을 확인해주세요.
-                    </p>
+                    <div class="carousel-container">
+                        </div>
+                    <div class="welcome-text">
+                        <h2 class="text-4xl font-bold text-gray-800 mb-6">Happy2Nanal과 함께하는 스마트한 직장 생활</h2>
+                        <p class="text-lg text-gray-700 leading-relaxed mb-8">
+                            업무 효율을 극대화하고 워라밸을 지키는 비법을 공유합니다.
+                            함께 배우고 성장하며 '칼퇴'의 꿈을 이루세요!
+                        </p>
+                    </div>
+                    <div class="home-cta">
+                        <button class="create-post-button" onclick="loadPage('blog')">블로그 최신 글 보러가기</button>
+                        <button class="create-post-button" onclick="loadPage('qa')">궁금한 점 질문하기</button>
+                    </div>
                 </section>
             `;
             // 홈에서는 특별히 사이드바를 표시하지 않음
+            setupCarousel(); // 캐러셀 설정 및 시작
             break;
         case 'blog':
             mainContent.innerHTML = `
@@ -143,7 +172,7 @@ function loadPage(page) {
             }
 
             loadBlogPosts();
-            document.querySelectorAll('.blog-section').forEach(section => section.classList.remove('hidden')); // 사이드바 활성화
+            document.querySelector('.sidebar-section.blog-section').classList.remove('hidden'); // 사이드바 활성화
             blogViewToggleGroup && blogViewToggleGroup.classList.remove('hidden'); // 보기 방식 토글 표시
             break;
         case 'qa':
@@ -156,7 +185,7 @@ function loadPage(page) {
             `;
             document.getElementById('create-qa-post-btn').addEventListener('click', openQAPostForm);
             loadQA();
-            document.querySelectorAll('.qa-section').forEach(section => section.classList.remove('hidden')); // 사이드바 활성화
+            document.querySelector('.sidebar-section.qa-section').classList.remove('hidden'); // 사이드바 활성화
             break;
         case 'notice':
             mainContent.innerHTML = `
@@ -168,7 +197,7 @@ function loadPage(page) {
             `;
             document.getElementById('create-notice-post-btn').addEventListener('click', openNoticePostForm);
             loadNotice();
-            document.querySelectorAll('.notice-section').forEach(section => section.classList.remove('hidden')); // 사이드바 활성화
+            document.querySelector('.sidebar-section.notice-section').classList.remove('hidden'); // 사이드바 활성화
             break;
         default:
             loadPage('home'); // 존재하지 않는 페이지는 홈으로 리다이렉트
@@ -181,6 +210,79 @@ function loadPage(page) {
 }
 
 // =====================================
+// Home Page Carousel Functions
+// =====================================
+function setupCarousel() {
+    const carouselContainer = document.querySelector('.carousel-container');
+    if (!carouselContainer) return; // 캐러셀 컨테이너가 없으면 함수 종료
+
+    carouselContainer.innerHTML = ''; // 기존 슬라이드 제거
+
+    carouselData.forEach((data, index) => {
+        const slide = document.createElement('div');
+        slide.classList.add('carousel-slide');
+        if (index === 0) {
+            slide.classList.add('active');
+        }
+        slide.style.backgroundImage = `url('${data.image}')`;
+        slide.innerHTML = `
+            <div class="carousel-text-overlay">
+                <h2>${data.title}</h2>
+                <p>${data.subtitle}</p>
+            </div>
+        `;
+        carouselContainer.appendChild(slide);
+    });
+
+    const dotsContainer = document.createElement('div');
+    dotsContainer.classList.add('carousel-dots');
+    carouselData.forEach((_, index) => {
+        const dot = document.createElement('span');
+        dot.classList.add('dot');
+        if (index === 0) {
+            dot.classList.add('active');
+        }
+        dot.dataset.index = index;
+        dot.addEventListener('click', () => showSlide(index));
+        dotsContainer.appendChild(dot);
+    });
+    carouselContainer.appendChild(dotsContainer);
+
+    showSlide(currentSlideIndex); // 초기 슬라이드 표시
+    startCarouselAutoPlay(); // 자동 재생 시작
+}
+
+function showSlide(index) {
+    const slides = document.querySelectorAll('.carousel-slide');
+    const dots = document.querySelectorAll('.dot');
+
+    if (index >= slides.length) currentSlideIndex = 0;
+    if (index < 0) currentSlideIndex = slides.length - 1;
+
+    slides.forEach(slide => slide.classList.remove('active'));
+    dots.forEach(dot => dot.classList.remove('active'));
+
+    slides[currentSlideIndex].classList.add('active');
+    dots[currentSlideIndex].classList.add('active');
+}
+
+function nextSlide() {
+    currentSlideIndex++;
+    if (currentSlideIndex >= carouselData.length) {
+        currentSlideIndex = 0;
+    }
+    showSlide(currentSlideIndex);
+}
+
+function startCarouselAutoPlay() {
+    if (carouselInterval) {
+        clearInterval(carouselInterval);
+    }
+    carouselInterval = setInterval(nextSlide, 5000); // 5초마다 슬라이드 변경
+}
+
+
+// =====================================
 // Custom Modal / Prompt Functions (Async/Await)
 // =====================================
 function showCustomModal({ title, content, buttons = [{ text: '확인', value: 'confirm', className: 'confirm-button' }] }) {
@@ -189,14 +291,14 @@ function showCustomModal({ title, content, buttons = [{ text: '확인', value: '
         modalContainer.innerHTML = '';
 
         const modal = document.createElement('div');
-        modal.classList.add('custom-modal'); // Tailwind 클래스는 CSS 파일에
+        modal.classList.add('custom-modal');
         modal.innerHTML = `
-            <h3 class="text-2xl font-bold text-gray-900 mb-4">${title}</h3>
-            <p class="text-gray-700 mb-6">${content}</p>
-            <div class="custom-modal-buttons flex justify-end space-x-3">
+            <h3>${title}</h3>
+            <p>${content}</p>
+            <div class="custom-modal-buttons">
                 ${buttons.map(btn => `<button class="${btn.className || 'confirm-button'}" data-value="${btn.value}">${btn.text}</button>`).join('')}
             </div>
-            <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-xl" data-value="cancel">&times;</button>
+            <button class="absolute" data-value="cancel">&times;</button>
         `;
 
         modalContainer.appendChild(modal);
@@ -218,16 +320,16 @@ function showCustomPrompt({ title, content, inputType = 'text', placeholder = ''
         modalContainer.innerHTML = '';
 
         const prompt = document.createElement('div');
-        prompt.classList.add('custom-prompt'); // Tailwind 클래스는 CSS 파일에
+        prompt.classList.add('custom-prompt');
         prompt.innerHTML = `
-            <h3 class="text-2xl font-bold text-gray-900 mb-4">${title}</h3>
-            <p class="text-gray-700 mb-4">${content}</p>
-            <input type="${inputType}" class="w-full p-3 border border-gray-300 rounded-md mb-6 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="${placeholder}" id="custom-prompt-input">
-            <div class="custom-prompt-buttons flex justify-end space-x-3">
+            <h3>${title}</h3>
+            <p>${content}</p>
+            <input type="${inputType}" placeholder="${placeholder}" id="custom-prompt-input">
+            <div class="custom-prompt-buttons">
                 <button class="cancel-button">${cancelText}</button>
                 <button class="confirm-button">${confirmText}</button>
             </div>
-            <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-xl" data-value="cancel">&times;</button>
+            <button class="absolute" data-value="cancel">&times;</button>
         `;
 
         modalContainer.appendChild(prompt);
@@ -324,7 +426,7 @@ function displayBlogPosts(posts, viewMode) {
         if (viewMode === 'list') {
             contentHTML = `
                 <div class="post-text-content" data-post-id="${postId}" data-post-type="blog">
-                    <h3 class="post-title cursor-pointer">${post.title}</h3>
+                    <h3 class="post-title">${post.title}</h3>
                     <div class="post-summary">${post.content.replace(/<[^>]*>/g, '').substring(0, 150)}${post.content.replace(/<[^>]*>/g, '').length > 150 ? '...' : ''}</div>
                     <div class="post-meta">
                         <span>${post.author}</span>
@@ -349,7 +451,7 @@ function displayBlogPosts(posts, viewMode) {
             `;
         } else { // tile view
             const imageUrlMatch = post.content.match(/<img[^>]+src="([^">]+)"/);
-            const thumbnailUrl = imageUrlMatch ? imageUrlMatch[1] : '';
+            const thumbnailUrl = imageUrlMatch ? imageUrlMatch[1] : 'https://via.placeholder.com/400x200/F0F2F5/A0A0A0?text=No+Image'; // 기본 이미지 URL
             const summaryText = post.content.replace(/<[^>]*>/g, '');
 
             contentHTML = `
@@ -357,7 +459,7 @@ function displayBlogPosts(posts, viewMode) {
                     ${thumbnailUrl ? `<img src="${thumbnailUrl}" alt="Thumbnail">` : '<span class="text-gray-500">이미지 없음</span>'}
                 </div>
                 <div class="post-text-content" data-post-id="${postId}" data-post-type="blog">
-                    <h3 class="post-title cursor-pointer">${post.title}</h3>
+                    <h3 class="post-title">${post.title}</h3>
                     <div class="post-summary">${summaryText.substring(0, 100)}${summaryText.length > 100 ? '...' : ''}</div>
                     <div class="post-meta">
                         <span>${post.author}</span>
@@ -612,7 +714,7 @@ function displayQAPosts(qaPosts) {
 
         postElement.innerHTML = `
             <div class="post-text-content" data-post-id="${postId}" data-post-type="qa">
-                <h3 class="post-title cursor-pointer">${post.title}</h3>
+                <h3 class="post-title">${post.title}</h3>
                 <div class="post-meta">
                     <span>작성자: ${post.nickname}</span>
                     <span>${post.date}</span>
@@ -850,7 +952,7 @@ function displayNoticePosts(noticePosts) {
 
         postElement.innerHTML = `
             <div class="post-text-content" data-post-id="${postId}" data-post-type="notice">
-                <h3 class="post-title cursor-pointer">${post.title}</h3>
+                <h3 class="post-title">${post.title}</h3>
                 <div class="post-meta">
                     <span>작성자: ${post.author}</span>
                     <span>${post.date}</span>
@@ -1105,7 +1207,7 @@ function loadSidebarPosts() {
             });
         }
         // 공지 섹션은 항상 보이도록 hidden 클래스 제거
-        document.querySelector('.sidebar-section.notice-section').classList.remove('hidden');
+        document.querySelector('.sidebar-section.notice-section')?.classList.remove('hidden');
     });
 
     // 인기글 (블로그) 로드 (조회수 기준)
@@ -1124,7 +1226,7 @@ function loadSidebarPosts() {
             });
         }
          // 블로그 섹션은 항상 보이도록 hidden 클래스 제거
-        document.querySelector('.sidebar-section.blog-section').classList.remove('hidden');
+        document.querySelector('.sidebar-section.blog-section')?.classList.remove('hidden');
     });
 
     // 최신 글 (블로그) 로드 (날짜 기준)
@@ -1142,7 +1244,7 @@ function loadSidebarPosts() {
             });
         }
         // 블로그 섹션은 항상 보이도록 hidden 클래스 제거
-        document.querySelector('.sidebar-section.blog-section').classList.remove('hidden');
+        document.querySelector('.sidebar-section.blog-section')?.classList.remove('hidden');
     });
 
      // 최신 Q&A 로드
@@ -1161,7 +1263,7 @@ function loadSidebarPosts() {
             });
         }
         // Q&A 섹션은 항상 보이도록 hidden 클래스 제거
-        document.querySelector('.sidebar-section.qa-section').classList.remove('hidden');
+        document.querySelector('.sidebar-section.qa-section')?.classList.remove('hidden');
     });
 }
 
