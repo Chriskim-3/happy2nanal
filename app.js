@@ -4,6 +4,11 @@ import { ref, push, onValue, remove, update, get } from 'https://www.gstatic.com
 let currentViewMode = 'list'; // 'list' 또는 'tile'
 let currentPage = ''; // 현재 로드된 페이지 (blog, qa, notice)
 
+// 달력 관련 변수
+let currentMonth = new Date().getMonth();
+let currentYear = new Date().getFullYear();
+let blogPostDates = new Set(); // 블로그 글이 있는 날짜를 저장할 Set
+
 document.addEventListener('DOMContentLoaded', function() {
     const scrollUpButton = document.getElementById('scrollUp');
     const scrollDownButton = document.getElementById('scrollDown');
@@ -12,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeBlogDetailButton = document.getElementById('close-blog-detail');
     const navListViewBtn = document.getElementById('nav-list-view-btn');
     const navTileViewBtn = document.getElementById('nav-tile-view-btn');
+    const globalSearchInput = document.getElementById('global-search-input');
 
     // 스크롤 버튼 이벤트
     scrollUpButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
@@ -35,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('nav').addEventListener('click', function(e) {
         if (e.target.tagName === 'A' && e.target.classList.contains('nav-item')) {
             e.preventDefault();
-            const page = e.target.getAttribute('href').slice(1);
+            const page = e.target.getAttribute('href').slice(1); // #blog -> blog
             loadPage(page);
         }
     });
@@ -61,6 +67,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (navTileViewBtn) {
         navTileViewBtn.addEventListener('click', () => setViewMode('tile'));
     }
+
+    // 통합 검색 입력 이벤트
+    globalSearchInput.addEventListener('input', (e) => {
+        searchPosts(e.target.value, currentPage); // 현재 활성화된 페이지에 따라 검색
+    });
+
+    // 달력 초기화 및 이벤트 리스너
+    initCalendar();
 });
 
 // --- 공통 유틸리티 함수 ---
@@ -171,11 +185,20 @@ function updateNavActiveState(pageId) {
         activeNavItem.classList.add('active');
     }
 
-    const blogViewToggleNavItem = document.getElementById('blog-view-toggle-nav-item');
+    const blogViewToggleGroup = document.getElementById('blog-view-toggle-group');
     if (pageId === 'blog') {
-        blogViewToggleNavItem.classList.remove('hidden');
+        blogViewToggleGroup.classList.remove('hidden');
     } else {
-        blogViewToggleNavItem.classList.add('hidden');
+        blogViewToggleGroup.classList.add('hidden');
+    }
+
+    // 달력 정보 섹션 가시성 (공지사항 페이지에서만 표시)
+    const calendarInfoSection = document.getElementById('calendar-info-section');
+    if (pageId === 'notice') {
+        calendarInfoSection.classList.remove('hidden');
+        renderCalendar(); // 공지사항 페이지 진입 시 달력 다시 그림
+    } else {
+        calendarInfoSection.classList.add('hidden');
     }
 }
 
@@ -185,6 +208,8 @@ function loadPage(page) {
     currentPage = page; // 현재 페이지 상태 업데이트
     const mainContent = document.getElementById('main-content');
     updateNavActiveState(page); // 네비게이션 활성화 상태 업데이트
+    // 통합 검색창 비우기
+    document.getElementById('global-search-input').value = '';
 
     switch(page) {
         case 'blog':
@@ -209,12 +234,8 @@ function loadBlog() {
     const mainContent = document.getElementById('main-content');
     mainContent.innerHTML = `
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6 blog-header">
-            <h1 class="text-3xl font-bold text-gray-800">BLOG</h1>
-            <div class="flex items-center space-x-3 mt-4 sm:mt-0 w-full sm:w-auto">
-                <div class="search-input-wrapper w-full sm:w-64">
-                    <input type="text" id="blog-search-input" placeholder="글 검색..." class="w-full p-2 pr-4 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-base">
-                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                </div>
+            <h1 class="text-3xl font-bold text-gray-800">MyHappyWay</h1>
+            <div class="flex items-center space-x-3 mt-4 sm:mt-0">
                 <button onclick="checkPasswordForBlogPost()" class="btn btn-primary whitespace-nowrap text-sm">새 글 작성</button>
             </div>
         </div>
@@ -226,7 +247,9 @@ function loadBlog() {
     // 보기 방식 버튼 활성화 상태 동기화
     updateViewModeButtons();
 
-    document.getElementById('blog-search-input').addEventListener('input', (e) => searchPosts(e.target.value, 'blog'));
+    // 블로그 페이지 로드 시, 검색창 이벤트 리스너를 다시 연결 (페이지 새로고침 시 필요)
+    document.getElementById('global-search-input').removeEventListener('input', (e) => searchPosts(e.target.value, 'blog'));
+    document.getElementById('global-search-input').addEventListener('input', (e) => searchPosts(e.target.value, 'blog'));
 }
 
 function updateViewModeButtons() {
@@ -256,7 +279,7 @@ function setViewMode(mode) {
     }
     updateViewModeButtons(); // 메뉴바의 버튼 상태 업데이트
     // 현재 검색어 유지하면서 다시 로드
-    const currentSearchInput = document.getElementById('blog-search-input');
+    const currentSearchInput = document.getElementById('global-search-input');
     const currentSearchTerm = currentSearchInput ? currentSearchInput.value : '';
     loadBlogPosts(document.getElementById('blog-posts-container'), currentSearchTerm);
 }
@@ -269,6 +292,13 @@ function loadBlogPosts(container, searchTerm = '') {
             posts.push({ id: childSnapshot.key, ...childSnapshot.val() });
         });
         posts.sort((a, b) => new Date(b.date) - new Date(a.date)); // 최신순 정렬
+
+        // 블로그 포스트 날짜 저장 (달력 하이라이팅용)
+        blogPostDates.clear(); // 기존 날짜 초기화
+        posts.forEach(post => {
+            blogPostDates.add(post.date); // 'YYYY-MM-DD' 형식으로 저장됨
+        });
+        renderCalendar(); // 포스트 로드 후 달력 업데이트
 
         // 검색 필터링
         if (searchTerm) {
@@ -302,8 +332,9 @@ function displayBlogPosts(posts, container) {
                 </div>
                 <div class="post-summary text-gray-700 leading-relaxed mb-4">${summary}</div>
                 <div class="flex justify-end actions space-x-2">
-                    <button onclick="showBlogPostDetail('${post.id}')" class="btn btn-outline-primary text-sm">더 보기</button>
-                    <button onclick="editBlogPost('${post.id}')" class="btn btn-primary text-sm">수정</button>
+                    <button onclick="showBlogPostDetail('${post.id}')" class="icon-btn-text" title="더 보기"><i class="fas fa-eye icon"></i>더보기</button>
+                    <button onclick="editBlogPost('${post.id}')" class="icon-btn-text" title="수정"><i class="fas fa-edit icon"></i>수정</button>
+                    <button onclick="deleteBlogPost('${post.id}')" class="icon-btn-text danger" title="삭제"><i class="fas fa-trash-alt icon"></i>삭제</button>
                 </div>
             </div>
         `;
@@ -394,7 +425,7 @@ async function submitBlogPost(e) {
     const title = document.getElementById('blog-title').value;
     const author = document.getElementById('blog-author').value;
     const content = document.getElementById('blog-editor').innerHTML;
-    const date = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '').replace(/ /g, '-').slice(0, -1);
+    const date = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '-').replace(/ /g, '').slice(0, -1); // YYYY-MM-DD 형식
 
     if (!title || !author || !content) {
         await showCustomModal('모든 필드를 채워주세요.');
@@ -410,7 +441,7 @@ async function saveBlogPost(post) {
     try {
         await push(postsRef, post);
         await showCustomModal('블로그 글이 등록되었습니다.');
-        loadBlog();
+        loadBlog(); // 재로드를 통해 달력 및 목록 업데이트
     } catch (error) {
         console.error("Error adding post: ", error);
         await showCustomModal('글 등록 중 오류가 발생했습니다.');
@@ -442,7 +473,7 @@ async function updateBlogPost(e, postId) {
     try {
         await update(postRef, post);
         await showCustomModal('블로그 글이 수정되었습니다.');
-        loadBlog();
+        loadBlog(); // 재로드를 통해 달력 및 목록 업데이트
     } catch (error) {
         console.error("Error updating post: ", error);
         await showCustomModal('글 수정 중 오류가 발생했습니다.');
@@ -458,7 +489,7 @@ async function deleteBlogPost(postId) {
             try {
                 await remove(postRef);
                 await showCustomModal('블로그 글이 삭제되었습니다.');
-                loadBlog();
+                loadBlog(); // 재로드를 통해 달력 및 목록 업데이트
             } catch (error) {
                 console.error("Error removing post: ", error);
                 await showCustomModal('글 삭제 중 오류가 발생했습니다.');
@@ -476,11 +507,7 @@ function loadQA() {
     mainContent.innerHTML = `
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6 qa-header">
             <h1 class="text-3xl font-bold text-gray-800">Q&A</h1>
-            <div class="flex items-center space-x-3 mt-4 sm:mt-0 w-full sm:w-auto">
-                 <div class="search-input-wrapper w-full sm:w-64">
-                    <input type="text" id="qa-search-input" placeholder="질문 검색..." class="w-full p-2 pr-4 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-base">
-                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                </div>
+            <div class="flex items-center space-x-3 mt-4 sm:mt-0">
                 <button onclick="openQAForm()" class="btn btn-primary whitespace-nowrap text-sm">새 질문</button>
                 <button onclick="checkPasswordForQAManagement()" class="btn btn-secondary whitespace-nowrap text-sm">관리</button>
             </div>
@@ -489,7 +516,9 @@ function loadQA() {
         <div id="qa-list" class="space-y-8"></div>
     `;
     loadQAPosts();
-    document.getElementById('qa-search-input').addEventListener('input', (e) => searchPosts(e.target.value, 'qa'));
+    // Q&A 페이지 로드 시, 검색창 이벤트 리스너를 다시 연결
+    document.getElementById('global-search-input').removeEventListener('input', (e) => searchPosts(e.target.value, 'qa'));
+    document.getElementById('global-search-input').addEventListener('input', (e) => searchPosts(e.target.value, 'qa'));
 }
 
 function loadQAPosts(searchTerm = '') {
@@ -531,8 +560,8 @@ function displayQAPosts(qaPosts, container) {
                 </div>
                 <p class="post-summary text-gray-700 leading-relaxed mb-4">${summary}</p>
                 <div class="flex justify-end space-x-2 actions">
-                    <button onclick="editQAPost('${qaPost.id}')" class="btn btn-primary text-sm">수정</button>
-                    <button onclick="deleteQAPost('${qaPost.id}')" class="btn btn-danger text-sm">삭제</button>
+                    <button onclick="editQAPost('${qaPost.id}')" class="icon-btn-text" title="수정"><i class="fas fa-edit icon"></i>수정</button>
+                    <button onclick="deleteQAPost('${qaPost.id}')" class="icon-btn-text danger" title="삭제"><i class="fas fa-trash-alt icon"></i>삭제</button>
                 </div>
             </div>
         `;
@@ -575,8 +604,8 @@ function manageQA() {
                     <p class="text-gray-700 leading-relaxed mb-6">비밀번호: <span class="password hidden font-mono text-gray-900">${qaPost.password}</span></p>
                     <div class="flex justify-end space-x-2 actions">
                         <button onclick="togglePassword(this)" class="btn btn-secondary btn-toggle-password text-sm">비밀번호 보기</button>
-                        <button onclick="editQAPost('${childSnapshot.key}')" class="btn btn-primary text-sm">수정</button>
-                        <button onclick="deleteQAPost('${childSnapshot.key}')" class="btn btn-danger text-sm">삭제</button>
+                        <button onclick="editQAPost('${childSnapshot.key}')" class="icon-btn-text" title="수정"><i class="fas fa-edit icon"></i>수정</button>
+                        <button onclick="deleteQAPost('${childSnapshot.key}')" class="icon-btn-text danger" title="삭제"><i class="fas fa-trash-alt icon"></i>삭제</button>
                     </div>
                 </div>
             `;
@@ -632,7 +661,7 @@ async function submitQAPost(e) {
     const content = document.getElementById('qa-content').value;
     const nickname = document.getElementById('qa-nickname').value;
     const password = document.getElementById('qa-password').value;
-    const date = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '').replace(/ /g, '-').slice(0, -1);
+    const date = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '-').replace(/ /g, '').slice(0, -1);
 
     if (!title || !content || !nickname || !password) {
         await showCustomModal('모든 필드를 채워주세요.');
@@ -722,11 +751,7 @@ function loadNotice() {
     mainContent.innerHTML = `
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6 notice-header">
             <h1 class="text-3xl font-bold text-gray-800">공지사항</h1>
-            <div class="flex items-center space-x-3 mt-4 sm:mt-0 w-full sm:w-auto">
-                <div class="search-input-wrapper w-full sm:w-64">
-                    <input type="text" id="notice-search-input" placeholder="공지 검색..." class="w-full p-2 pr-4 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-base">
-                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                </div>
+            <div class="flex items-center space-x-3 mt-4 sm:mt-0">
                 <button onclick="checkPasswordForNotice()" class="btn btn-primary whitespace-nowrap text-sm">새 공지 작성</button>
             </div>
         </div>
@@ -734,7 +759,9 @@ function loadNotice() {
         <div id="notice-list" class="space-y-8"></div>
     `;
     loadNoticePosts();
-    document.getElementById('notice-search-input').addEventListener('input', (e) => searchPosts(e.target.value, 'notice'));
+    // 공지사항 페이지 로드 시, 검색창 이벤트 리스너를 다시 연결
+    document.getElementById('global-search-input').removeEventListener('input', (e) => searchPosts(e.target.value, 'notice'));
+    document.getElementById('global-search-input').addEventListener('input', (e) => searchPosts(e.target.value, 'notice'));
 }
 
 function loadNoticePosts(searchTerm = '') {
@@ -776,8 +803,8 @@ function displayNoticePosts(noticePosts, container) {
                 </div>
                 <p class="post-summary text-gray-700 leading-relaxed mb-4">${summary}</p>
                 <div class="flex justify-end actions space-x-2">
-                    <button onclick="showNoticeDetail('${post.id}')" class="btn btn-outline-primary text-sm">더 보기</button>
-                    <button onclick="editNoticePost('${post.id}')" class="btn btn-primary text-sm">수정</button>
+                    <button onclick="showNoticeDetail('${post.id}')" class="icon-btn-text" title="더 보기"><i class="fas fa-eye icon"></i>더보기</button>
+                    <button onclick="editNoticePost('${post.id}')" class="icon-btn-text" title="수정"><i class="fas fa-edit icon"></i>수정</button>
                 </div>
             </div>
         `;
@@ -870,7 +897,7 @@ async function submitNoticePost(e) {
     const title = document.getElementById('notice-title').value;
     const author = document.getElementById('notice-author').value;
     const content = document.getElementById('notice-editor').innerHTML;
-    const date = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '').replace(/ /g, '-').slice(0, -1);
+    const date = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '-').replace(/ /g, '').slice(0, -1);
 
     if (!title || !author || !content) {
         await showCustomModal('모든 필드를 채워주세요.');
@@ -947,14 +974,14 @@ async function deleteNoticePost(noticeId) {
 // --- 사이드바 관련 함수 ---
 
 function loadSidebarPosts() {
-    // 최신 블로그 글 (가장 최근 5개)
+    // 최신 블로그 글 (가장 최근 3개)
     const postsRef = ref(database, 'posts');
     onValue(postsRef, (snapshot) => {
         const posts = [];
         snapshot.forEach((childSnapshot) => {
             posts.push({ id: childSnapshot.key, ...childSnapshot.val() });
         });
-        const latestPosts = posts.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+        const latestPosts = posts.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3); // 3줄로 변경
         displaySidebarPosts(latestPosts, 'latest-posts-sidebar', 'blog');
     });
 
@@ -965,7 +992,7 @@ function loadSidebarPosts() {
         snapshot.forEach((childSnapshot) => {
             posts.push({ id: childSnapshot.key, ...childSnapshot.val() });
         });
-        const popularPosts = posts.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5); // 임시
+        const popularPosts = posts.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3); // 3줄로 변경
         displaySidebarPosts(popularPosts, 'popular-posts-sidebar', 'blog');
     });
 
@@ -1026,6 +1053,107 @@ function searchPosts(searchTerm, type) {
     } else if (type === 'notice') {
         const container = document.getElementById('notice-list');
         loadNoticePosts(searchTerm);
+    }
+}
+
+// --- 달력 관련 함수 ---
+
+function initCalendar() {
+    const prevMonthBtn = document.getElementById('prevMonth');
+    const nextMonthBtn = document.getElementById('nextMonth');
+
+    if (prevMonthBtn && nextMonthBtn) {
+        prevMonthBtn.addEventListener('click', () => {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        });
+
+        nextMonthBtn.addEventListener('click', () => {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        });
+    }
+
+    // 초기 로드 시 블로그 글 날짜를 가져와 달력에 표시
+    const postsRef = ref(database, 'posts');
+    onValue(postsRef, (snapshot) => {
+        blogPostDates.clear();
+        snapshot.forEach((childSnapshot) => {
+            const postDate = childSnapshot.val().date;
+            if (postDate) {
+                blogPostDates.add(postDate);
+            }
+        });
+        renderCalendar(); // 데이터 로드 후 달력 다시 그리기
+    });
+}
+
+function renderCalendar() {
+    const monthYearSpan = document.getElementById('currentMonthYear');
+    const daysContainer = document.getElementById('calendar-days');
+    if (!monthYearSpan || !daysContainer) return; // 요소가 없으면 함수 종료
+
+    const date = new Date(currentYear, currentMonth);
+    monthYearSpan.textContent = `${date.getFullYear()}년 ${date.getMonth() + 1}월`;
+
+    daysContainer.innerHTML = '';
+
+    // 이번 달 첫째 날과 마지막 날
+    const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+    const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+
+    // 이전 달의 마지막 날짜
+    const prevMonthLastDay = new Date(currentYear, currentMonth, 0);
+
+    // 이번 달 1일이 무슨 요일인지 (0:일, 1:월, ...)
+    const startDayIndex = firstDayOfMonth.getDay();
+
+    // 날짜 채우기 (이전 달 날짜)
+    for (let i = startDayIndex; i > 0; i--) {
+        const day = prevMonthLastDay.getDate() - i + 1;
+        const dayElement = document.createElement('div');
+        dayElement.classList.add('day', 'prev-month');
+        dayElement.textContent = day;
+        daysContainer.appendChild(dayElement);
+    }
+
+    // 이번 달 날짜
+    for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
+        const dayElement = document.createElement('div');
+        dayElement.classList.add('day', 'current-month');
+        dayElement.textContent = i;
+
+        const currentDayFormatted = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        if (blogPostDates.has(currentDayFormatted)) {
+            dayElement.classList.add('has-post');
+        }
+
+        // 오늘 날짜 표시
+        const today = new Date();
+        if (i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
+            dayElement.classList.add('today');
+        }
+
+        daysContainer.appendChild(dayElement);
+    }
+
+    // 다음 달 날짜 (달력 꽉 채우기)
+    const totalDays = startDayIndex + lastDayOfMonth.getDate();
+    const remainingDays = 42 - totalDays; // 6주(6*7=42칸) 기준
+
+    for (let i = 1; i <= remainingDays; i++) {
+        const dayElement = document.createElement('div');
+        dayElement.classList.add('day', 'next-month');
+        dayElement.textContent = i;
+        daysContainer.appendChild(dayElement);
     }
 }
 
