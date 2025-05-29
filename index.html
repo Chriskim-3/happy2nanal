@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Happy2Nanal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlNqL1nO0b2a7p+4N4JjN+K4Tz4PzB0/x5z5w5p5u5g5v5p5q5u5i5j5k5l5m5n5o5p5q5r5s5t5u5v5w5x5y5z5" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         /* Tailwind CSS 기본 설정 및 커스텀 폰트 */
         @layer base {
@@ -17,25 +18,32 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
-    <header class="bg-white shadow-sm py-4 sticky top-0 z-40">
+    <header class="bg-white shadow-lg py-4 sticky top-0 z-40">
         <div class="container mx-auto px-4 flex flex-col items-center">
             <div class="flex flex-col items-center mb-4">
-                <a href="#blog" class="text-4xl font-extrabold text-gray-800 logo">Happy2Nanal</a>
-                <p class="text-gray-600 text-sm mt-1 subtitle">당신의 칼퇴를 응원합니다</p>
+                <a href="#blog" class="text-5xl font-extrabold text-gray-800 logo font-playfair">Happy2Nanal</a>
+                <p class="text-gray-600 text-base mt-1 subtitle">당신의 칼퇴를 응원합니다</p>
             </div>
-            <nav class="w-full">
-                <ul class="flex justify-center space-x-10 border-t border-b border-gray-200 py-3">
-                    <li><a href="#blog" class="nav-item">BLOG</a></li>
-                    <li><a href="#qa" class="nav-item">Q&A</a></li>
-                    <li><a href="#notice" class="nav-item">공지사항</a></li>
-                    <li id="blog-view-toggle-nav-item" class="hidden">
-                        <div class="flex space-x-1">
-                            <button id="nav-list-view-btn" class="nav-view-btn active">목록형</button>
-                            <button id="nav-tile-view-btn" class="nav-view-btn">타일형</button>
-                        </div>
-                    </li>
-                </ul>
-            </nav>
+            <div class="w-full flex justify-center lg:justify-between items-center py-3 border-t border-b border-gray-200">
+                <nav class="flex-grow">
+                    <ul class="flex justify-center lg:justify-start space-x-10">
+                        <li><a href="#blog" class="nav-item">MyHappyWay</a></li>
+                        <li><a href="#qa" class="nav-item">Q&A</a></li>
+                        <li><a href="#notice" class="nav-item">공지사항</a></li>
+                    </ul>
+                </nav>
+                <div class="flex items-center space-x-4 mt-4 lg:mt-0">
+                    <div class="search-input-wrapper">
+                        <input type="text" id="global-search-input" placeholder="통합 검색..." class="w-48 p-2 pr-4 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+                        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </div>
+                    <div id="blog-view-toggle-group" class="hidden border border-gray-300 rounded-lg p-2 flex items-center space-x-2 bg-gray-50">
+                        <span class="text-gray-600 text-sm font-medium whitespace-nowrap">보기 방식:</span>
+                        <button id="nav-list-view-btn" class="nav-view-btn active">목록형</button>
+                        <button id="nav-tile-view-btn" class="nav-view-btn">타일형</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -43,23 +51,44 @@
         <main id="main-content" role="main" class="flex-1 bg-white p-8 rounded-xl shadow-lg"></main>
 
         <aside class="w-full lg:w-80 space-y-8">
-             <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+             <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 sidebar-section notice-section">
                 <h3 class="text-2xl font-bold text-gray-800 mb-5 border-b pb-3 border-gray-200">최신 공지</h3>
                 <ul id="latest-notices-sidebar" class="space-y-4">
                     <li class="text-gray-700">최신 공지가 없습니다.</li>
                 </ul>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 sidebar-section blog-section">
                 <h3 class="text-2xl font-bold text-gray-800 mb-5 border-b pb-3 border-gray-200">인기글</h3>
                 <ul id="popular-posts-sidebar" class="space-y-4">
                     <li class="text-gray-700">인기글이 없습니다.</li>
                 </ul>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 sidebar-section blog-section">
                 <h3 class="text-2xl font-bold text-gray-800 mb-5 border-b pb-3 border-gray-200">최신 글</h3>
                 <ul id="latest-posts-sidebar" class="space-y-4">
                     <li class="text-gray-700">최신 글이 없습니다.</li>
                 </ul>
+            </div>
+             <div id="calendar-info-section" class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 hidden">
+                <h3 class="text-2xl font-bold text-gray-800 mb-5 border-b pb-3 border-gray-200">캘린더</h3>
+                <div id="calendar-widget" class="text-center text-gray-700">
+                    <div class="calendar-header flex justify-between items-center mb-4">
+                        <button id="prevMonth" class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-700">&lt;</button>
+                        <span id="currentMonthYear" class="text-xl font-semibold"></span>
+                        <button id="nextMonth" class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-700">&gt;</button>
+                    </div>
+                    <div class="calendar-grid grid grid-cols-7 gap-1 text-sm">
+                        <div class="day-label text-gray-600 font-medium">일</div>
+                        <div class="day-label text-gray-600 font-medium">월</div>
+                        <div class="day-label text-gray-600 font-medium">화</div>
+                        <div class="day-label text-gray-600 font-medium">수</div>
+                        <div class="day-label text-gray-600 font-medium">목</div>
+                        <div class="day-label text-gray-600 font-medium">금</div>
+                        <div class="day-label text-gray-600 font-medium">토</div>
+                    </div>
+                    <div id="calendar-days" class="calendar-grid grid grid-cols-7 gap-1">
+                        </div>
+                </div>
             </div>
         </aside>
     </div>
@@ -79,9 +108,9 @@
     <div id="custom-modal-container"></div>
 
 
-    <div class="scroll-buttons fixed bottom-12 right-6 flex flex-col z-50">
-        <button id="scrollUp" class="bg-gray-700 text-white p-3 mb-2 rounded-full shadow-lg hover:bg-gray-800 transition-colors text-xl">▲</button>
-        <button id="scrollDown" class="bg-gray-700 text-white p-3 rounded-full shadow-lg hover:bg-gray-800 transition-colors text-xl">▼</button>
+    <div class="scroll-buttons fixed bottom-4 right-4 flex flex-col z-50">
+        <button id="scrollUp" class="bg-gray-700 text-white p-2 mb-1 rounded-full shadow-lg hover:bg-gray-800 transition-colors text-lg w-10 h-10 flex items-center justify-center">▲</button>
+        <button id="scrollDown" class="bg-gray-700 text-white p-2 rounded-full shadow-lg hover:bg-gray-800 transition-colors text-lg w-10 h-10 flex items-center justify-center">▼</button>
     </div>
 
     <footer id="footer" class="bg-gray-800 text-white text-center p-6 text-sm mt-auto shadow-inner" style="display: none;">
