@@ -93,7 +93,7 @@ function loadPage(page) {
         case 'blog':
             mainContent.innerHTML = `
                 <div class="blog-header flex justify-between items-center mb-6">
-                    <h2 class="text-3xl font-bold text-gray-800">BLOG</h2>
+                    <h2 class="text-4xl font-bold text-gray-800">BLOG</h2>
                     <button id="create-blog-post-btn" class="create-post-button">글 작성</button>
                 </div>
                 <div id="blog-posts-container" class="py-4"></div>
@@ -114,7 +114,7 @@ function loadPage(page) {
         case 'qa':
             mainContent.innerHTML = `
                 <div class="qa-header flex justify-between items-center mb-6">
-                    <h2 class="text-3xl font-bold text-gray-800">Q&A</h2>
+                    <h2 class="text-4xl font-bold text-gray-800">Q&A</h2>
                     <button id="create-qa-post-btn" class="create-post-button">질문 작성</button>
                 </div>
                 <div id="qa-posts-container" class="py-4"></div>
@@ -126,7 +126,7 @@ function loadPage(page) {
         case 'notice':
             mainContent.innerHTML = `
                 <div class="notice-header flex justify-between items-center mb-6">
-                    <h2 class="text-3xl font-bold text-gray-800">공지사항</h2>
+                    <h2 class="text-4xl font-bold text-gray-800">공지사항</h2>
                     <button id="create-notice-post-btn" class="create-post-button">공지 작성</button>
                 </div>
                 <div id="notice-posts-container" class="py-4"></div>
@@ -264,8 +264,8 @@ function displayBlogPosts(posts, viewMode) {
         let contentHTML;
         if (viewMode === 'list') {
             contentHTML = `
-                <div class="post-text-content">
-                    <h3 class="post-title">${post.title}</h3>
+                <div class="post-text-content" data-post-id="${postId}" data-post-type="blog">
+                    <h3 class="post-title cursor-pointer">${post.title}</h3>
                     <div class="post-summary">${post.content.replace(/<[^>]*>/g, '').substring(0, 150)}${post.content.replace(/<[^>]*>/g, '').length > 150 ? '...' : ''}</div>
                     <div class="post-meta">
                         <span>${post.author}</span>
@@ -273,12 +273,6 @@ function displayBlogPosts(posts, viewMode) {
                     </div>
                 </div>
                 <div class="post-management-buttons flex items-center mt-4">
-                    <button class="view-button" onclick="window.showCustomPrompt({
-                        title: '비밀번호 확인',
-                        content: '게시글을 보려면 비밀번호를 입력하세요.',
-                        inputType: 'password',
-                        placeholder: '비밀번호'
-                    }).then(password => window.checkPasswordForBlogPost('${postId}', password, 'view'))">👁️ 보기</button>
                     <button class="edit-button" onclick="window.showCustomPrompt({
                         title: '비밀번호 확인',
                         content: '게시글을 수정하려면 비밀번호를 입력하세요.',
@@ -302,8 +296,8 @@ function displayBlogPosts(posts, viewMode) {
                 <div class="post-thumbnail">
                     ${thumbnailUrl ? `<img src="${thumbnailUrl}" alt="Thumbnail">` : '<span>No Image</span>'}
                 </div>
-                <div class="post-text-content">
-                    <h3 class="post-title">${post.title}</h3>
+                <div class="post-text-content" data-post-id="${postId}" data-post-type="blog">
+                    <h3 class="post-title cursor-pointer">${post.title}</h3>
                     <div class="post-summary">${summaryText.substring(0, 100)}${summaryText.length > 100 ? '...' : ''}</div>
                     <div class="post-meta">
                         <span>${post.author}</span>
@@ -311,12 +305,6 @@ function displayBlogPosts(posts, viewMode) {
                     </div>
                 </div>
                 <div class="post-management-buttons flex items-center justify-end p-4">
-                    <button class="view-button" onclick="window.showCustomPrompt({
-                        title: '비밀번호 확인',
-                        content: '게시글을 보려면 비밀번호를 입력하세요.',
-                        inputType: 'password',
-                        placeholder: '비밀번호'
-                    }).then(password => window.checkPasswordForBlogPost('${postId}', password, 'view'))">👁️ 보기</button>
                     <button class="edit-button" onclick="window.showCustomPrompt({
                         title: '비밀번호 확인',
                         content: '게시글을 수정하려면 비밀번호를 입력하세요.',
@@ -335,6 +323,11 @@ function displayBlogPosts(posts, viewMode) {
 
         postElement.innerHTML = contentHTML;
         postsContainer.appendChild(postElement);
+
+        // 제목 클릭 이벤트 리스너 추가
+        postElement.querySelector('.post-title').addEventListener('click', () => {
+            openBlogPostDetail(postId);
+        });
     });
 }
 
@@ -485,6 +478,9 @@ async function deleteBlogPost(postId) {
 }
 
 async function checkPasswordForBlogPost(postId, password, action) {
+    // 하드코딩된 비밀번호 111로 변경
+    const correctPassword = '111';
+
     if (password === null) { // '취소'를 눌렀을 때
         return;
     }
@@ -493,14 +489,8 @@ async function checkPasswordForBlogPost(postId, password, action) {
         return;
     }
 
-    const postRef = ref(database, `posts/${postId}`);
-    const snapshot = await get(postRef);
-    const post = snapshot.val();
-
-    if (post && post.password === password) {
-        if (action === 'view') {
-            openBlogPostDetail(postId);
-        } else if (action === 'edit') {
+    if (password === correctPassword) { // 입력된 비밀번호가 111이면
+        if (action === 'edit') {
             openBlogPostForm(postId);
         } else if (action === 'delete') {
             deleteBlogPost(postId);
@@ -566,20 +556,14 @@ function displayQAPosts(qaPosts) {
         postElement.classList.add('qa-list-item');
 
         postElement.innerHTML = `
-            <div class="post-text-content">
-                <h3 class="post-title">${post.title}</h3>
+            <div class="post-text-content" data-post-id="${postId}" data-post-type="qa">
+                <h3 class="post-title cursor-pointer">${post.title}</h3>
                 <div class="post-meta">
                     <span>작성자: ${post.nickname}</span>
                     <span>${post.date}</span>
                 </div>
             </div>
             <div class="post-management-buttons flex items-center justify-end p-4">
-                <button class="view-button" onclick="window.showCustomPrompt({
-                    title: '비밀번호 확인',
-                    content: '게시글을 보려면 비밀번호를 입력하세요.',
-                    inputType: 'password',
-                    placeholder: '비밀번호'
-                }).then(password => window.checkPasswordForQAManagement('${postId}', password, 'view'))">👁️ 보기</button>
                 <button class="edit-button" onclick="window.showCustomPrompt({
                     title: '비밀번호 확인',
                     content: '게시글을 수정하려면 비밀번호를 입력하세요.',
@@ -595,6 +579,11 @@ function displayQAPosts(qaPosts) {
             </div>
         `;
         qaPostsContainer.appendChild(postElement);
+
+        // 제목 클릭 이벤트 리스너 추가
+        postElement.querySelector('.post-title').addEventListener('click', () => {
+            openQADetail(postId);
+        });
     });
 }
 
@@ -744,6 +733,9 @@ async function deleteQAPost(postId) {
 }
 
 async function checkPasswordForQAManagement(postId, password, action) {
+    // 하드코딩된 비밀번호 111로 변경
+    const correctPassword = '111';
+
     if (password === null) {
         return;
     }
@@ -752,14 +744,8 @@ async function checkPasswordForQAManagement(postId, password, action) {
         return;
     }
 
-    const postRef = ref(database, `qa/${postId}`);
-    const snapshot = await get(postRef);
-    const post = snapshot.val();
-
-    if (post && post.password === password) {
-        if (action === 'view') {
-            openQADetail(postId);
-        } else if (action === 'edit') {
+    if (password === correctPassword) { // 입력된 비밀번호가 111이면
+        if (action === 'edit') {
             openQAPostForm(postId);
         } else if (action === 'delete') {
             deleteQAPost(postId);
@@ -821,20 +807,14 @@ function displayNoticePosts(noticePosts) {
         postElement.classList.add('notice-list-item');
 
         postElement.innerHTML = `
-            <div class="post-text-content">
-                <h3 class="post-title">${post.title}</h3>
+            <div class="post-text-content" data-post-id="${postId}" data-post-type="notice">
+                <h3 class="post-title cursor-pointer">${post.title}</h3>
                 <div class="post-meta">
                     <span>작성자: ${post.author}</span>
                     <span>${post.date}</span>
                 </div>
             </div>
             <div class="post-management-buttons flex items-center justify-end p-4">
-                <button class="view-button" onclick="window.showCustomPrompt({
-                    title: '비밀번호 확인',
-                    content: '게시글을 보려면 비밀번호를 입력하세요.',
-                    inputType: 'password',
-                    placeholder: '비밀번호'
-                }).then(password => window.checkPasswordForNoticeManagement('${postId}', password, 'view'))">👁️ 보기</button>
                 <button class="edit-button" onclick="window.showCustomPrompt({
                     title: '비밀번호 확인',
                     content: '게시글을 수정하려면 비밀번호를 입력하세요.',
@@ -850,6 +830,11 @@ function displayNoticePosts(noticePosts) {
             </div>
         `;
         noticePostsContainer.appendChild(postElement);
+
+        // 제목 클릭 이벤트 리스너 추가
+        postElement.querySelector('.post-title').addEventListener('click', () => {
+            openNoticeDetail(postId);
+        });
     });
 }
 
@@ -999,6 +984,9 @@ async function deleteNoticePost(postId) {
 }
 
 async function checkPasswordForNoticeManagement(postId, password, action) {
+    // 하드코딩된 비밀번호 111로 변경
+    const correctPassword = '111';
+
     if (password === null) {
         return;
     }
@@ -1007,14 +995,8 @@ async function checkPasswordForNoticeManagement(postId, password, action) {
         return;
     }
 
-    const postRef = ref(database, `notice/${postId}`);
-    const snapshot = await get(postRef);
-    const post = snapshot.val();
-
-    if (post && post.password === password) {
-        if (action === 'view') {
-            openNoticeDetail(postId);
-        } else if (action === 'edit') {
+    if (password === correctPassword) { // 입력된 비밀번호가 111이면
+        if (action === 'edit') {
             openNoticePostForm(postId);
         } else if (action === 'delete') {
             deleteNoticePost(postId);
@@ -1158,13 +1140,12 @@ function generateCalendar(month, year) {
     for (let i = 1; i <= daysInMonth; i++) {
         const dayDiv = document.createElement('div');
         dayDiv.classList.add('p-2', 'text-center', 'rounded-md', 'cursor-pointer', 'hover:bg-blue-200', 'transition-colors');
-        dayDiv.textContent = i;
 
         const today = new Date();
         if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
             dayDiv.classList.add('bg-blue-500', 'text-white', 'font-bold');
         }
-
+        dayDiv.textContent = i;
         dayDiv.addEventListener('click', () => {
             // 날짜 클릭 시 이벤트 (예: 해당 날짜의 게시물 필터링)
             showCustomModal({ title: '달력 날짜', content: `${year}.${month + 1}.${i} 날짜를 클릭했습니다.` });
