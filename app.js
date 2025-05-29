@@ -380,10 +380,20 @@ async function openBlogPostForm(postId = null) {
         const snapshot = await get(postRef);
         const post = snapshot.val();
         if (post) {
-            document.getElementById('blog-title').value = post.title;
-            document.getElementById('blog-author').value = post.author;
-            quillBlog.setContents(quillBlog.clipboard.convert(post.content)); // HTML을 Quill content로 변환
+            document.getElementById('blog-title').value = post.title || ''; // null 또는 undefined 방지
+            document.getElementById('blog-author').value = post.author || ''; // null 또는 undefined 방지
+            // Quill 에디터에 내용 설정 (HTML 형식)
+            if (quillBlog && post.content) {
+                quillBlog.setContents(quillBlog.clipboard.convert(post.content));
+            } else {
+                quillBlog.setContents([]); // 내용이 없으면 빈 상태로 설정
+            }
             document.getElementById('save-blog-post-btn').onclick = () => updateBlogPost(postId);
+        } else {
+             // 게시글이 없는 경우 알림 및 페이지 이동
+            showCustomModal({ title: '오류', content: '수정할 게시글을 찾을 수 없습니다.' });
+            loadPage('blog');
+            return; // 함수 종료
         }
     } else {
         document.getElementById('save-blog-post-btn').onclick = saveBlogPost;
@@ -398,7 +408,7 @@ function saveBlogPost() {
     const password = document.getElementById('blog-password').value;
     const content = quillBlog.root.innerHTML; // Quill 에디터의 HTML 내용 가져오기
 
-    if (!title || !author || !password || !content || content === '<p><br></p>') { // 내용이 비어있는 경우도 체크
+    if (!title || !author || !password || !content || content.trim() === '<p><br></p>' || content.trim() === '') { // 내용이 비어있는 경우도 체크 강화
         showCustomModal({ title: '오류', content: '모든 필드를 채워주세요.' });
         return;
     }
@@ -425,10 +435,10 @@ function saveBlogPost() {
 async function updateBlogPost(postId) {
     const title = document.getElementById('blog-title').value;
     const author = document.getElementById('blog-author').value;
-    const passwordInput = document.getElementById('blog-password').value;
+    const passwordInput = document.getElementById('blog-password').value; // 수정 시에도 비밀번호 입력
     const content = quillBlog.root.innerHTML;
 
-    if (!title || !author || !passwordInput || !content || content === '<p><br></p>') {
+    if (!title || !author || !passwordInput || !content || content.trim() === '<p><br></p>' || content.trim() === '') {
         showCustomModal({ title: '오류', content: '모든 필드를 채워주세요.' });
         return;
     }
@@ -636,10 +646,18 @@ async function openQAPostForm(postId = null) {
         const snapshot = await get(postRef);
         const post = snapshot.val();
         if (post) {
-            document.getElementById('qa-title').value = post.title;
-            document.getElementById('qa-nickname').value = post.nickname;
-            quillQA.setContents(quillQA.clipboard.convert(post.content));
+            document.getElementById('qa-title').value = post.title || '';
+            document.getElementById('qa-nickname').value = post.nickname || '';
+            if (quillQA && post.content) {
+                quillQA.setContents(quillQA.clipboard.convert(post.content));
+            } else {
+                quillQA.setContents([]);
+            }
             document.getElementById('save-qa-post-btn').onclick = () => updateQAPost(postId);
+        } else {
+            showCustomModal({ title: '오류', content: '수정할 Q&A 게시글을 찾을 수 없습니다.' });
+            loadPage('qa');
+            return;
         }
     } else {
         document.getElementById('save-qa-post-btn').onclick = saveQAPost;
@@ -654,7 +672,7 @@ function saveQAPost() {
     const password = document.getElementById('qa-password').value;
     const content = quillQA.root.innerHTML;
 
-    if (!title || !nickname || !password || !content || content === '<p><br></p>') {
+    if (!title || !nickname || !password || !content || content.trim() === '<p><br></p>' || content.trim() === '') {
         showCustomModal({ title: '오류', content: '모든 필드를 채워주세요.' });
         return;
     }
@@ -680,10 +698,10 @@ function saveQAPost() {
 async function updateQAPost(postId) {
     const title = document.getElementById('qa-title').value;
     const nickname = document.getElementById('qa-nickname').value;
-    const passwordInput = document.getElementById('qa-password').value;
+    const passwordInput = document.getElementById('qa-password').value; // 수정 시에도 비밀번호 입력
     const content = quillQA.root.innerHTML;
 
-    if (!title || !nickname || !passwordInput || !content || content === '<p><br></p>') {
+    if (!title || !nickname || !passwordInput || !content || content.trim() === '<p><br></p>' || content.trim() === '') {
         showCustomModal({ title: '오류', content: '모든 필드를 채워주세요.' });
         return;
     }
@@ -887,10 +905,18 @@ async function openNoticePostForm(postId = null) {
         const snapshot = await get(postRef);
         const post = snapshot.val();
         if (post) {
-            document.getElementById('notice-title').value = post.title;
-            document.getElementById('notice-author').value = post.author;
-            quillNotice.setContents(quillNotice.clipboard.convert(post.content));
+            document.getElementById('notice-title').value = post.title || '';
+            document.getElementById('notice-author').value = post.author || '';
+            if (quillNotice && post.content) {
+                quillNotice.setContents(quillNotice.clipboard.convert(post.content));
+            } else {
+                quillNotice.setContents([]);
+            }
             document.getElementById('save-notice-post-btn').onclick = () => updateNoticePost(postId);
+        } else {
+            showCustomModal({ title: '오류', content: '수정할 공지사항 게시글을 찾을 수 없습니다.' });
+            loadPage('notice');
+            return;
         }
     } else {
         document.getElementById('save-notice-post-btn').onclick = saveNoticePost;
@@ -905,7 +931,7 @@ function saveNoticePost() {
     const password = document.getElementById('notice-password').value;
     const content = quillNotice.root.innerHTML;
 
-    if (!title || !author || !password || !content || content === '<p><br></p>') {
+    if (!title || !author || !password || !content || content.trim() === '<p><br></p>' || content.trim() === '') {
         showCustomModal({ title: '오류', content: '모든 필드를 채워주세요.' });
         return;
     }
@@ -931,10 +957,10 @@ function saveNoticePost() {
 async function updateNoticePost(postId) {
     const title = document.getElementById('notice-title').value;
     const author = document.getElementById('notice-author').value;
-    const passwordInput = document.getElementById('notice-password').value;
+    const passwordInput = document.getElementById('notice-password').value; // 수정 시에도 비밀번호 입력
     const content = quillNotice.root.innerHTML;
 
-    if (!title || !author || !passwordInput || !content || content === '<p><br></p>') {
+    if (!title || !author || !passwordInput || !content || content.trim() === '<p><br></p>' || content.trim() === '') {
         showCustomModal({ title: '오류', content: '모든 필드를 채워주세요.' });
         return;
     }
