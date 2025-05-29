@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Happy2Nanal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Playfair+Display:wght=700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlNqL1nO0b2a7p+4N4JjN+K4Tz4PzB0/x5z5w5p5u5g5v5p5q5u5i5j5k5l5m5n5o5p5q5r5s5t5u5v5w5x5y5z5" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlNqL1nO0b2a7p+4N4JjN+K4Tz4PzB0/x5z5w5p5u5g5v5p5q5r5s5t5u5v5w5x5y5z5" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         /* Tailwind CSS 기본 설정 및 커스텀 폰트 */
         @layer base {
@@ -27,20 +27,20 @@
             <div class="w-full flex justify-center lg:justify-between items-center py-3 border-t border-b border-gray-200">
                 <nav class="flex-grow">
                     <ul class="flex justify-center lg:justify-start space-x-10">
-                        <li><a href="#blog" class="nav-item">BLOG</a></li>
-                        <li><a href="#qa" class="nav-item">Q&A</a></li>
-                        <li><a href="#notice" class="nav-item">공지사항</a></li>
+                        <li><a href="#blog" class="nav-item text-gray-700 hover:text-blue-600 transition-colors duration-200">BLOG</a></li>
+                        <li><a href="#qa" class="nav-item text-gray-700 hover:text-blue-600 transition-colors duration-200">Q&A</a></li>
+                        <li><a href="#notice" class="nav-item text-gray-700 hover:text-blue-600 transition-colors duration-200">공지사항</a></li>
                     </ul>
                 </nav>
                 <div class="flex items-center space-x-4 mt-4 lg:mt-0">
-                    <div class="search-input-wrapper">
+                    <div class="relative search-input-wrapper">
                         <input type="text" id="global-search-input" placeholder="통합 검색..." class="w-48 p-2 pr-4 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
                         <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                     </div>
                     <div id="blog-view-toggle-group" class="hidden border border-gray-300 rounded-lg p-2 flex items-center space-x-2 bg-gray-50">
                         <span class="text-gray-600 text-sm font-medium whitespace-nowrap">보기 방식:</span>
-                        <button id="nav-list-view-btn" class="nav-view-btn active">목록형</button>
-                        <button id="nav-tile-view-btn" class="nav-view-btn">타일형</button>
+                        <button id="nav-list-view-btn" class="nav-view-btn active px-3 py-1 rounded-md text-sm text-gray-700 bg-white shadow-sm hover:bg-gray-100">목록형</button>
+                        <button id="nav-tile-view-btn" class="nav-view-btn px-3 py-1 rounded-md text-sm text-gray-700 bg-white shadow-sm hover:bg-gray-100">타일형</button>
                     </div>
                 </div>
             </div>
@@ -109,8 +109,12 @@
 
 
     <div class="scroll-buttons fixed bottom-4 right-4 flex flex-col z-50">
-        <button id="scrollUp" class="bg-gray-700 text-white p-2 mb-1 rounded-full shadow-lg hover:bg-gray-800 transition-colors text-lg w-10 h-10 flex items-center justify-center">▲</button>
-        <button id="scrollDown" class="bg-gray-700 text-white p-2 rounded-full shadow-lg hover:bg-gray-800 transition-colors text-lg w-10 h-10 flex items-center justify-center">▼</button>
+        <button id="scrollUp" class="bg-gray-700 text-white p-2 mb-1 rounded-full shadow-lg hover:bg-gray-800 transition-colors text-lg w-10 h-10 flex items-center justify-center">
+            <i class="fas fa-chevron-up"></i>
+        </button>
+        <button id="scrollDown" class="bg-gray-700 text-white p-2 rounded-full shadow-lg hover:bg-gray-800 transition-colors text-lg w-10 h-10 flex items-center justify-center">
+            <i class="fas fa-chevron-down"></i>
+        </button>
     </div>
 
     <footer id="footer" class="bg-gray-800 text-white text-center p-6 text-sm mt-auto shadow-inner" style="display: none;">
