@@ -3,7 +3,7 @@ body, html {
     margin: 0;
     padding: 0;
     font-family: 'Noto Sans KR', sans-serif;
-    background-color: #f0f2f5; /* 아주 연한 회색 배경 */
+    background-color: #f8f9fa; /* 아주 연한 회색 배경 */
     color: #333;
     line-height: 1.6;
 }
@@ -18,8 +18,8 @@ body {
 header {
     background-color: #ffffff; /* 흰색 헤더 배경 */
     padding: 15px 0; /* 패딩 조정 */
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08); /* 은은한 그림자 강화 */
-    border-bottom: 1px solid #e5e7eb; /* 구분선 */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* 은은한 그림자 강화 */
+    border-bottom: 1px solid #e9ecef; /* 구분선 */
     position: sticky; /* 상단 고정 */
     top: 0;
     z-index: 100; /* 다른 요소 위에 오도록 */
@@ -45,18 +45,18 @@ nav {
     font-family: 'Georgia', serif; /* 좀 더 클래식하고 세련된 폰트 */
     font-size: 28px; /* 크기 키움 */
     font-weight: bold;
-    color: #3b82f6; /* 세련된 파스텔톤 블루 (포인트 색상) */
+    color: #495057; /* 세련된 다크 그레이 */
     text-decoration: none;
     transition: color 0.3s ease;
     letter-spacing: -0.5px; /* 약간의 자간 조정 */
 }
 
 .logo-text:hover {
-    color: #2563eb; /* 호버 시 색상 변경 */
+    color: #007bff; /* 호버 시 포인트 색상 */
 }
 
 .subtitle {
-    color: #6b7280; /* 부드러운 회색 */
+    color: #868e96; /* 부드러운 회색 */
     margin: 5px 0 0 0;
     font-size: 14px;
     letter-spacing: -0.2px;
@@ -76,7 +76,7 @@ nav ul li {
 /* 메뉴 아이템 스타일 */
 nav ul li a {
     text-decoration: none;
-    color: #4b5563; /* 무채색 계열 */
+    color: #495057; /* 무채색 계열 */
     font-weight: 500;
     padding: 8px 0; /* 패딩 증가 */
     transition: color 0.3s ease, border-bottom 0.3s ease;
@@ -90,13 +90,13 @@ nav ul li a::after {
     left: 50%;
     width: 0;
     height: 2px;
-    background-color: #3b82f6; /* 포인트 색상 */
+    background-color: #007bff; /* 포인트 색상 */
     transition: width 0.3s ease-out, left 0.3s ease-out;
 }
 
 nav ul li a.active,
 nav ul li a:hover {
-    color: #3b82f6; /* 활성화 및 호버 시 포인트 색상 */
+    color: #007bff; /* 활성화 및 호버 시 포인트 색상 */
 }
 
 nav ul li a.active::after,
@@ -113,7 +113,7 @@ nav ul li a:hover::after {
     margin: 40px auto; /* 상하단 여백 추가 */
     padding: 30px; /* 내부 패딩 증가 */
     background-color: #ffffff;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.05); /* 더 은은하고 깊은 그림자 */
+    box-shadow: 0 5px 20px rgba(0,0,0,0.04); /* 더 은은하고 깊은 그림자 */
     border-radius: 12px; /* 둥근 모서리 */
 }
 
@@ -123,14 +123,15 @@ nav ul li a:hover::after {
     justify-content: space-between;
     align-items: center;
     padding: 25px 0;
-    border-bottom: 1px solid #e5e7eb; /* 하단 구분선 */
+    border-bottom: 1px solid #dee2e6; /* 하단 구분선 */
     margin-bottom: 30px; /* 여백 증가 */
+    position: relative; /* 검색바 위치 조정을 위해 */
 }
 
 .blog-header h2, .qa-header h2, .notice-header h2 {
     font-size: 38px; /* 제목 크기 키움 */
     font-weight: 700;
-    color: #4b5563; /* 제목 색상 무채색 계열 */
+    color: #343a40; /* 제목 색상 무채색 계열 */
     position: relative;
     padding-left: 15px; /* 아이콘 공간 */
 }
@@ -146,13 +147,13 @@ nav ul li a:hover::after {
     transform: translateY(-50%);
     width: 8px; /* 포인트 바 두께 */
     height: 30px; /* 포인트 바 높이 */
-    background-color: #3b82f6; /* 포인트 색상 */
+    background-color: #007bff; /* 포인트 색상 */
     border-radius: 4px;
 }
 
 /* 게시글 작성 버튼 스타일 */
 .create-post-button {
-    background-color: #60a5fa; /* 부드러운 블루 */
+    background-color: #007bff; /* 부드러운 블루 */
     color: white;
     padding: 12px 25px;
     border: none;
@@ -161,65 +162,105 @@ nav ul li a:hover::after {
     font-size: 17px;
     font-weight: 600;
     transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
 }
 
 .create-post-button:hover {
-    background-color: #3b82f6; /* 호버 시 좀 더 진하게 */
+    background-color: #0056b3; /* 호버 시 좀 더 진하게 */
     transform: translateY(-2px); /* 살짝 위로 이동 */
-    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.12);
 }
 
-/* 게시글 목록 (리스트 뷰) - 가독성 및 구성 개선 */
-.blog-list-view, .qa-list-item, .notice-list-item {
-    display: grid; /* 그리드 레이아웃 */
-    grid-template-columns: 1fr auto auto; /* 제목/내용 | 수정 버튼 | 삭제 버튼 */
-    gap: 15px; /* 컬럼 간 간격 */
-    padding: 20px 0; /* 패딩 증가 */
-    border-bottom: 1px solid #ebf0f5; /* 연한 구분선 */
+/* 검색바 스타일 */
+.search-container {
+    display: flex;
     align-items: center;
-    transition: background-color 0.2s ease;
+    margin-left: auto; /* 우측 정렬 */
+    margin-right: 20px; /* 버튼과의 간격 */
+    flex-grow: 1; /* 공간 최대한 활용 */
+    max-width: 400px; /* 최대 너비 제한 */
+    position: absolute; /* 절대 위치로 변경 */
+    right: 180px; /* 버튼 옆에 오도록 조정 */
+    top: 50%;
+    transform: translateY(-50%);
 }
 
-.blog-list-view:last-child, .qa-list-item:last-child, .notice-list-item:last-child {
+.search-input {
+    flex-grow: 1;
+    padding: 10px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 16px;
+    color: #495057;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+.search-button {
+    background-color: #6c757d; /* 짙은 회색 */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.search-button:hover {
+    background-color: #5a6268;
+}
+
+/* 게시글 목록 (리스트 뷰) - 기존 방식 유지 및 개선 */
+.blog-list-view, .qa-list-container, .notice-list-container {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.blog-list-item, .qa-list-item, .notice-list-item {
+    display: flex; /* 플렉스박스 사용 */
+    justify-content: space-between; /* 양 끝 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    padding: 18px 0; /* 패딩 조정 */
+    border-bottom: 1px solid #e9ecef; /* 연한 구분선 */
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.blog-list-item:last-child, .qa-list-item:last-child, .notice-list-item:last-child {
     border-bottom: none;
 }
 
-.blog-list-view:hover, .qa-list-item:hover, .notice-list-item:hover {
-    background-color: #fcfdfe; /* 호버 시 아주 살짝 배경색 */
+.blog-list-item:hover, .qa-list-item:hover, .notice-list-item:hover {
+    background-color: #f8f9fa; /* 호버 시 아주 살짝 배경색 */
 }
 
 .post-text-content {
-    cursor: pointer;
-    overflow: hidden; /* 긴 텍스트 처리 */
+    flex-grow: 1; /* 남은 공간 모두 차지 */
+    margin-right: 20px; /* 버튼과의 간격 */
+    overflow: hidden; /* 텍스트 넘침 방지 */
 }
 
 .post-title {
-    font-size: 22px; /* 제목 크기 조정 */
+    font-size: 18px; /* 제목 크기 조정 */
     font-weight: 600;
-    color: #333;
-    margin-bottom: 8px; /* 여백 증가 */
-    line-height: 1.4;
-    text-overflow: ellipsis; /* 긴 제목 ... 처리 */
+    color: #343a40;
+    margin-bottom: 5px; /* 여백 조정 */
     white-space: nowrap; /* 한 줄로 표시 */
     overflow: hidden;
-}
-
-.post-summary {
-    font-size: 15px;
-    color: #6b7280;
-    margin-bottom: 10px;
-    line-height: 1.6;
-    display: -webkit-box;
-    -webkit-line-clamp: 2; /* 2줄까지만 표시 */
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow: ellipsis; /* 긴 제목 ... 처리 */
 }
 
 .post-meta {
     font-size: 13px;
-    color: #9ca3af;
+    color: #868e96;
     display: flex;
     gap: 15px; /* 메타 정보 간 간격 */
 }
@@ -227,115 +268,32 @@ nav ul li a:hover::after {
 /* 관리 버튼 그룹 */
 .post-management-buttons {
     display: flex;
-    gap: 10px; /* 버튼 간 간격 */
+    gap: 8px; /* 버튼 간 간격 */
     flex-shrink: 0; /* 공간 줄어들지 않도록 */
 }
 
-/* 수정/삭제 버튼 공통 스타일 */
-.edit-button, .delete-button {
-    padding: 10px 16px; /* 패딩 증가 */
-    border: 1px solid #d1d5db; /* 테두리 색상 */
-    border-radius: 6px;
+/* 수정/삭제 버튼 스타일 (아이콘 형태로) */
+.management-icon-button {
+    background: none;
+    border: none;
+    color: #6c757d; /* 아이콘 색상 */
+    font-size: 18px; /* 아이콘 크기 */
     cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    padding: 8px; /* 클릭 영역 확보 */
+    border-radius: 50%; /* 둥근 배경 */
+    transition: color 0.3s ease, background-color 0.3s ease;
 }
 
-.edit-button {
-    background-color: #e5e7eb; /* 연한 회색 */
-    color: #4b5563; /* 어두운 회색 텍스트 */
+.management-icon-button:hover {
+    color: #007bff; /* 호버 시 포인트 색상 */
+    background-color: #e9ecef; /* 은은한 배경색 */
 }
 
-.edit-button:hover {
-    background-color: #d1d5db;
-    color: #333;
-    transform: translateY(-1px);
+.management-icon-button.delete:hover {
+    color: #dc3545; /* 삭제 버튼은 빨간색 */
+    background-color: #ffebe9; /* 연한 빨간색 배경 */
 }
 
-.delete-button {
-    background-color: #fee2e2; /* 연한 빨강 */
-    color: #ef4444; /* 진한 빨강 텍스트 */
-    border-color: #fca5a5;
-}
-
-.delete-button:hover {
-    background-color: #fecaca;
-    color: #dc2626;
-    transform: translateY(-1px);
-}
-
-
-/* 블로그 타일 뷰 */
-.blog-tile-view {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); /* 반응형 그리드, 최소 너비 증가 */
-    gap: 30px; /* 타일 간 간격 증가 */
-    padding-bottom: 20px;
-}
-
-.blog-tile-view .blog-post-item {
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    overflow: hidden;
-    background-color: #fff;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05); /* 타일 그림자 */
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    display: flex; /* 내부 컨텐츠를 플렉스로 */
-    flex-direction: column; /* 세로 정렬 */
-}
-
-.blog-tile-view .blog-post-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-}
-
-.blog-tile-view .post-thumbnail {
-    width: 100%;
-    height: 200px; /* 썸네일 높이 고정 */
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #e0e2e6; /* 이미지가 없을 때 배경 */
-    border-bottom: 1px solid #eee; /* 썸네일과 내용 분리 */
-    cursor: pointer;
-}
-
-.blog-tile-view .post-thumbnail img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.blog-tile-view .post-thumbnail span {
-    color: #999;
-    font-size: 15px;
-}
-
-.blog-tile-view .post-text-content {
-    padding: 20px; /* 패딩 증가 */
-    flex-grow: 1;
-    cursor: pointer;
-}
-
-.blog-tile-view .post-title {
-    font-size: 20px;
-    margin-bottom: 6px;
-}
-
-.blog-tile-view .post-summary {
-    font-size: 14px;
-    -webkit-line-clamp: 3; /* 타일 뷰에서는 3줄까지 */
-}
-
-.blog-tile-view .post-management-buttons {
-    padding: 15px 20px; /* 패딩 조정 */
-    justify-content: flex-end;
-    border-top: 1px solid #ebf0f5;
-    background-color: #f9fafb; /* 버튼 영역 배경 */
-}
 
 /* 글 작성/수정 폼 */
 .bg-white {
@@ -364,7 +322,7 @@ nav ul li a:hover::after {
 
 label {
     display: block;
-    color: #4b5563; /* 라벨 색상 */
+    color: #495057; /* 라벨 색상 */
     font-weight: 600;
     margin-bottom: 8px;
     font-size: 15px;
@@ -374,24 +332,24 @@ input[type="text"],
 input[type="password"] {
     width: 100%;
     padding: 12px;
-    border: 1px solid #d1d5db; /* 테두리 색상 */
+    border: 1px solid #ced4da; /* 테두리 색상 */
     border-radius: 6px;
     font-size: 16px;
-    color: #333;
+    color: #343a40;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 input[type="text"]:focus,
 input[type="password"]:focus {
     outline: none;
-    border-color: #60a5fa; /* 포커스 시 포인트 색상 */
-    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2); /* 은은한 그림자 */
+    border-color: #007bff; /* 포커스 시 포인트 색상 */
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2); /* 은은한 그림자 */
 }
 
 /* Quill 에디터 스타일 오버라이드 */
 #blog-editor, #qa-editor, #notice-editor {
     min-height: 400px; /* 높이 증가 */
-    border: 1px solid #d1d5db;
+    border: 1px solid #ced4da;
     border-radius: 6px;
     font-size: 16px;
     line-height: 1.7; /* 줄 간격 넓힘 */
@@ -399,15 +357,15 @@ input[type="password"]:focus {
 }
 
 .ql-toolbar.ql-snow {
-    border: 1px solid #d1d5db;
+    border: 1px solid #ced4da;
     border-bottom: none;
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
-    background-color: #f8f8f8; /* 툴바 배경색 */
+    background-color: #f8f9fa; /* 툴바 배경색 */
 }
 
 .ql-container.ql-snow {
-    border: 1px solid #d1d5db;
+    border: 1px solid #ced4da;
     border-bottom-left-radius: 6px;
     border-bottom-right-radius: 6px;
 }
@@ -427,23 +385,23 @@ input[type="password"]:focus {
 }
 
 #save-blog-post-btn, #save-qa-post-btn, #save-notice-post-btn {
-    background-color: #3b82f6; /* 저장 버튼 포인트 색상 */
+    background-color: #007bff; /* 저장 버튼 포인트 색상 */
     color: white;
 }
 
 #save-blog-post-btn:hover, #save-qa-post-btn:hover, #save-notice-post-btn:hover {
-    background-color: #2563eb;
+    background-color: #0056b3;
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0,0,0,0.15);
 }
 
 #cancel-blog-post-btn, #cancel-qa-post-btn, #cancel-notice-post-btn {
-    background-color: #9ca3af; /* 취소 버튼 회색 */
+    background-color: #6c757d; /* 취소 버튼 회색 */
     color: white;
 }
 
 #cancel-blog-post-btn:hover, #cancel-qa-post-btn:hover, #cancel-notice-post-btn:hover {
-    background-color: #6b7280;
+    background-color: #5a6268;
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0,0,0,0.15);
 }
@@ -460,7 +418,7 @@ input[type="password"]:focus {
 }
 
 .scroll-buttons button {
-    background-color: rgba(75, 85, 99, 0.7); /* 어두운 회색 반투명 */
+    background-color: rgba(73, 80, 87, 0.7); /* 어두운 회색 반투명 */
     color: white;
     border: none;
     border-radius: 50%;
@@ -476,23 +434,23 @@ input[type="password"]:focus {
 }
 
 .scroll-buttons button:hover {
-    background-color: rgba(55, 65, 81, 0.9);
+    background-color: rgba(52, 58, 64, 0.9);
     transform: translateY(-3px);
 }
 
 /* Footer */
 #footer {
-    background-color: #e0e2e6; /* 밝은 회색 푸터 */
+    background-color: #e9ecef; /* 밝은 회색 푸터 */
     padding: 20px;
     text-align: center;
     font-size: 0.9em;
-    color: #6b7280;
+    color: #6c757d;
     margin-top: auto;
-    border-top: 1px solid #d1d5db;
+    border-top: 1px solid #dee2e6;
 }
 
 #footer strong {
-    color: #3b82f6; /* 포인트 색상 */
+    color: #007bff; /* 포인트 색상 */
 }
 
 /* Custom Modal Overlay */
@@ -525,7 +483,7 @@ input[type="password"]:focus {
 .custom-modal h3, .custom-prompt h3 {
     font-size: 28px; /* 제목 크기 */
     font-weight: 700;
-    color: #333;
+    color: #343a40;
     margin-bottom: 20px;
 }
 
@@ -558,39 +516,39 @@ input[type="password"]:focus {
 }
 
 .custom-modal .confirm-button, .custom-prompt .confirm-button {
-    background-color: #3b82f6;
+    background-color: #007bff;
     color: white;
 }
 .custom-modal .confirm-button:hover, .custom-prompt .confirm-button:hover {
-    background-color: #2563eb;
+    background-color: #0056b3;
     transform: translateY(-1px);
     box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
 .custom-modal .cancel-button, .custom-prompt .cancel-button {
-    background-color: #9ca3af;
+    background-color: #6c757d;
     color: white;
 }
 .custom-modal .cancel-button:hover, .custom-prompt .cancel-button:hover {
-    background-color: #6b7280;
+    background-color: #5a6268;
     transform: translateY(-1px);
     box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
 .custom-modal .btn-danger {
-    background-color: #ef4444;
+    background-color: #dc3545;
     color: white;
 }
 .custom-modal .btn-danger:hover {
-    background-color: #dc2626;
+    background-color: #bd2130;
 }
 
 .custom-modal .btn-secondary {
-    background-color: #e5e7eb;
-    color: #4b5563;
+    background-color: #e9ecef;
+    color: #495057;
 }
 .custom-modal .btn-secondary:hover {
-    background-color: #d1d5db;
+    background-color: #dee2e6;
 }
 
 .custom-modal .absolute {
@@ -638,7 +596,7 @@ input[type="password"]:focus {
 .modal-content h3 {
     font-size: 32px; /* 모달 제목 크기 */
     font-weight: 700;
-    color: #333;
+    color: #343a40;
     margin-bottom: 15px;
 }
 
@@ -666,7 +624,7 @@ input[type="password"]:focus {
     width: 300px; /* 사이드바 너비 조정 */
     padding: 30px;
     background-color: #ffffff;
-    border-left: 1px solid #e5e7eb;
+    border-left: 1px solid #e9ecef;
     box-shadow: -2px 0 10px rgba(0,0,0,0.03);
     position: fixed;
     top: 80px;
@@ -691,7 +649,7 @@ input[type="password"]:focus {
 .sidebar-section h4 {
     font-size: 22px;
     font-weight: 700;
-    color: #4b5563; /* 사이드바 제목 색상 */
+    color: #495057; /* 사이드바 제목 색상 */
     margin-bottom: 18px;
     position: relative;
     padding-left: 10px;
@@ -699,7 +657,7 @@ input[type="password"]:focus {
 
 .sidebar-section h4::before {
     content: '▪'; /* 심플한 글머리 기호 */
-    color: #60a5fa; /* 포인트 색상 */
+    color: #007bff; /* 포인트 색상 */
     position: absolute;
     left: 0;
     top: 50%;
@@ -727,7 +685,7 @@ input[type="password"]:focus {
 }
 
 .sidebar-section li a:hover {
-    color: #3b82f6;
+    color: #007bff;
 }
 
 .sidebar-section .post-date {
@@ -741,7 +699,7 @@ input[type="password"]:focus {
     display: none !important;
 }
 
-/* 보기 방식 토글 버튼 그룹 */
+/* 보기 방식 토글 버튼 그룹 (블로그 전용) */
 .blog-view-toggle-group {
     display: flex;
     justify-content: flex-end;
@@ -749,9 +707,9 @@ input[type="password"]:focus {
 }
 
 .blog-view-toggle-group button {
-    background-color: #e5e7eb;
-    color: #6b7280;
-    border: 1px solid #d1d5db;
+    background-color: #e9ecef;
+    color: #6c757d;
+    border: 1px solid #ced4da;
     padding: 10px 18px;
     font-size: 15px;
     cursor: pointer;
@@ -770,14 +728,14 @@ input[type="password"]:focus {
 }
 
 .blog-view-toggle-group button.active {
-    background-color: #60a5fa; /* 활성화 시 색상 */
+    background-color: #007bff; /* 활성화 시 색상 */
     color: white;
-    border-color: #60a5fa;
+    border-color: #007bff;
 }
 
 .blog-view-toggle-group button:hover:not(.active) {
-    background-color: #d1d5db;
-    color: #4b5563;
+    background-color: #dee2e6;
+    color: #495057;
 }
 
 /* Home 페이지 스타일 (개선) */
@@ -891,7 +849,7 @@ body {
     to { opacity: 1; }
 }
 
-/* 반응형 디자인 (모바일 최적화는 유지) */
+/* 반응형 디자인 (모바일 최적화) */
 @media (max-width: 768px) {
     nav {
         flex-direction: column;
@@ -945,35 +903,61 @@ body {
         width: 100%;
         padding: 10px 0;
         font-size: 16px;
+        order: 3; /* 모바일에서 버튼 순서 변경 */
+        margin-top: 20px; /* 상단 여백 추가 */
     }
 
-    .blog-list-view, .qa-list-item, .notice-list-item {
-        grid-template-columns: 1fr; /* 모바일에서는 단일 컬럼 */
-        gap: 10px;
+    /* 모바일 검색바 배치 */
+    .search-container {
+        position: static; /* 고정 해제 */
+        transform: none;
+        width: 100%;
+        margin: 15px 0 0 0; /* 여백 조정 */
+        order: 2; /* 버튼 앞에 오도록 */
+    }
+
+    .search-input {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    .search-button {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    .blog-list-item, .qa-list-item, .notice-list-item {
+        flex-direction: column; /* 세로로 쌓이도록 */
+        align-items: flex-start; /* 왼쪽 정렬 */
         padding: 15px 0;
     }
 
     .post-text-content {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px; /* 버튼과 간격 */
+    }
+
+    .post-title {
+        font-size: 16px;
+        white-space: normal; /* 여러 줄 허용 */
+        overflow: visible;
+        text-overflow: clip;
+    }
+
+    .post-meta {
+        font-size: 12px;
         margin-bottom: 10px;
     }
 
     .post-management-buttons {
         width: 100%;
-        justify-content: flex-start;
+        justify-content: flex-end; /* 우측 정렬 */
     }
 
-    .edit-button, .delete-button {
-        padding: 8px 12px;
-        font-size: 13px;
-    }
-
-    .blog-tile-view {
-        grid-template-columns: 1fr; /* 모바일에서는 단일 컬럼 */
-        gap: 20px;
-    }
-
-    .blog-tile-view .post-thumbnail {
-        height: 160px;
+    .management-icon-button {
+        font-size: 16px;
+        padding: 6px;
     }
 
     .home-section .carousel-container {
