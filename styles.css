@@ -1,368 +1,752 @@
-/* Custom Fonts and Base Styles - Tailwind CSS @layer base ensures these are applied correctly */
-@layer base {
-    body {
-        font-family: 'Noto Sans KR', sans-serif;
-    }
-    .ql-editor { /* Quill 에디터 내 폰트 */
-        font-family: 'Noto Sans KR', sans-serif;
-    }
-}
-
-/* Tailwind CSS를 사용하므로, 여기에 복잡한 레이아웃/색상/폰트 스타일은 최소화합니다. */
-
+/* 기본 스타일 */
 body, html {
     margin: 0;
     padding: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #f8f8f8; /* 밝은 회색 배경 */
+    color: #333;
 }
 
 body {
     min-height: 100vh;
+    display: flex;
     flex-direction: column;
 }
 
-/* 블로그 목록 스타일 (list-view) */
-.blog-list-view .blog-post-item {
-    display: flex;
-    flex-direction: column; /* 제목, 요약, 메타, 버튼이 세로로 정렬되도록 변경 */
-    align-items: flex-start; /* 왼쪽 정렬 */
-    padding: 1rem;
-    border-bottom: 1px solid #e2e8f0; /* gray-200 */
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
+/* Header */
+header {
+    background-color: #ffffff; /* 흰색 헤더 배경 */
+    padding: 20px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* 은은한 그림자 */
+    border-bottom: 1px solid #e0e0e0; /* 구분선 */
 }
 
-.blog-list-view .blog-post-item:hover {
-    background-color: #f8f8f8; /* gray-50 */
-}
-
-.blog-list-view .blog-post-item:last-child {
-    border-bottom: none;
-}
-
-.blog-list-view .blog-post-item .post-text-content {
-    width: 100%; /* 너비를 100%로 설정하여 텍스트가 전체 너비를 차지하도록 */
-    margin-bottom: 1rem; /* 텍스트와 버튼 사이 간격 */
-}
-
-.blog-list-view .blog-post-item .post-title {
-    font-size: 1.25rem; /* text-xl */
-    font-weight: 700; /* font-bold */
-    color: #1a202c; /* gray-900 */
-    margin-bottom: 0.5rem;
-}
-
-.blog-list-view .blog-post-item .post-summary {
-    color: #4a5568; /* gray-700 */
-    font-size: 0.95rem;
-    margin-bottom: 0.75rem;
-    line-height: 1.5;
-    /* 2줄로 제한하고 ... 처리 */
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.blog-list-view .blog-post-item .post-meta {
-    font-size: 0.875rem; /* text-sm */
-    color: #718096; /* gray-500 */
+nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%; /* 너비를 100%로 설정하여 justify-between이 잘 작동하도록 */
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
-/* 블로그 목록 스타일 (tile-view) */
+.left-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* Happy2Nanal 로고 텍스트 스타일 */
+.logo-text {
+    font-family: 'Arial', sans-serif; /* 이전 폰트 스타일로 추정되는 Arial */
+    font-size: 20px; /* 크기 줄임 */
+    font-weight: bold;
+    color: #4CAF50; /* 포인트 색상 (예: 초록 계열) */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.logo-text:hover {
+    color: #388E3C; /* 호버 시 색상 변경 */
+}
+
+.subtitle {
+    color: #666;
+    margin: 5px 0 0 0;
+    font-size: 13px; /* 약간 줄임 */
+}
+
+nav ul {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+nav ul li {
+    margin-left: 25px; /* 간격 넓힘 */
+}
+
+/* 메뉴 아이템 스타일 */
+nav ul li a {
+    text-decoration: none;
+    color: #555; /* 무채색 계열 */
+    font-weight: 500;
+    padding: 5px 0;
+    transition: color 0.3s ease, border-bottom 0.3s ease;
+}
+
+nav ul li a.active,
+nav ul li a:hover {
+    color: #2196F3; /* 활성화 및 호버 시 포인트 색상 (파란 계열) */
+    border-bottom: 2px solid #2196F3;
+}
+
+/* 메인 콘텐츠 */
+#main-content {
+    flex-grow: 1;
+    max-width: 1000px; /* 최대 너비 증가 */
+    margin: 30px auto; /* 상단 여백 추가 */
+    padding: 0 20px;
+    background-color: #ffffff;
+    box-shadow: 0 0 15px rgba(0,0,0,0.03); /* 더 은은한 그림자 */
+    border-radius: 10px; /* 둥근 모서리 */
+}
+
+/* 섹션 헤더 (BLOG, Q&A, 공지사항) */
+.blog-header, .qa-header, .notice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 0; /* 패딩 증가 */
+    border-bottom: 1px solid #eee; /* 하단 구분선 */
+    margin-bottom: 20px;
+}
+
+.blog-header h2, .qa-header h2, .notice-header h2 {
+    font-size: 36px; /* 제목 크기 키움 */
+    font-weight: 700;
+    color: #4CAF50; /* 제목에도 포인트 색상 */
+}
+
+/* 게시글 작성 버튼 스타일 */
+.create-post-button {
+    background-color: #607D8B; /* 어두운 회색 (Slate Gray) */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.create-post-button:hover {
+    background-color: #546E7A; /* 호버 시 약간 어둡게 */
+    transform: translateY(-1px); /* 살짝 위로 이동 */
+}
+
+/* 게시글 목록 (리스트 뷰) */
+.blog-list-view, .qa-list-item, .notice-list-item {
+    padding: 15px 0;
+    border-bottom: 1px dashed #e0e0e0; /* 점선 구분선 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.blog-list-view:last-child, .qa-list-item:last-child, .notice-list-item:last-child {
+    border-bottom: none;
+}
+
+.blog-list-view:hover, .qa-list-item:hover, .notice-list-item:hover {
+    background-color: #fcfcfc; /* 호버 시 아주 살짝 배경색 */
+}
+
+.post-text-content {
+    flex-grow: 1;
+    cursor: pointer;
+    padding-right: 20px; /* 버튼과의 간격 */
+}
+
+.post-title {
+    font-size: 20px; /* 제목 크기 조정 */
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+    line-height: 1.4;
+}
+
+.post-summary {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.post-meta {
+    font-size: 12px;
+    color: #999;
+}
+
+.post-meta span {
+    margin-right: 15px;
+}
+
+/* 관리 버튼 그룹 */
+.post-management-buttons {
+    display: flex;
+    gap: 8px; /* 버튼 간 간격 */
+}
+
+/* 수정/삭제 버튼 공통 스타일 */
+.edit-button, .delete-button {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.edit-button {
+    background-color: #f0f0f0;
+    color: #555;
+    border-color: #d0d0d0;
+}
+
+.edit-button:hover {
+    background-color: #e0e0e0;
+    color: #333;
+    border-color: #c0c0c0;
+}
+
+.delete-button {
+    background-color: #f0f0f0;
+    color: #d32f2f; /* 빨간색 */
+    border-color: #d0d0d0;
+}
+
+.delete-button:hover {
+    background-color: #e0e0e0;
+    color: #c62828;
+    border-color: #c0c0c0;
+}
+
+
+/* 블로그 타일 뷰 */
 .blog-tile-view {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* 반응형 그리드 */
-    gap: 1.5rem; /* gap-6 */
+    gap: 25px; /* 타일 간 간격 */
+    padding-bottom: 20px;
 }
 
 .blog-tile-view .blog-post-item {
-    background-color: #ffffff; /* bg-white */
-    border: 1px solid #e2e8f0; /* border-gray-200 */
-    border-radius: 0.75rem; /* rounded-xl */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    display: flex; /* 내부 콘텐츠를 flex로 하여 레이아웃 조정 */
-    flex-direction: column; /* 세로 정렬 */
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden; /* 이미지 오버플로우 숨김 */
+    background-color: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* 타일 그림자 */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .blog-tile-view .blog-post-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15); /* shadow-lg */
+    transform: translateY(-5px); /* 호버 시 살짝 위로 */
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
 }
 
-.blog-tile-view .blog-post-item .post-thumbnail {
+.blog-tile-view .post-thumbnail {
     width: 100%;
-    height: 180px; /* 고정 높이 */
-    background-color: #e2e8f0; /* gray-200, placeholder */
+    height: 180px; /* 썸네일 높이 고정 */
+    overflow: hidden;
     display: flex;
-    align-items: center;
     justify-content: center;
-    color: #718096; /* gray-500 */
-    font-size: 0.9rem;
-    overflow: hidden; /* 이미지가 넘치면 잘라내기 */
+    align-items: center;
+    background-color: #f0f0f0; /* 이미지가 없을 때 배경 */
 }
-.blog-tile-view .blog-post-item .post-thumbnail img {
+
+.blog-tile-view .post-thumbnail img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* 이미지가 썸네일 박스에 꽉 차도록 */
+    object-fit: cover; /* 이미지를 비율 유지하며 채움 */
 }
 
-.blog-tile-view .blog-post-item .post-text-content {
-    padding: 1.25rem; /* p-5 */
-    flex-grow: 1; /* 콘텐츠 영역이 남은 공간을 차지하도록 */
-    display: flex;
-    flex-direction: column;
+.blog-tile-view .post-thumbnail span {
+    color: #999;
+    font-size: 14px;
 }
 
-.blog-tile-view .blog-post-item .post-title {
-    font-size: 1.125rem; /* text-lg */
-    font-weight: 700; /* font-bold */
-    color: #1a202c; /* gray-900 */
-    margin-bottom: 0.5rem; /* mb-2 */
-    /* 2줄로 제한하고 ... 처리 */
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.blog-tile-view .blog-post-item .post-summary {
-    color: #4a5568; /* gray-700 */
-    font-size: 0.95rem;
-    margin-bottom: 1rem; /* mb-4 */
-    line-height: 1.5;
-    /* 3줄로 제한하고 ... 처리 */
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.blog-tile-view .blog-post-item .post-meta {
-    font-size: 0.875rem; /* text-sm */
-    color: #718096; /* gray-500 */
-    margin-top: auto; /* 메타 정보를 항상 하단에 위치시킴 */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
-
-
-/* Q&A 및 공지사항 목록 스타일 (list-view와 유사) */
-.qa-list-item, .notice-list-item {
-    display: flex;
-    flex-direction: column;
-    padding: 1rem;
-    border-bottom: 1px solid #e2e8f0; /* gray-200 */
+.blog-tile-view .post-text-content {
+    padding: 15px;
+    flex-grow: 1; /* 콘텐츠 영역 확장 */
     cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
 }
 
-.qa-list-item:hover, .notice-list-item:hover {
-    background-color: #f8f8f8; /* gray-50 */
+.blog-tile-view .post-management-buttons {
+    padding: 15px;
+    justify-content: flex-end; /* 오른쪽 정렬 */
+    border-top: 1px solid #eee;
 }
 
-.qa-list-item:last-child, .notice-list-item:last-child {
-    border-bottom: none;
+/* 글 작성/수정 폼 */
+.bg-white {
+    background-color: #ffffff;
 }
 
-.qa-list-item .post-title, .notice-list-item .post-title {
-    font-size: 1.125rem; /* text-lg */
-    font-weight: 700; /* font-bold */
-    color: #1a202c; /* gray-900 */
-    margin-bottom: 0.5rem;
+.p-8 {
+    padding: 32px;
 }
 
-.qa-list-item .post-meta, .notice-list-item .post-meta {
-    font-size: 0.875rem; /* text-sm */
-    color: #718096; /* gray-500 */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.rounded-xl {
+    border-radius: 12px;
+}
+
+.shadow-lg {
+    box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+}
+
+.mb-4 {
+    margin-bottom: 16px;
+}
+
+.mb-6 {
+    margin-bottom: 24px;
+}
+
+label {
+    display: block;
+    color: #444; /* 라벨 색상 */
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+input[type="text"],
+input[type="password"] {
     width: 100%;
-}
-
-/* 글 상세 모달 내부 콘텐츠 스타일 */
-#modal-blog-content img {
-    max-width: 100%; /* 이미지가 모달 너비를 넘지 않도록 */
-    height: auto;
-    display: block; /* 이미지 하단 여백 제거 */
-    margin-top: 1rem; /* 이미지 위쪽 여백 */
-    margin-bottom: 1rem; /* 이미지 아래쪽 여백 */
-    border-radius: 0.5rem; /* rounded-lg */
-}
-
-/* 사이드바 글 목록 */
-.sidebar-section ul li {
-    font-size: 0.95rem;
+    padding: 12px;
+    border: 1px solid #d0d0d0; /* 테두리 색상 */
+    border-radius: 6px;
+    font-size: 16px;
     color: #333;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px dotted #e2e8f0; /* gray-200 */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.sidebar-section ul li:last-child {
+input[type="text"]:focus,
+input[type="password"]:focus {
+    outline: none;
+    border-color: #2196F3; /* 포커스 시 포인트 색상 */
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2); /* 은은한 그림자 */
+}
+
+/* Quill 에디터 스타일 오버라이드 */
+#blog-editor, #qa-editor, #notice-editor {
+    min-height: 350px; /* 높이 증가 */
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 16px;
+    line-height: 1.6;
+    background-color: #fff;
+}
+
+.ql-toolbar.ql-snow {
+    border: 1px solid #d0d0d0;
     border-bottom: none;
-    padding-bottom: 0;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    background-color: #f8f8f8; /* 툴바 배경색 */
 }
 
-.sidebar-section ul li a {
-    color: #4a5568; /* gray-700 */
-    text-decoration: none;
+.ql-container.ql-snow {
+    border: 1px solid #d0d0d0;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+/* 저장/취소 버튼 */
+#save-blog-post-btn, #cancel-blog-post-btn,
+#save-qa-post-btn, #cancel-qa-post-btn,
+#save-notice-post-btn, #cancel-notice-post-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
     font-weight: 500;
-    transition: color 0.2s ease-in-out;
-    flex-grow: 1; /* 제목이 공간을 최대한 차지하도록 */
-    white-space: nowrap; /* 제목이 한 줄로 유지되도록 */
-    overflow: hidden; /* 넘치는 부분 숨김 */
-    text-overflow: ellipsis; /* 넘치는 부분 ... 처리 */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.sidebar-section ul li a:hover {
-    color: #2b6cb0; /* blue-700 */
-}
-
-.sidebar-section ul li .post-date {
-    font-size: 0.85rem;
-    color: #718096; /* gray-500 */
-    flex-shrink: 0; /* 날짜가 줄어들지 않도록 */
-    margin-left: 10px; /* 제목과 날짜 사이 간격 */
-}
-
-/* --- 새로 추가되거나 수정된 스타일 --- */
-
-/* 네비게이션 아이템 활성화 시 스타일 */
-.nav-item.active {
-    color: #2563eb; /* blue-600 */
-    font-weight: 700; /* font-bold */
-    border-bottom: 2px solid #2563eb; /* blue-600 */
-    padding-bottom: 0.5rem; /* 링크 텍스트 아래 여백 */
-}
-
-/* 보기 방식 버튼 활성화 시 */
-.nav-view-btn.active {
-    background-color: #2563eb; /* blue-600 */
+#save-blog-post-btn, #save-qa-post-btn, #save-notice-post-btn {
+    background-color: #2196F3; /* 저장 버튼 포인트 색상 */
     color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* 블로그/Q&A/공지사항 관리 버튼 */
-.post-management-buttons button {
-    @apply px-3 py-1 rounded-md font-medium text-xs transition-colors duration-200 flex items-center justify-center space-x-1; /* 폰트 크기 및 아이콘 정렬 */
-}
-.post-management-buttons .view-button {
-    @apply bg-blue-500 text-white hover:bg-blue-600;
-}
-.post-management-buttons .edit-button {
-    @apply bg-green-500 text-white hover:bg-green-600;
-    margin-left: 0.5rem;
-}
-.post-management-buttons .delete-button {
-    @apply bg-red-500 text-white hover:bg-red-600;
-    margin-left: 0.5rem;
+#save-blog-post-btn:hover, #save-qa-post-btn:hover, #save-notice-post-btn:hover {
+    background-color: #1976D2;
+    transform: translateY(-1px);
 }
 
-/* 글 작성 버튼 */
-.create-post-button {
-    @apply bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition-colors duration-200;
+#cancel-blog-post-btn, #cancel-qa-post-btn, #cancel-notice-post-btn {
+    background-color: #B0BEC5; /* 취소 버튼 회색 */
+    color: white;
 }
 
-
-/* 커스텀 모달/프롬프트 관련 스타일 (app.js에서 동적으로 생성될 때 Tailwind 클래스 적용) */
-/* #custom-modal-container 안에 들어가는 요소들에 대한 기본적인 z-index 및 위치 */
-#custom-modal-container {
-    /* hidden 클래스는 app.js에서 토글 */
-    /* position: fixed; */ /* Tailwind 'fixed' 사용 */
-    /* top: 0; left: 0; width: 100%; height: 100%; */ /* Tailwind 'inset-0' 사용 */
-    /* display: flex; justify-content: center; align-items: center; */ /* Tailwind 'flex items-center justify-center' 사용 */
-    /* background-color: rgba(0, 0, 0, 0.5); */ /* Tailwind 'bg-gray-900 bg-opacity-75' 사용 */
-    /* z-index: 1000; */ /* Tailwind 'z-[9999]' 사용 */
+#cancel-blog-post-btn:hover, #cancel-qa-post-btn:hover, #cancel-notice-post-btn:hover {
+    background-color: #90A4AE;
+    transform: translateY(-1px);
 }
 
+/* Scroll Buttons */
+.scroll-buttons {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.scroll-buttons button {
+    background-color: rgba(96, 125, 139, 0.7); /* 어두운 회색 반투명 */
+    color: white;
+    border: none;
+    border-radius: 50%; /* 원형 */
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.scroll-buttons button:hover {
+    background-color: rgba(84, 110, 119, 0.9);
+    transform: translateY(-2px);
+}
+
+/* Footer */
+#footer {
+    background-color: #e0e0e0; /* 밝은 회색 푸터 */
+    padding: 15px;
+    text-align: center;
+    font-size: 0.8em;
+    color: #666;
+    margin-top: auto; /* 하단 고정 */
+    border-top: 1px solid #d0d0d0;
+}
+
+#footer strong {
+    color: #4CAF50; /* 포인트 색상 */
+}
+
+/* Custom Modal Overlay */
+.custom-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* 어두운 배경 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+/* Custom Modal/Prompt */
 .custom-modal, .custom-prompt {
-    /* background-color: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); */ /* Tailwind 클래스 사용 */
-    /* max-width: 90%; max-height: 90%; overflow-y: auto; position: relative; */ /* Tailwind 클래스 사용 */
+    background-color: #ffffff;
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    position: relative;
+    max-width: 450px; /* 최대 너비 조정 */
+    width: 90%;
+    text-align: center;
 }
 
 .custom-modal h3, .custom-prompt h3 {
-    /* font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: #1a202c; */ /* Tailwind 클래스 사용 */
+    font-size: 26px; /* 제목 크기 */
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 15px;
 }
 
 .custom-modal p, .custom-prompt p {
-    /* margin-bottom: 1rem; color: #4a5568; */ /* Tailwind 클래스 사용 */
+    font-size: 16px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 25px;
 }
 
-.custom-prompt input[type="password"] {
-    /* width: 100%; padding: 0.75rem; border: 1px solid #cbd5e0; border-radius: 0.375rem; margin-bottom: 1rem; font-size: 1rem; */ /* Tailwind 클래스 사용 */
+.custom-prompt input {
+    margin-bottom: 25px;
 }
 
 .custom-modal-buttons, .custom-prompt-buttons {
-    /* display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem; */ /* Tailwind 클래스 사용 */
+    display: flex;
+    justify-content: center; /* 버튼 중앙 정렬 */
+    gap: 15px; /* 버튼 간 간격 */
 }
 
-.custom-modal-buttons button, .custom-prompt-buttons button {
-    /* padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; transition: background-color 0.2s ease-in-out; */ /* Tailwind 클래스 사용 */
+.custom-modal button, .custom-prompt button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.custom-modal-buttons .confirm-button, .custom-prompt-buttons .confirm-button {
-    @apply bg-blue-600 text-white hover:bg-blue-700;
+.custom-modal .confirm-button, .custom-prompt .confirm-button {
+    background-color: #2196F3;
+    color: white;
+}
+.custom-modal .confirm-button:hover, .custom-prompt .confirm-button:hover {
+    background-color: #1976D2;
+    transform: translateY(-1px);
 }
 
-.custom-modal-buttons .cancel-button, .custom-prompt-buttons .cancel-button {
-    @apply bg-gray-300 text-gray-800 hover:bg-gray-400;
+.custom-modal .cancel-button, .custom-prompt .cancel-button {
+    background-color: #B0BEC5;
+    color: white;
+}
+.custom-modal .cancel-button:hover, .custom-prompt .cancel-button:hover {
+    background-color: #90A4AE;
+    transform: translateY(-1px);
 }
 
-/* Rich Text Editor (Quill) 기본 스타일 */
-#blog-editor, #qa-editor, #notice-editor {
+.custom-modal .btn-danger {
+    background-color: #f44336;
+    color: white;
+}
+.custom-modal .btn-danger:hover {
+    background-color: #d32f2f;
+}
+
+.custom-modal .btn-secondary {
+    background-color: #e0e0e0;
+    color: #333;
+}
+.custom-modal .btn-secondary:hover {
+    background-color: #d0d0d0;
+}
+
+.custom-modal .absolute {
+    top: 15px;
+    right: 15px;
+    font-size: 28px; /* 닫기 버튼 크기 */
+    color: #999;
+    background: none; /* 배경 없앰 */
+    border: none; /* 테두리 없앰 */
+    padding: 0;
+    box-shadow: none;
+}
+.custom-modal .absolute:hover {
+    color: #666;
+    transform: none; /* 변형 효과 제거 */
+}
+
+/* 게시글 상세 모달 (재사용) */
+.modal {
+    position: fixed;
+    z-index: 2001; /* 다른 모달 위에 */
+    left: 0;
+    top: 0;
     width: 100%;
-    min-height: 300px;
-    /* border: 1px solid #ddd; */ /* Quill 자체 스타일이 적용되므로 제거 */
-    /* padding: 10px; */ /* Quill 자체 스타일이 적용되므로 제거 */
-    margin-bottom: 10px;
-    /* background-color: #fff; */ /* Quill 자체 스타일이 적용되므로 제거 */
-    /* font-size: 1rem; line-height: 1.5; */ /* Quill 자체 스타일이 적용되므로 제거 */
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.ql-editor {
-    min-height: 300px; /* 에디터 본문 영역 높이 */
+.modal-content {
+    background-color: #fff;
+    margin: auto;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    width: 90%;
+    max-width: 800px; /* 상세 보기 모달 너비 */
+    position: relative;
+    animation: fadeIn 0.3s ease-out;
 }
 
-/* Quill toolbar container */
-.ql-toolbar {
-    border: 1px solid #ddd;
+.close-button {
+    color: #999;
+    font-size: 32px;
+    font-weight: bold;
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #666;
+    text-decoration: none;
+}
+
+.modal-post-content {
+    margin-top: 20px;
+    font-size: 16px;
+    line-height: 1.7;
+    color: #333;
+    word-wrap: break-word; /* 긴 단어 줄바꿈 */
+}
+
+/* 이미지 첨부 시 에디터 내에서 이미지 크기 조정 */
+.ql-editor img {
+    max-width: 100%;
+    height: auto;
+    display: block; /* 이미지 하단 여백 제거 */
+    margin: 10px auto; /* 중앙 정렬 및 위아래 여백 */
+    border-radius: 5px; /* 이미지 모서리 둥글게 */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+
+/* Sidebar */
+.sidebar {
+    width: 280px; /* 사이드바 너비 조정 */
+    padding: 30px;
+    background-color: #ffffff;
+    border-left: 1px solid #eee;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.03);
+    position: fixed; /* 고정 */
+    top: 80px; /* 헤더 아래로 */
+    right: 0;
+    bottom: 0;
+    overflow-y: auto; /* 내용 길어지면 스크롤 */
+}
+
+.sidebar-section {
+    margin-bottom: 35px; /* 섹션 간 간격 */
+    padding-bottom: 25px;
+    border-bottom: 1px dashed #e0e0e0;
+}
+
+.sidebar-section:last-child {
     border-bottom: none;
-    background-color: #f5f5f5;
-    border-top-left-radius: 0.5rem;
-    border-top-right-radius: 0.5rem;
+    margin-bottom: 0;
+    padding-bottom: 0;
 }
 
-/* Quill editor content container */
-.ql-container {
-    border: 1px solid #ddd;
-    border-bottom-left-radius: 0.5rem;
-    border-bottom-right-radius: 0.5rem;
-    font-family: 'Noto Sans KR', sans-serif; /* 에디터 내 폰트 설정 */
-    font-size: 1rem;
+.sidebar-section h4 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #4CAF50; /* 사이드바 제목에도 포인트 색상 */
+    margin-bottom: 15px;
 }
 
-/* 공통 버튼 스타일 (전체적으로 Tailwind 클래스를 선호) */
-.btn-primary {
-    @apply bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200;
+.sidebar-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
-.btn-secondary {
-    @apply bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200;
+
+.sidebar-section li {
+    margin-bottom: 10px;
+    font-size: 15px;
 }
-.btn-danger {
-    @apply bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors duration-200;
+
+.sidebar-section li a {
+    text-decoration: none;
+    color: #555;
+    display: block;
+    padding: 5px 0;
+    transition: color 0.2s ease;
+}
+
+.sidebar-section li a:hover {
+    color: #2196F3;
+}
+
+.sidebar-section .post-date {
+    font-size: 12px;
+    color: #999;
+    margin-left: 10px;
+}
+
+/* 숨김 처리 */
+.hidden {
+    display: none !important;
+}
+
+/* 보기 방식 토글 버튼 그룹 */
+.blog-view-toggle-group {
+    display: flex;
+    justify-content: flex-end; /* 오른쪽 정렬 */
+    margin-bottom: 20px;
+}
+
+.blog-view-toggle-group button {
+    background-color: #e0e0e0;
+    color: #666;
+    border: 1px solid #d0d0d0;
+    padding: 8px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.blog-view-toggle-group button:first-child {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.blog-view-toggle-group button:last-child {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    margin-left: -1px; /* 테두리 겹치지 않게 */
+}
+
+.blog-view-toggle-group button.active {
+    background-color: #607D8B; /* 활성화 시 색상 */
+    color: white;
+    border-color: #607D8B;
+}
+
+.blog-view-toggle-group button:hover:not(.active) {
+    background-color: #d0d0d0;
+    color: #333;
+}
+
+/* Home 페이지 스타일 (필요시 추가) */
+.home-section {
+    padding: 40px;
+    text-align: center;
+}
+
+.home-section h2 {
+    font-size: 40px;
+    color: #4CAF50;
+    margin-bottom: 20px;
+}
+
+.home-section p {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #555;
+    max-width: 700px;
+    margin: 0 auto 30px auto;
+}
+
+.home-image {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* 폰트 관련 */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-content {
+    animation: fadeIn 0.3s ease-out;
 }
